@@ -1,5 +1,3 @@
-# docker-dev
-
 These are Docker Compose files used for Data source and Data destination in [Demo Load Generator](https://github.com/arcionlabs/arcion-demo) and Release Testing.
 The diagram below depicts the components of the demo kit where where the Docker Compose files fit in.
 
@@ -36,21 +34,21 @@ graph LR
 
 - Start one or more of Data source and destinations
 
-  - Examaple of starting Kakfa
+  An examaple of starting Kakfa
 
     ```bash
     cd kakfa
     docker compose up -d
     ```
 
-  - Examaple of stopping Kakfa
+  An examaple of stopping Kakfa
 
     ```bash
     cd kakfa
     docker compose down
     ```
 
-  - Examaple of logs from Kakfa
+  An examaple of logs from Kakfa
 
     ```bash
     cd kakfa
