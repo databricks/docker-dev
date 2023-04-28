@@ -1,0 +1,59 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  metadata:
+    image: postgres:14-alpine
+    container_name: arcion-metadata
+    ports:
+      - :5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=Passw0rd 
+    volumes:
+      - arcion-metadata:/var/lib/postgresql/data
+      - ./init.d:/docker-entrypoint-initdb.d
+
+  ui:
+    image:  arcionlabs/replicant-on-premises:latest
+    container_name: ui
+    ports:
+      - :8080
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=Passw0rd 
+      - ARCION_LICENSE="${ARCION_LICENSE}"
+      - DB_HOST=arcion-metadata
+      - DB_PORT=5432
+      - DB_DATABASE=arcion
+      - DB_USERNAME=arcion
+      - DB_PASSWORD=Passw0rd
+    volumes:
+      - ./arcion-share/data:/data
+      - ./arcion-share/config:/config
+      - ./arcion-share/libs:/libs
+    depends_on:
+      - metadata  
+
+  workloads:
+    image:  robertslee/arcdemo
+    container_name: workloads
+    ports:
+      - :7681
+    environment:
+      - ARCION_LICENSE="${ARCION_LICENSE}"
+      - LANG=C.UTF-8
+    volumes:
+      - ./arcion-share/data:/data
+      - ./arcion-share/config:/config
+      - ./arcion-share/libs:/libs
+    depends_on:
+      - metadata  
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  arcion-metadata:
+

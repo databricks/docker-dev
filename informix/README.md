@@ -1,7 +1,5 @@
 # Overview
 
-NOTE: If you are not in the current directory as the `docker-compose.yaml` file, then use `-f` to indicate the location of the file.  For exmaple,  `docker compose -f informix/docker-compose.yaml up -d`  Use the same pattern for the other commands.  
-
 - Start service
 
 ```bash

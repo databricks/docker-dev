@@ -26,7 +26,7 @@ graph LR
     cd docker-dev
     ```
 
-- Create Docker network
+- Create Docker network (one time)
 
     ```bash
     docker network create arcnet
@@ -54,3 +54,5 @@ graph LR
     cd kakfa
     docker logs
     ```
+
+NOTE: If you are not in the current directory as the `docker-compose.yaml` file, then use `-f` to indicate the location of the file.  For exmaple,  `docker compose -f kafka/docker-compose.yaml up -d`  Use the same pattern for the other commands.  
