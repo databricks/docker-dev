@@ -1,4 +1,5 @@
-# Arcion Demo specific
+# Arcion specific
+replicant.lic
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
