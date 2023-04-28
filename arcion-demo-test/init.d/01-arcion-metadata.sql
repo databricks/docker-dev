@@ -1,0 +1,5 @@
+CREATE USER arcion PASSWORD 'Passw0rd';
+CREATE DATABASE arcion WITH OWNER arcion;
+CREATE DATABASE io_replicate WITH OWNER arcion;
+
+
