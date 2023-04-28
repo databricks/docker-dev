@@ -24,7 +24,7 @@ graph LR
     ```bash
     git clone https://github.com/arcionlabs/docker-dev 
     cd docker-dev
-    git refresh
+    git fetch
     ```
 
 - Create Docker network (one time)
