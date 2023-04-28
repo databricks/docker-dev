@@ -13,17 +13,18 @@ graph LR
         A1
         M[(Meta <br>Data)]
     end
-    S[(Source <br>Data)] --> A1[Arcion <br> Node 1]
+    S[(Source <br>Data)] --> A1[Arcion <br> UI]
     A1 --> T[(Destination<br>Data)]
 ```
 
 # Getting started
 
-- Clone this repo
+- Clone this repo (one time)
 
     ```bash
     git clone https://github.com/arcionlabs/docker-dev 
     cd docker-dev
+    git refresh
     ```
 
 - Create Docker network (one time)
@@ -32,27 +33,36 @@ graph LR
     docker network create arcnet
     ```
 
+- Start Arcion
+
+    ```bash
+    docker compose -f arcion-demo/docker-compose.yaml up -d
+    ```
+
 - Start one or more of Data source and destinations
 
-  An examaple of starting Kakfa
+  An examaple of starting MySQL, PostgreSQL, Open Source Kakfa
 
     ```bash
-    cd kakfa
-    docker compose up -d
+    docker compose -f mysql/docker-compose.yaml up -d
+    docker compose -f kafka/docker-compose.yaml up -d
+    docker compose -f postgresql/docker-compose.yaml up -d
     ```
 
-  An examaple of stopping Kakfa
+- Generate data and activity for testing using Arcion CLI
+
+    go to http://localhost:7681
+
+    each will run for 5 minutes and times out
 
     ```bash
-    cd kakfa
-    docker compose down
+    arcdemo.sh full mysql oskafka
+    arcdemo.sh full mysql postgresql
+    arcdemo.sh full postgresql mysql
+    arcdemo.sh full postgresql oskafka
     ```
+- Use Arcion UI
 
-  An examaple of logs from Kakfa
+    go to http://localhost:8080
 
-    ```bash
-    cd kakfa
-    docker logs
-    ```
 
-NOTE: If you are not in the current directory as the `docker-compose.yaml` file, then use `-f` to indicate the location of the file.  For exmaple,  `docker compose -f kafka/docker-compose.yaml up -d`  Use the same pattern for the other commands.  
