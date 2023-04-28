@@ -22,7 +22,7 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
-      - ARCION_LICENSE="${ARCION_LICENSE}"
+      - ARCION_LICENSE=${ARCION_LICENSE}
       - DB_HOST=arcion-metadata
       - DB_PORT=5432
       - DB_DATABASE=arcion
@@ -41,7 +41,7 @@ services:
     ports:
       - 7681:7681
     environment:
-      - ARCION_LICENSE="${ARCION_LICENSE}"
+      - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
     volumes:
       - ./arcion-share/data:/data

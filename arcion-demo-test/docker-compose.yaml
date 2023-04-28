@@ -21,7 +21,7 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
-      - ARCION_LICENSE="${ARCION_LICENSE}"
+      - ARCION_LICENSE=${ARCION_LICENSE}
       - DB_HOST=arcion-metadata-test
       - DB_PORT=5432
       - DB_DATABASE=arcion
