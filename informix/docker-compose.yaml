@@ -15,7 +15,7 @@ services:
       - LICENSE=accept
       - RUN_FILE_POST_INIT=informix.root.sh 
     volumes:
-      - ./informix.root.sh:/opt/ibm/config/informix.root.sh
+      - ./init.d/informix.root.sh:/opt/ibm/config/informix.root.sh
       - ifx:/opt/ibm/data
 networks:
   default:
