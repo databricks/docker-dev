@@ -1,0 +1,21 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  singlestore:
+    image:  singlestore/cluster-in-a-box
+    stdin_open: true  # docker run -i
+    init: true        # docker run --init
+    ports:
+      - :8080
+      - :3306
+    environment:
+      - LICENSE_KEY="${SINGLESTORE_LICENSE}"
+      - ROOT_PASSWORD="Passw0rd"
+      - START_AFTER_INIT=Y
+networks:
+  default:
+    name: arcnet
+    external: true
+
+   
