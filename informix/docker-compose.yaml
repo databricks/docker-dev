@@ -1,18 +1,26 @@
 ---
-version: '3'
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
 services:
   informix:
     image: ibmcom/informix-developer-database:latest
     container_name: informix
     ports:
-      - 9088:9088
+      - :9088
       - :9089
       - :27017
       - :27018
       - :27883
     environment:
       - LICENSE=accept
+      - RUN_FILE_POST_INIT=informix.root.sh 
+    volumes:
+      - ./informix.root.sh:/opt/ibm/config/informix.root.sh
+      - ifx:/opt/ibm/data
 networks:
   default:
     name: arcnet
     external: true
+volumes:
+  ifx:
+
