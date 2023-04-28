@@ -4,6 +4,7 @@ version: '3.8'
 services:
   oraxe:
     image: oracle/database:21.3.0-xe
+    container_name: oraxe
     ports:
       - :1521
       - :5500

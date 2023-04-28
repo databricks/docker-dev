@@ -4,14 +4,15 @@ version: '3.8'
 services:
   singlestore:
     image:  singlestore/cluster-in-a-box
+    container_name: singlestore
     stdin_open: true  # docker run -i
     init: true        # docker run --init
     ports:
       - :8080
       - :3306
     environment:
-      - LICENSE_KEY="${SINGLESTORE_LICENSE}"
-      - ROOT_PASSWORD="Passw0rd"
+      - LICENSE_KEY=${SINGLESTORE_LICENSE}  # having quote around license not accepted
+      - ROOT_PASSWORD=Passw0rd
       - START_AFTER_INIT=Y
 networks:
   default:

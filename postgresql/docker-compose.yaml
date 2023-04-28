@@ -4,6 +4,7 @@ version: '3.8'
 services:
   pg:
     image: postgres
+    container_name: psql
     ports:
       - :5432
     environment:

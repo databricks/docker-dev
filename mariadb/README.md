@@ -11,7 +11,7 @@ docker compose up -d
 ```bash
 docker compose down
 docker compose logs -f
-docker compose exec mysql bash
+docker compose exec maraidb bash
 ```
 
 # References

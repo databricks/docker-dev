@@ -4,6 +4,7 @@ version: '3.8'
 services:
   yugabytesql:
     image:  yugabytedb/yugabyte
+    container_name: yugabytesql
     ports:
       - :7001
       - :9000
