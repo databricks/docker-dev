@@ -1,6 +1,7 @@
 # Arcion specific
 replicant.lic
 ojdbc.jar
+oracle-docker-images/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
