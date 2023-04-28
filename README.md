@@ -63,6 +63,6 @@ graph LR
     ```
 - Use Arcion UI
 
-    go to http://localhost:8080
+    go to http://localhost:8080 and sign in with user `admin` password `arcion`
 
 

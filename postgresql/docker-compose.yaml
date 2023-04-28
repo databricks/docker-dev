@@ -3,7 +3,7 @@
 version: '3.8'
 services:
   pg:
-    image: postgres
+    build: .
     container_name: postgresql
     ports:
       - :5432
