@@ -3,7 +3,7 @@
 version: '3.8'
 services:
   oraxe:
-    image: oracle/database:21.3.0-xe
+    image: oracle/database:19.3.0-ee
     container_name: oraee
     ports:
       - 1521
@@ -11,11 +11,11 @@ services:
     environment:
       - ORACLE_PWD=Passw0rd 
     volumes:
-      - oraxe:/opt/oracle/oradata
+      - oraee1930:/opt/oracle/oradata
 
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  oraxe:
+  oraee1930:

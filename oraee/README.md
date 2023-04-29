@@ -18,6 +18,7 @@ Build the docker image
 ```bash
 cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
 ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
+./buildContainerImage.sh -v 21.3.0 -e -o '--build-arg SLIMMING=false'
 ```
 
 - Start service

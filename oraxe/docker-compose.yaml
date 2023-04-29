@@ -11,11 +11,11 @@ services:
     environment:
       - ORACLE_PWD=Passw0rd 
     volumes:
-      - oraxe:/opt/oracle/oradata
+      - oraxe2130:/opt/oracle/oradata
 
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  oraxe:
+  oraxe2130:

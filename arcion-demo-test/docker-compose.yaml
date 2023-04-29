@@ -42,7 +42,8 @@ services:
       - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
     volumes:
-      - ./arcion-share/data:/arcion/data
+      - ./arcion-share/data/workloads/trace:/arcion/data
+      - ./arcion-share/data/workloads/yaml:/arcion/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
       - ../../arcion-demo/scripts/:/scripts
