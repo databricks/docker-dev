@@ -1,0 +1,24 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  cockroach:
+    image: cockroachdb/cockroach:v22.2.3
+    container_name: cockroach
+    ports:
+      - 26257
+      - 8080
+    environment:
+      - PGCLIENTENCODING=utf-8
+    volumes:
+      - cockroach:/cockroach/cockroach-data
+    command: 
+      - start-single-node
+      - --insecure
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  cockroach:

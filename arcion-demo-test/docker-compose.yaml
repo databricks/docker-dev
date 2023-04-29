@@ -10,6 +10,7 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
+      - PGCLIENTENCODING=utf-8
     volumes:
       - arcion-metadata:/var/lib/postgresql/data
       - ./init.d:/docker-entrypoint-initdb.d
@@ -46,6 +47,7 @@ services:
       - METADATA_DB_DATABASE=arcion
       - METADATA_DB_USERNAME=arcion
       - METADATA_DB_PASSWORD=Passw0rd
+      - PGCLIENTENCODING=utf-8
     volumes:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
