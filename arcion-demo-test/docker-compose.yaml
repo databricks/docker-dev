@@ -42,10 +42,10 @@ services:
       - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
     volumes:
-      - ./arcion-share/data:/data
+      - ./arcion-share/data:/arcion/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
-      - ./arcion-share/data:/arcion/data
+      - ../../arcion-demo/scripts/:/scripts
     depends_on:
       - metadata  
 
