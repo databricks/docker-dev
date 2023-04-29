@@ -47,6 +47,7 @@ services:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
+      - ./arcion-share/loadgen:/arcion/data
     depends_on:
       - metadata  
 
