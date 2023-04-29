@@ -41,11 +41,16 @@ services:
     environment:
       - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
+      - METADATA_DB_HOST=arcion-metadata-test
+      - METADATA_DB_PORT=5432
+      - METADATA_DB_DATABASE=arcion
+      - METADATA_DB_USERNAME=arcion
+      - METADATA_DB_PASSWORD=Passw0rd
     volumes:
-      - ./arcion-share/data/workloads/trace:/arcion/data
-      - ./arcion-share/data/workloads/yaml:/arcion/data
+      - ./arcion-share/data:/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
+      - ./arcion-share/loadgen:/arcion/data
       - ../../arcion-demo/scripts/:/scripts
     depends_on:
       - metadata  
