@@ -8,7 +8,13 @@ services:
     ports:
       - 1521
       - 5500
+      - 2484
     environment:
+      - ORACLE_SID=orcl
+      - ORACLE_PDB=orclpdb1
+      - ORACLE_EDITION=enterprise
+      - ENABLE_ARCHIVELOG=true
+      #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
       - ORACLE_PWD=Passw0rd 
     volumes:
       - oraee1930:/opt/oracle/oradata
