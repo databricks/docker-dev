@@ -1,0 +1,30 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  yugabyte:
+    image:  yugabytedb/yugabyte
+    container_name: yugabyte
+    ports:
+      - 7001
+      - 9000    # admin
+      - 5433    # pg
+      - 9042    # cassandra
+    volumes:
+      - yugabyte:/home/yugabyte/yb_data
+    command:
+      - bin/yugabyted 
+      - start
+      - --base_dir=/home/yugabyte/yb_data
+      - --daemon=false
+    networks:
+      default:
+        aliases:
+          - yugabytesql
+          - yugabytecql
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  yugabyte:
