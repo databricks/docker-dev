@@ -1,0 +1,33 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  mongo:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=Passw0rd
+    ports:
+      - 27017  
+    volumes:
+      - mongodb:/data/db   
+      - ./init.d:/docker-entrypoint-initdb.d
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=Passw0rd
+      - ME_CONFIG_MONGODB_URL=mongodb://root:Passw0rd@mongo:27017/
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  mongodb:
+
