@@ -6,10 +6,10 @@ services:
     image:  yugabytedb/yugabyte
     container_name: yugabytesql
     ports:
-      - :7001
-      - :9000
-      - :5433
-      - :9042
+      - 7001
+      - 9000
+      - 5433
+      - 9042
     command:
       - bin/yugabyted 
       - start

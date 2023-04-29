@@ -6,11 +6,11 @@ services:
     image: ibmcom/informix-developer-database:latest
     container_name: informix
     ports:
-      - :9088
-      - :9089
-      - :27017
-      - :27018
-      - :27883
+      - 9088
+      - 9089
+      - 27017
+      - 27018
+      - 27883
     environment:
       - LICENSE=accept
       - RUN_FILE_POST_INIT=informix.root.sh 

@@ -6,7 +6,7 @@ services:
     image: postgres:14-alpine
     container_name: arcion-metadata-test
     ports:
-      - :5432
+      - 5432
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
@@ -17,7 +17,7 @@ services:
   ui:
     image:  arcionlabs/replicant-on-premises:test
     ports:
-      - :8080
+      - 8080
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
@@ -37,15 +37,15 @@ services:
   workloads:
     image:  robertslee/arcdemo
     ports:
-      - :7681
+      - 7681
     environment:
-      - ARCION_LICENSE="${ARCION_LICENSE}"
+      - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
     volumes:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
-      - ../../arcion-demo/scripts:/scripts
+      - ./arcion-share/data:/arcion/data
     depends_on:
       - metadata  
 
