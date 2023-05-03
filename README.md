@@ -65,4 +65,10 @@ graph LR
 
     go to http://localhost:8080 and sign in with user `admin` password `arcion`
 
+- To shutdown all databases
 
+```bash
+for db in $( find * -maxdepth 1 -type d -prune ! -name "arcion*" ); do
+  pushd $db; docker compose down; popd
+done
+```
