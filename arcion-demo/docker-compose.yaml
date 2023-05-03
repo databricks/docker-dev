@@ -64,10 +64,10 @@ services:
       # AWS
       - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY      
-    volumes:
-      - ./arcion-share/data:/data
-      - ./arcion-share/config:/config
-      - ./arcion-share/libs:/libs
+    #volumes:
+      #- ./arcion-share/data:/data
+      #- ./arcion-share/config:/config
+      #- ./arcion-share/libs:/libs
       # - ./arcion-share/loadgen:/arcion/data
     depends_on:
       - metadata  
