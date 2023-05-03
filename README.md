@@ -27,6 +27,14 @@ graph LR
     git fetch
     ```
 
+- Setup Arcion License (one time)
+
+    ```bash
+    export ARCION_LICENSE="$(cat replicant.lic | base64)"
+    if [ -z "${ARCION_LICENSE}" ]; then echo "ERROR: ARCION_LICENSE is blank"; fi
+    echo "${ARCION_LICENSE}" | base64 -d
+    ```
+
 - Create Docker network (one time)
 
     ```bash
@@ -61,6 +69,38 @@ graph LR
     arcdemo.sh full postgresql mysql
     arcdemo.sh full postgresql oskafka
     ```
+
+- For 1GB volume test, change the scale factor to 10
+
+    go to http://localhost:7681
+
+    each will run for 5 minutes and times out
+
+    scale factor 10 will generate about 1GB of data on YCSB and TPC-C
+
+    ```bash
+    arcdemo.sh -s 10 full mysql oskafka
+    arcdemo.sh -s 10 full mysql postgresql
+    arcdemo.sh -s 10 full postgresql mysql
+    arcdemo.sh -s 10 full postgresql oskafka
+    ```
+
+- For 10GB volume test, change the scale factor to 100
+
+    go to http://localhost:7681
+
+    each will run for 5 minutes and times out
+
+    scale factor 100 will generate about 10GB of data on YCSB and TPC-C
+    set snapshot inter table parallelism to 2 on the extractor and 2 on the applier
+
+    ```bash
+    arcdemo.sh -s 100 -b 2:2 full mysql oskafka
+    arcdemo.sh -s 100 -b 2:2 full mysql postgresql
+    arcdemo.sh -s 100 -b 2:2 full postgresql mysql
+    arcdemo.sh -s 100 -b 2:2 full postgresql oskafka
+    ```
+    
 - Use Arcion UI
 
     go to http://localhost:8080 and sign in with user `admin` password `arcion`

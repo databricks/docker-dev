@@ -69,7 +69,7 @@ services:
       - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
       
     volumes:
-      - arcion-bin-23033116:/arcion
+      - arcion-bin-23030115:/arcion
       - ./arcion-share/loadgen:/arcion/data
       - ../../arcion-demo/scripts/:/scripts
       - ./arcion-share/data:/data
