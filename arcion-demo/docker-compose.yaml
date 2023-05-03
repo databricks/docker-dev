@@ -30,9 +30,9 @@ services:
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
     volumes:
-      - ./arcion-share/data:/data
-      - ./arcion-share/config:/config
-      - ./arcion-share/libs:/libs
+      - arcion-share-data:/data
+      - arcion-share-config:/config
+      - arcion-share-libs:/libs
     depends_on:
       - metadata  
 
@@ -64,11 +64,11 @@ services:
       # AWS
       - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY      
-    #volumes:
-      #- ./arcion-share/data:/data
-      #- ./arcion-share/config:/config
-      #- ./arcion-share/libs:/libs
-      # - ./arcion-share/loadgen:/arcion/data
+    volumes:
+      - arcion-share-data:/data
+      - arcion-share-config:/config
+      - arcion-share-libs:/libs
+      - arcion-share-loadgen:/arcion/data
     depends_on:
       - metadata  
 
@@ -78,4 +78,7 @@ networks:
     external: true
 volumes:
   arcion-metadata:
-
+  arcion-share-data:
+  arcion-share-config:
+  arcion-share-libs:
+  arcion-share-loadgen:
