@@ -78,13 +78,14 @@ services:
     depends_on:
       - metadata  
 
-networks:
-  default:
-    name: arcnet
-    external: true
 volumes:
-  arcion-metadata:
   arcion-bin-23030115:
     external: true
   arcion-bin-23033116:
+    external: true
+  arcion-metadata:
+
+networks:
+  default:
+    name: arcnet
     external: true

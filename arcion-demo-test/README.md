@@ -6,9 +6,6 @@ echo Workloads http://$(docker compose port workloads 7681)
 
 # to change the arcion binary
 
-```
-- set the docker volume name
-
 generate the docker volume with the binary
 
 ```bash
