@@ -137,3 +137,12 @@ Oracle XE does not require the extra step of download the Oracle EE binary.
     ```bash
     docker compose -f oraxe/docker-compose.yaml up -d
     ``` 
+
+- A test examples
+
+    Scale factor 100 
+    Snapshot inter table parallelism of 2
+
+    ```bash
+    arcdemo.sh -s 100 -b 2:2 full mysql oskafka
+    ```
