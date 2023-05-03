@@ -1,0 +1,27 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    ports:
+      - 9000
+      - 9090
+    environment:
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=Passw0rd
+    volumes:
+      - minio:/data
+    command: 
+      -  server 
+      - /data 
+      - --console-address 
+      - :9090
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  minio:
+   
