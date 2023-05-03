@@ -115,13 +115,13 @@ graph LR
 
 ## Oracle Docker Setup
 
-Oracle requires container images to be build locally.  
+Oracle requires container images to be build locally.
 Start with Oracle XE, then use Oracle EE for volume testing.
 Oracle XE does not require the extra step of download the Oracle EE binary.
 
 ### Oracle XE
 
-    - Build the image
+- Build the image
 
     ```bash
     cd oraxe
@@ -132,10 +132,8 @@ Oracle XE does not require the extra step of download the Oracle EE binary.
     cd ..
     ```
 
-    - Start service
+- Start service
 
     ```bash
     docker compose -f oraxe/docker-compose.yaml up -d
     ``` 
-
-### Oracle EE
