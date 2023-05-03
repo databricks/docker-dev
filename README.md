@@ -118,6 +118,7 @@ graph LR
 Oracle requires container images to be build locally.
 Start with Oracle XE, then use Oracle EE for volume testing.
 Oracle XE does not require the extra step of download the Oracle EE binary.
+Oracle EE should be used for anything scale factor beyond 10.
 
 ### Oracle XE
 
@@ -140,9 +141,9 @@ Oracle XE does not require the extra step of download the Oracle EE binary.
 
 - A test examples
 
-    Scale factor 100 
+    Scale factor 10 
     Snapshot inter table parallelism of 2
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 full mysql oskafka
+    arcdemo.sh -s 10 -b 2:2 full mysql oskafka
     ```

@@ -16,8 +16,8 @@ services:
       - ENABLE_ARCHIVELOG=true
       #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
       - ORACLE_PWD=Passw0rd 
-    volumes:
-      - oraee1930:/opt/oracle/oradata
+    #volumes:
+    #  - oraee1930:/opt/oracle/oradata
 
 networks:
   default:
