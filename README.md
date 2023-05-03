@@ -107,8 +107,35 @@ graph LR
 
 - To shutdown all databases
 
-```bash
-for db in $( find * -maxdepth 1 -type d -prune ! -name "arcion*" ); do
-  pushd $db; docker compose down; popd
-done
-```
+    ```bash
+    for db in $( find * -maxdepth 1 -type d -prune ! -name "arcion*" ); do
+    pushd $db; docker compose down; popd
+    done
+    ```
+
+## Oracle Docker Setup
+
+Oracle requires container images to be build locally.  
+Start with Oracle XE, then use Oracle EE for volume testing.
+Oracle XE does not require the extra step of download the Oracle EE binary.
+
+### Oracle XE
+
+    - Build the image
+
+    ```bash
+    cd oraxe
+    git clone https://github.com/oracle/docker-images oracle-docker-images
+    pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+    ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
+    popd
+    cd ..
+    ```
+
+    - Start service
+
+    ```bash
+    docker compose -f oraxe/docker-compose.yaml up -d
+    ``` 
+
+### Oracle EE
