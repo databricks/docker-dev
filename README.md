@@ -128,17 +128,19 @@ graph LR
 ## Cloud Database Examples
 
 - Snowflake source to MySQL destination
-source database is SNOWFLAKE_SAMPLE_DATA and source schema is TPCH_SF1
 use default on mysql destination
 
 single thread each extractor and applier
+source catalog is SNOWFLAKE_SAMPLE_DATA and source schema is TPCH_SF1
+
 ```bash
 SRCDB_DB=SNOWFLAKE_SAMPLE_DATA SRCDB_SCHEMA=TPCH_SF1 arcdemo.sh snapshot snowflake mysql
 ```
 
 two threads each extractor and applier
+source catalog is default `arcsrc` and source schema is `PUBLIC`
 ```bash
-SRCDB_DB=SNOWFLAKE_SAMPLE_DATA SRCDB_SCHEMA=TPCH_SF1 arcdemo.sh -b 2:2 snpashot snowflake mysql
+arcdemo.sh -b 2:2 snpashot snowflake mysql
 ```
 
 ## Oracle Docker Setup
