@@ -9,30 +9,13 @@ echo Workloads http://$(docker compose port workloads 7681)
 generate the docker volume with the binary
 
 ```bash
-function create_arcion_bin_volume () {
-    local ARCION_BIN_URL=$1
-    [ -z "${1}" ] && echo "please enter URL as param." && return 1
-    local VER=$(echo $ARCION_BIN_URL | sed 's/.*cli-\(.*\)\.zip$/\1/' | sed 's/\.//g')
-    docker volume create arcion-bin-$VER
-    docker run -it --rm -v arcion-bin-$VER:/arcion -e ARCION_BIN_URL="$ARCION_BIN_URL" alpine sh -c '\
-    cd /arcion;\
-    wget $ARCION_BIN_URL;\
-    unzip -q *.zip;\
-    mv replicant-cli/* .;\
-    rm -rf replicant-cli/;\
-    rm *.zip;\
-    chown -R 1000 .;\
-    ls\
-    '
-}
-```
+bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.31.16.zip
 
-create the volumes
+bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.01.15.zip
 
-```bash
-create_arcion_bin_volume https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.31.16.zip
+bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.31.19.zip
 
-create_arcion_bin_volume https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.01.15.zip
+docker volume ls | grep arcion-bin
 ```
 
 edit [docker-compose.yaml](./docker-compose.yaml) to use the volume
