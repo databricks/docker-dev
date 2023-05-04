@@ -10,9 +10,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=Passw0rd
-      - CONFIG_EDGE_BUILD=0
-    volumes:
-      - sqlserver:/var/opt/mssql      
+      - CONFIG_EDGE_BUILD=0    
 networks:
   default:
     name: arcnet
