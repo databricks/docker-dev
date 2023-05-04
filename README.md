@@ -76,7 +76,7 @@ graph LR
 
     each will run for 5 minutes and times out
 
-    scale factor 10 will generate about 1GB of data on YCSB and TPC-C
+    scale factor 10 will generate about 1GB of data on YCSB and 1GB TPC-C
 
     ```bash
     arcdemo.sh -s 10 full mysql oskafka
@@ -91,7 +91,7 @@ graph LR
 
     each will run for 5 minutes and times out
 
-    scale factor 100 will generate about 10GB of data on YCSB and TPC-C
+    scale factor 100 will generate about 10GB of data on YCSB and 1GB of TPC-C
     set snapshot inter table parallelism to 2 on the extractor and 2 on the applier
 
     ```bash
@@ -100,6 +100,18 @@ graph LR
     arcdemo.sh -s 100 -b 2:2 full postgresql mysql
     arcdemo.sh -s 100 -b 2:2 full postgresql oskafka
     ```
+
+- For stresing out CDC, change the workload update rate and increase threads on Arcion real-time threads
+
+    ```bash
+    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full mysql oskafka
+    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full mysql postgresql
+    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full postgresql mysql
+    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full postgresql oskafka
+    ```
+
+    `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 
+    `-t 0`   run YCSB on 1 thread and TPC-C on 1 thread as fast as possible 
     
 - Use Arcion UI
 
@@ -112,6 +124,22 @@ graph LR
     pushd $db; docker compose down; popd
     done
     ```
+
+## Cloud Database Examples
+
+- Snowflake source to MySQL destination
+source database is SNOWFLAKE_SAMPLE_DATA and source schema is TPCH_SF1
+use default on mysql destination
+
+single thread each extractor and applier
+```bash
+SRCDB_DB=SNOWFLAKE_SAMPLE_DATA SRCDB_SCHEMA=TPCH_SF1 arcdemo.sh snapshot snowflake mysql
+```
+
+two threads each extractor and applier
+```bash
+SRCDB_DB=SNOWFLAKE_SAMPLE_DATA SRCDB_SCHEMA=TPCH_SF1 arcdemo.sh -b 2:2 snpashot snowflake mysql
+```
 
 ## Oracle Docker Setup
 
