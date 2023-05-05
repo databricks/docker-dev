@@ -32,11 +32,14 @@ services:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
+      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee1930:/opt/mnt/oraee1930/oradata:ro
     depends_on:
       - metadata  
 
   workloads:
     image:  robertslee/arcdemo:test
+    privileged: true
     ports:
       - 7681
     environment:
@@ -96,23 +99,32 @@ services:
       - AWS_DST_ID=$AWS_DST_ID
       - AWS_DST_SECRET=$AWS_DST_SECRET    
     volumes:
+      # these are remapped to internal directories via volremap.sh in side docker
       - arcion-bin-23033119:/arcion
-      - ./arcion-share/loadgen:/arcion/data
+      - ./arcion-share/loadgen:/opt/mnt/loadgen
       - ../../arcion-demo/scripts/:/scripts
-      - ./arcion-share/data:/data
-      - ./arcion-share/config:/config
-      - ./arcion-share/libs:/libs
+      - ./arcion-share/data:/opt/mnt/data
+      - ./arcion-share/config:/opt/mnt/config
+      - ./arcion-share/libs:/opt/mnt/libs
+      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee1930:/opt/mnt/oraee1930/oradata:ro
     depends_on:
       - metadata  
 
 volumes:
+  arcion-metadata:
+  # arcion binaries
   arcion-bin-23030115:
     external: true
   arcion-bin-23033116:
     external: true
   arcion-bin-23033119:
     external: true
-  arcion-metadata:
+  # oracle volumes
+  oraxe2130:
+    external: true    
+  oraee1930:
+    external: true
 
 networks:
   default:
