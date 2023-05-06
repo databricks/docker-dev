@@ -166,6 +166,7 @@ Oracle EE should be used for anything scale factor beyond 10.
 - Start service
 
     ```bash
+    docker create volume oraxe2130
     docker compose -f oraxe/docker-compose.yaml up -d
     ``` 
 
