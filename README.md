@@ -8,7 +8,7 @@ The diagram below depicts the components of the demo kit where where the Docker 
 
 ```mermaid
 graph LR
-    L[Load Generator<br>benchbase<br>sysbench<br>YCSB] --> S
+    L[Load Generator<br>TPC-C<br>sysbench<br>YCSB] --> S
     subgraph Arcion Cluster
         A1
         M[(Meta <br>Data)]
@@ -166,7 +166,6 @@ Oracle EE should be used for anything scale factor beyond 10.
 - Start service
 
     ```bash
-    docker create volume oraxe2130
     docker compose -f oraxe/docker-compose.yaml up -d
     ``` 
 

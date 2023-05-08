@@ -2,7 +2,7 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  oraxe:
+  oraee:
     image: oracle/database:19.3.0-ee
     container_name: oraee
     ports:
@@ -25,4 +25,3 @@ networks:
     external: true
 volumes:
   oraee1930:
-    external: true

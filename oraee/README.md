@@ -2,23 +2,15 @@
 
 download Oracle Database 19c (19.3) for Linux x86-64 from https://www.oracle.com/database/technologies/oracle19c-linux-downloads.html
 
+- Build Oracle EE image
 
-- Build Oracle XE image
 
 ```bash
+cd oraee
 git clone https://github.com/oracle/docker-images oracle-docker-images
-cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-
-cd 19.3.0
-copy the .zip file here
-```
-
-Build the docker image
-
-```bash
-cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
 ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
-./buildContainerImage.sh -v 21.3.0 -e -o '--build-arg SLIMMING=false'
+popd
 ```
 
 - Start service

@@ -19,4 +19,3 @@ networks:
     external: true
 volumes:
   oraxe2130:
-    external: true

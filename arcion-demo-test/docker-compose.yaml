@@ -32,8 +32,8 @@ services:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
-      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
-      - oraee1930:/opt/mnt/oraee1930/oradata:ro
+      - oraxe_oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee_oraee1930:/opt/mnt/oraee1930/oradata:ro
     depends_on:
       - metadata  
 
@@ -106,8 +106,8 @@ services:
       - ./arcion-share/data:/opt/mnt/data
       - ./arcion-share/config:/opt/mnt/config
       - ./arcion-share/libs:/opt/mnt/libs
-      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
-      - oraee1930:/opt/mnt/oraee1930/oradata:ro
+      - oraxe_oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee_oraee1930:/opt/mnt/oraee1930/oradata:ro
     depends_on:
       - metadata  
 
@@ -120,10 +120,12 @@ volumes:
     external: true
   arcion-bin-23033119:
     external: true
-  # oracle volumes
-  oraxe2130:
+  arcion-bin-23033120:
     external: true    
-  oraee1930:
+  # oracle volumes
+  oraxe_oraxe2130:
+    external: true    
+  oraee_oraee1930:
     external: true
 
 networks:
