@@ -16,7 +16,7 @@ services:
       - mysqld
       - --default-authentication-plugin=mysql_native_password
       - --local-infile=true
-      - --lower_case_table_names=1
+        #- --lower_case_table_names=1
       - --innodb_redo_log_capacity=209715200  # 209715200 =  200*1024*1024
 
 networks:

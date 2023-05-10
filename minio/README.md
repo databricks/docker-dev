@@ -11,10 +11,9 @@ docker compose up -d
 ```bash
 docker compose down
 docker compose logs -f
-docker compose exec informix bash
+docker compose exec minio bash
 ```
 
 # References
 
-more info from IBM at 
-https://github.com/informix/informix-dockerhub-readme
+
