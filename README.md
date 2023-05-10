@@ -175,5 +175,5 @@ Oracle EE should be used for anything scale factor beyond 10.
     Snapshot inter table parallelism of 2
 
     ```bash
-    arcdemo.sh -s 10 -b 2:2 full mysql oskafka
+    arcdemo.sh -s 10 -b 2:2 full oraxe postgresql
     ```
