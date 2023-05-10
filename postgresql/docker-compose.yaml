@@ -1,5 +1,6 @@
 ---
 # 3.8 required for the volume relative path name to config file 
+# the build adds wal2json 
 version: '3.8'
 services:
   pg:
