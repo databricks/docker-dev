@@ -1,0 +1,8 @@
+FROM erichough/nfs-server
+
+COPY etc/exports.txt /etc/exports
+
+RUN adduser --disabled-password --gecos "" --uid 7689 test_user
+RUN mkdir --parents /nfs/test_share
+RUN chown test_user:test_user /var/lib/nfs
+RUN chown test_user:test_user /nfs/test_share

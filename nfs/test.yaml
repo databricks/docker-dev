@@ -1,0 +1,85 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  nfs-server-1:
+    profiles:
+    - dev
+    build:
+      context: .
+      dockerfile: nfs-server-docker-file
+    image: danbrill/nfs-server
+    cap_add:
+    - SYS_ADMIN
+    container_name: nfs-server-1
+    environment:
+     NFS_LOG_LEVEL: DEBUG
+     #NFS_DISABLE_VERSION_3: "1"
+    hostname: nfs-server-1
+    networks:
+      nfs-server-bridge:
+        ipv4_address: 192.168.1.2
+    volumes:
+    - type: volume
+      source: nfs-server-1-volume
+      target: /nfs/test_share
+  ubuntu-1:
+    profiles:
+    - dev
+    depends_on:
+      nfs-server-1:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: nfs-client-docker-file
+    image: danbrill/ubuntu
+    container_name: ubuntu-1
+    hostname: ubuntu-1
+    networks:
+      nfs-server-bridge: null
+    volumes:
+    - type: volume
+      source: ubuntu-1-volume
+      target: /nfs/test_share
+  ubuntu-2:
+    profiles:
+    - dev
+    depends_on:
+      nfs-server-1:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: nfs-client-docker-file
+    image: danbrill/ubuntu
+    container_name: ubuntu-2
+    hostname: ubuntu-2
+    networks:
+      nfs-server-bridge: null
+    volumes:
+    - type: volume
+      source: ubuntu-2-volume
+      target: /nfs/test_share
+volumes:
+  nfs-server-1-volume:
+    name: nfs-server-1-volume
+  ubuntu-1-volume:
+    name: ubuntu-1-volume
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.1.2"
+      device: ":/nfs/test_share"
+  ubuntu-2-volume:
+    name: ubuntu-2-volume
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.1.2"
+      device: ":/nfs/test_share"
+networks:
+  nfs-server-bridge:
+    name: nfs-server-bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 192.168.1.0/24
