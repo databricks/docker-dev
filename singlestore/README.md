@@ -1,5 +1,7 @@
 # Overview
 
+`SINGLESTORE_LICENSE` environment variable must be set first
+
 - Start service
 
 ```bash

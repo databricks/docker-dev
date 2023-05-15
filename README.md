@@ -56,8 +56,8 @@ graph LR
 
     ```bash
     docker compose -f mysql/docker-compose.yaml up -d
-    docker compose -f kafka/docker-compose.yaml up -d
     docker compose -f postgresql/docker-compose.yaml up -d
+    docker compose -f kafka/docker-compose.yaml up -d
     ```
 
 - Generate data and activity for testing using Arcion CLI
