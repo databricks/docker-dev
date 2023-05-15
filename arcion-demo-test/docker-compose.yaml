@@ -100,14 +100,13 @@ services:
       - AWS_DST_SECRET=$AWS_DST_SECRET    
     volumes:
       # these are remapped to internal directories via volremap.sh in side docker
-      - arcion-bin-23033121:/arcion
+      - arcion-bin-2304304:/arcion
       - ./arcion-share/loadgen:/opt/mnt/loadgen
       - ../../arcion-demo/scripts/:/scripts
       - ./arcion-share/data:/opt/mnt/data
       - ./arcion-share/config:/opt/mnt/config
       - ./arcion-share/libs:/opt/mnt/libs
-      - oraxe_oraxe2130:/opt/mnt/oraxe2130/oradata:ro
-      - oraee_oraeeredo:/opt/mnt/oraee1930/oradata:ro
+      - oraxe-nfs_oraxe:/opt/mnt/oraxe2130/oradata:ro
     depends_on:
       - metadata  
 
@@ -126,6 +125,9 @@ volumes:
   oraxe_oraxe2130:
     external: true    
   oraee_oraeeredo:
+    external: true
+  # oracle NFS volumes
+  oraxe-nfs_oraxe:  
     external: true
 
 networks:

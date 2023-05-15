@@ -2,28 +2,33 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  oraxe:
-    image: oracle/database:21.3.0-xe
-    container_name: oraxe
+  oraeeredo:
+    image: oracle/database:19.3.0-ee
+    container_name: oraee
     ports:
       - 1521
       - 5500
+      - 2484
     environment:
+      - ORACLE_SID=orcl
+      - ORACLE_PDB=orclpdb1
+      - ORACLE_EDITION=enterprise
+      - ENABLE_ARCHIVELOG=true
+      #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
       - ORACLE_PWD=Passw0rd 
     volumes:
-      - oraxe:/opt/oracle/oradata
-
+      - oraee1930redo:/opt/oracle/oradata
 networks:
   default:
     name: arcnet
     external: true
 volumes:
   # https://docs.oracle.com/en/database/oracle/oracle-database/21/racdk/oracle-rac-on-docker.html#GUID-370DABCF-E5AC-48F7-BE1E-15528A42DB85
-  oraxe:
+  oraee1930redo:
     driver: local
     driver_opts:
       type: "nfs"
       # addr = nfs server IP address
       o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
       # device = dir from NFS server exposing to client
-      device: ":/oraxe"
+      device: ":/oraee/1930/redo"

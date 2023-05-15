@@ -6,7 +6,11 @@
 cd oraxe
 git clone https://github.com/oracle/docker-images oracle-docker-images
 pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+
+./buildContainerImage.sh -v 18.4.0 -x
 ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
+./buildContainerImage.sh -v 11.2.0.2 -x -o '--build-arg SLIMMING=false'
+
 popd
 ```
 
@@ -29,43 +33,63 @@ docker compose exec oraxe bash
 enable archivelog
 
 ```
+docker compose exec -it oraxe bash
+
+mkdir /opt/oracle/oradata/XE/arch
+
+ sqlplus sys/Passw0rd@XE as sysdba 
+-- set archive
 alter system set log_archive_dest_1='LOCATION=/opt/oracle/oradata/XE/arch' scope=both;
-
-archive log list
-
 select destination,STATUS from v$archive_dest where statuS='VALID';
+archive log list;
+
+shutdown immediate
+startup mount
+alter database archivelog;
+ALTER DATABASE FORCE LOGGING;
+alter database open;
 
 
-/opt/oracle/oradata/XE/redo03.log
+-- online redo current size and location 
+select group#,sequence#,bytes,archived,status from v$log;
+select group#, member from v$logfile order by group#, member;
 
-         2
-/opt/oracle/oradata/XE/redo02.log
-
-         1
-/opt/oracle/oradata/XE/redo01.log
-
+-- add 8GB redo
 alter database add logfile group 4 '/opt/oracle/oradata/XE/redo04.log' size 8G;
 alter database add logfile group 5 '/opt/oracle/oradata/XE/redo05.log' size 8G;
 alter database add logfile group 6 '/opt/oracle/oradata/XE/redo06.log' size 8G;
 
+-- switch to the new 8GB redo
 alter system switch logfile;
 alter system switch logfile;
 alter system switch logfile;
+alter system checkpoint;
 
-alter system archive log group 1;
- alter system archive log group 2;
- alter system archive log group 3;
- 
-select group#, status from v$log;
-
+--- drop the small redos
 alter database drop logfile group 1; 
 alter database drop logfile group 2; 
 alter database drop logfile group 3;
 
--- For checkpoint
-alter system checkpoint;
--- For clear archive log
-alter system archive log all;
--- Check status
-select group#, thread#, sequence#, status, archived from v$log;
+-- bounce
+shutdown immediate
+```
 
+login in again
+```
+docker compose exec -it oraxe sqlplus sys/Passw0rd@XE as sysdba 
+startup mount
+alter database archivelog;
+alter database open;
+
+-- archive log all 
+alter system archive log all;
+archive log list
+```
+
+
+
+
+kill user
+```
+SELECT SID, SERIAL#, STATUS, SERVER FROM V$SESSION WHERE USERNAME = 'C##ARCSRC';
+ALTER SYSTEM KILL SESSION '1101, 31201';

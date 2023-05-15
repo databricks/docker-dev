@@ -1,5 +1,0 @@
-FROM ubuntu:20.04
-
-RUN adduser --disabled-password --gecos "" --uid 7689 test_user
-
-ENTRYPOINT ["tail", "--follow", "/dev/null"]

@@ -45,9 +45,11 @@ git clone https://github.com/oracle/docker-images oracle-docker-images
 cp ~/github/arcion/arcion-demo/tmp/LINUX.X64_213000_db_home.zip .
 cp  LINUX.X64_213000_grid_home.zip
 
-pushd oracle-docker-images/OracleDatabase/RAC 
+pushd oracle-docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles 
 
-./buildContainerImage.sh -v 21.3.0
+sed -i .bak s/$OLIMAGE?oraclelinux:7-slim/ 21.3.0/Dockerfile
+
+./buildContainerImage.sh -v 21.3.0 -o '--build-arg SLIMMING=true'  # false does not build
 popd
 
 ```

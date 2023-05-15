@@ -1,21 +1,7 @@
 ---
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
-services:
-  nfs:
-    image: itsthenetwork/nfs-server-alpine:latest
-    container_name: nfs
-    ports:
-      - 2049
-    cap_add:
-      - SYS_ADMIN
-    environment:
-      - SHARED_DIRECTORY=/nfsshare 
-    volumes:
-      - nfsdata:/nfsshare
-  nfsclient:
-    image: alpine
-    
+services:   
   oraxe:
     image: oracle/database:21.3.0-xe
     container_name: oraxe
@@ -25,11 +11,11 @@ services:
     environment:
       - ORACLE_PWD=Passw0rd 
     volumes:
-      - type: volume
+      - oradata:type: volume
         source: oranfs
         target: /opt/oracle/oradata
         volume:
-          nocopy: true
+          nocopy: tru
     depends_on:
       - nfs  
 networks:
