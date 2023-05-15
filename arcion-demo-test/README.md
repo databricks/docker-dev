@@ -9,13 +9,9 @@ echo Workloads http://$(docker compose port workloads 7681)
 generate the docker volume with the binary
 
 ```bash
-bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.01.15.zip
-
-bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.31.16.zip
-
 bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.03.31.21.zip
 
-bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.04.30.4.zip
+bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.04.30.7.zip
 
 docker volume ls | grep arcion-bin
 ```

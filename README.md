@@ -19,14 +19,6 @@ graph LR
 
 # Getting started
 
-- Clone this repo (one time)
-
-    ```bash
-    git clone https://github.com/arcionlabs/docker-dev 
-    cd docker-dev
-    git fetch
-    ```
-
 - Setup Arcion License (one time)
 
     ```bash
@@ -35,10 +27,21 @@ graph LR
     echo "${ARCION_LICENSE}" | base64 -d
     ```
 
+- Clone this repo (one time)
+
+    ```bash
+    git clone https://github.com/arcionlabs/docker-dev 
+    cd docker-dev
+    git fetch
+    ```
+
 - Create Docker network (one time)
+
+    NFS_SERVER is used for Oracle Redo Native Reader.
 
     ```bash
     docker network create arcnet
+    export NFS_SERVER=$(docker network inspect arcnet -f '{{ json .IPAM}}' | jq -r '.Config | .[] | .Subnet | split("/") | .[0] | split(".") | .[0:3] | join(".")').254
     ```
 
 - Start Arcion
@@ -53,8 +56,8 @@ graph LR
 
     ```bash
     docker compose -f mysql/docker-compose.yaml up -d
-    docker compose -f kafka/docker-compose.yaml up -d
     docker compose -f postgresql/docker-compose.yaml up -d
+    docker compose -f kafka/docker-compose.yaml up -d
     ```
 
 - Generate data and activity for testing using Arcion CLI

@@ -2,9 +2,9 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  oraee:
+  oraeeredo:
     image: oracle/database:19.3.0-ee
-    container_name: oraee
+    container_name: oraeeredo
     ports:
       - 1521
       - 5500
@@ -17,11 +17,28 @@ services:
       #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
       - ORACLE_PWD=Passw0rd 
     volumes:
-      - oraee1930:/opt/oracle/oradata
+      - oraeeredo:/opt/oracle/oradata
+  oraeeminer:
+    image: oracle/database:19.3.0-ee
+    container_name: oraeeminer
+    ports:
+      - 1521
+      - 5500
+      - 2484
+    environment:
+      - ORACLE_SID=orcl
+      - ORACLE_PDB=orclpdb1
+      - ORACLE_EDITION=enterprise
+      - ENABLE_ARCHIVELOG=true
+      #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
+      - ORACLE_PWD=Passw0rd 
+    volumes:
+      - oraeeminer:/opt/oracle/oradata
 
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  oraee1930:
+  oraeeminer:
+  oraeeredo:

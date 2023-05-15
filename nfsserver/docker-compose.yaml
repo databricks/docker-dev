@@ -1,0 +1,46 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  nfsserver:
+    build: .
+    container_name: nfsserver
+    cap_add:
+      # https://github.com/ehough/docker-nfs-server/blob/develop/doc/feature/auto-load-kernel-modules.md
+      - SYS_ADMIN
+      - SYS_MODULE
+    ports:
+      - 2049:2049
+    volumes:
+      # these must be docker voluem matching in Dockerfile, init.d/exports.txt
+      #  otherwise, t nfs volume at [path] error will occur
+      - export:/export
+      - db2data:/db2data
+      - oraxe:/oraxe
+      - oraee:/oraee
+      - orarac:/orarac
+      # allow NFS from host
+      - /lib/modules:/lib/modules:ro
+      # conf for exports    
+      - ./init.d/exports.txt:/etc/exports:ro
+    networks:
+      default:
+        ipv4_address: ${NFS_SERVER}
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  # oracle
+  oraxe:      
+  oraee:      
+  orarac:      
+  # db2
+  db2data:      
+  # test volume
+  export:      
+ 
+                                   
+
+   
