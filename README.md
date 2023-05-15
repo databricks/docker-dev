@@ -37,6 +37,8 @@ graph LR
 
 - Create Docker network (one time)
 
+    NFS_SERVER is used for Oracle Redo Native Reader.
+
     ```bash
     docker network create arcnet
     export NFS_SERVER=$(docker network inspect arcnet -f '{{ json .IPAM}}' | jq -r '.Config | .[] | .Subnet | split("/") | .[0] | split(".") | .[0:3] | join(".")').254
