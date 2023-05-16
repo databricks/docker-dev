@@ -106,7 +106,9 @@ services:
       - ./arcion-share/data:/opt/mnt/data
       - ./arcion-share/config:/opt/mnt/config
       - ./arcion-share/libs:/opt/mnt/libs
-      - oraxe-nfs_oraxe:/opt/mnt/oraxe2130/oradata:ro
+      # these are oracle
+      - oraxe_oraxe11g:/opt/mnt/oraxe2130/oradata:ro
+      #- oraxe-nfs_oraxe:/opt/mnt/oraxe2130/oradata:ro
     depends_on:
       - metadata  
 
@@ -128,6 +130,8 @@ volumes:
     external: true
   # oracle NFS volumes
   oraxe-nfs_oraxe:  
+    external: true
+  oraxe_oraxe11g:
     external: true
 
 networks:

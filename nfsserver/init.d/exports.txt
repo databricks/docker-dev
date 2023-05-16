@@ -1,5 +1,3 @@
-/export *(rw,sync,no_root_squash,no_subtree_check)
-/oraxe *(rw,sync,no_root_squash,no_subtree_check)
-/oraee *(rw,sync,no_root_squash,no_subtree_check)
-/orarac *(rw,sync,no_root_squash,no_subtree_check)
-/db2data *(rw,sync,no_root_squash,no_subtree_check)
+/oradata/xe/11g *(rw,sync,no_root_squash,no_subtree_check)
+/oradata/xe/2130 *(rw,sync,no_root_squash,no_subtree_check)
+/oradata/ee/1930 *(rw,sync,no_root_squash,no_subtree_check)

@@ -14,11 +14,10 @@ services:
     volumes:
       # these must be docker voluem matching in Dockerfile, init.d/exports.txt
       #  otherwise, t nfs volume at [path] error will occur
-      - export:/export
-      - db2data:/db2data
-      - oraxe:/oraxe
-      - oraee:/oraee
-      - orarac:/orarac
+      - oradata:/oradata
+      - oradata_ee_1930:/oradata/ee/1930
+      - oradata_xe_2130:/oradata/xe/2130
+      - oradata_xe_11g:/oradata/xe/11g
       # allow NFS from host
       - /lib/modules:/lib/modules:ro
       # conf for exports    
@@ -32,14 +31,45 @@ networks:
     name: arcnet
     external: true
 volumes:
-  # oracle
-  oraxe:      
-  oraee:      
-  orarac:      
-  # db2
-  db2data:      
-  # test volume
-  export:      
+  # volumes backing each NFS
+  oradata:
+  oradata_ee_1930:
+  oradata_xe_2130:
+  oradata_xe_11g:
+  # nfs volumes that will be used by other instances
+  # https://docs.oracle.com/en/database/oracle/oracle-database/21/racdk/oracle-rac-on-docker.html#GUID-370DABCF-E5AC-48F7-BE1E-15528A42DB85
+  oraxe11g:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/11g"
+  oraxe2130:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/2130"
+  oraee1930:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/ee/1930"
+  orarac2130:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/rac"   
  
                                    
 
