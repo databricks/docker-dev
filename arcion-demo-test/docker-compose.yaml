@@ -32,8 +32,10 @@ services:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
-      - oraxe_oraxe2130:/opt/mnt/oraxe2130/oradata:ro
-      - oraee_oraeeredo:/opt/mnt/oraee1930/oradata:ro
+      # these are oracle
+      - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
+      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee1930:/opt/mnt/oraee1930/oradata:ro
     depends_on:
       - metadata  
 
@@ -99,16 +101,22 @@ services:
       - AWS_DST_ID=$AWS_DST_ID
       - AWS_DST_SECRET=$AWS_DST_SECRET    
     volumes:
-      # these are remapped to internal directories via volremap.sh in side docker
-      - arcion-bin-2304307:/arcion
-      - ./arcion-share/loadgen:/opt/mnt/loadgen
-      - ../../arcion-demo/scripts/:/scripts
+      # same as the UI
       - ./arcion-share/data:/opt/mnt/data
       - ./arcion-share/config:/opt/mnt/config
       - ./arcion-share/libs:/opt/mnt/libs
+      # loadgen specific
+      - ./arcion-share/loadgen:/opt/mnt/loadgen
+      # test specific to edit scripts
+      - ../../arcion-demo/scripts/:/scripts
+      # test specific to use different replicant cli
+      - arcion-bin-2304307:/arcion
+      # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
-      - oraxe_oraxe11g:/opt/mnt/oraxe2130/oradata:ro
-      #- oraxe-nfs_oraxe:/opt/mnt/oraxe2130/oradata:ro
+      - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
+      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee1930:/opt/mnt/oraee1930/oradata:ro
+
     depends_on:
       - metadata  
 
@@ -124,15 +132,30 @@ volumes:
   arcion-bin-2304307:
     external: true    
   # oracle volumes
-  oraxe_oraxe2130:
-    external: true    
-  oraee_oraeeredo:
-    external: true
-  # oracle NFS volumes
-  oraxe-nfs_oraxe:  
-    external: true
-  oraxe_oraxe11g:
-    external: true
+  oraxe11g:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/11g"
+  oraxe2130:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/2130"
+  oraee1930:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/ee/1930"
 
 networks:
   default:

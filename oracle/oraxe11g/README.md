@@ -39,11 +39,13 @@ for 11g
 export ARCHREDO=/u01/app/oracle/oradata/XE/arch
 export REDO=/u01/app/oracle/oradata/XE
 export PASSWORD=oracle
+export FOOTER_LINES=3
 
 for others
 export ARCHREDO=/opt/oracle/oradata/XE/arch
 export REDO=/opt/oracle/oradata/XE
 export PASSWORD=Passw0rd
+export FOOTER_LINES=4
 
 
 mkdir $ARCHREDO
@@ -69,9 +71,9 @@ select group#, member from v\$logfile order by group#, member;
 EOF
 
 
-export GROUP=$(echo "select max(group#) from v\$log;" | sqlplus sys/${PASSWORD}@XE as sysdba | tail -n 3 | head -n 1)
+export GROUP=$(echo "select max(group#) from v\$log;" | sqlplus sys/${PASSWORD}@XE as sysdba | tail -n $FOOTER_LINES | head -n 1)
 
-
+# add 3 redo groups
 sqlplus sys/${PASSWORD}@XE as sysdba <<EOF
 alter database add logfile group $((GROUP + 1)) '$REDO/redo$((GROUP + 1)).log' size 1G;
 alter database add logfile group $((GROUP + 2)) '$REDO/redo$((GROUP + 2)).log' size 1G;
@@ -80,10 +82,12 @@ select group#,sequence#,bytes,archived,status from v\$log;
 select group#, member from v\$logfile order by group#, member;
 EOF
 
+# switch to new redo groups
 for i in $(seq 1 $GROUP);do 
     echo "alter system switch logfile;" | sqlplus sys/${PASSWORD}@XE as sysdba
 done
 
+# check redo group
 sqlplus sys/${PASSWORD}@XE as sysdba <<EOF
 select group#,sequence#,bytes,archived,status from v\$log;
 select group#, member from v\$logfile order by group#, member;
