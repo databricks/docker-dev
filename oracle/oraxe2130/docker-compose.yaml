@@ -2,9 +2,9 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  oraxe:
+  oraxe2130:
     image: oracle/database:21.3.0-xe
-    container_name: oraxe
+    container_name: oraxe2130
     ports:
       - 1521
       - 5500
@@ -19,3 +19,10 @@ networks:
     external: true
 volumes:
   oraxe2130:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/2130"

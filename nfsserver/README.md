@@ -1,3 +1,14 @@
+# overview
+
+NFS directory structure
+
+```bash
+/oradata/xe/11g 1000
+/oradata/xe/2130 54321
+/oradata/ee/11930 54321
+/oradata/rac/2130 54321
+```
+
 need for nfs
 want nfs 3 and 4 
 https://github.com/ehough/docker-nfs-server has support
