@@ -11,6 +11,7 @@ services:
     environment:
       - LICENSE=accept
       - DB2INST1_PASSWORD=Passw0rd
+      - DBNAME=db2inst1
     volumes:
       - ./init.d:/var/custom
       - db2:/database
