@@ -6,7 +6,8 @@
 onmode -wf USERMAPPING=BASIC
 [ ! -d /etc/informix ] && sudo mkdir -p /etc/informix
 # allow remote login for users
-sudo echo "arcion-demo.arcnet" >>  $INFORMIXDIR/etc/hosts.equiv
+# allow any hosts to login (for demo purposes)
+sudo echo "+" >>  $INFORMIXDIR/etc/hosts.equiv
 # create host user and set database password
 # create utf8 compitable database
 # export GL_USEGLU=1
