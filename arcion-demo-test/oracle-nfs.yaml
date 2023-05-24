@@ -126,12 +126,30 @@ networks:
     external: true
 
 volumes:
-  arcion-metadata:
   arcion-bin-2304307:
-    external: true     
+    external: true    
+  # oracle volumes
   oraxe11g:
-    external: true
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/11g"
   oraxe2130:
-    external: true
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/2130"
   oraee1930:
-    external: true
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/ee/1930"

@@ -2,9 +2,9 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  oraee1930:
-    image: oracle/database:19.3.0-ee
-    container_name: oraee1930
+  orarac-2130:
+    image: oracle/database-rac:21.3.0
+    container_name: orarac-2130
     ports:
       - 1521
       - 5500
@@ -17,19 +17,17 @@ services:
       #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
       - ORACLE_PWD=Passw0rd 
     volumes:
-      - oraee1930:/opt/oracle/oradata
+      - orarac2130:/opt/oracle/oradata
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  oraee1930:
-    external: true
-  #oraee1930:
-  #  driver: local
-  #  driver_opts:
-  #    type: "nfs"
-  #    # addr = nfs server IP address
-  #    o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
-  #    # device = dir from NFS server exposing to client
-  #    device: ":/oradata/ee/1930"
+  orarac2130:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/rac/2130"

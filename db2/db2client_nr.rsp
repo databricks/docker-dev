@@ -1,0 +1,31 @@
+*-----------------------------------------------------
+* Generated response file used by the DB2 Setup wizard
+* generation time: 5/18/23 1:59 PM
+*-----------------------------------------------------
+*  Product Installation 
+LIC_AGREEMENT       = ACCEPT
+PROD       = CLIENT
+FILE       = /home/rslee/sqllib/
+INSTALL_TYPE       = CUSTOM
+COMP       = REPL_CLIENT
+COMP       = SQL_PROCEDURES
+COMP       = JDK
+COMP       = JAVA_SUPPORT
+COMP       = FIRST_STEPS
+COMP       = INSTANCE_SETUP_SUPPORT
+COMP       = LDAP_EXPLOITATION
+COMP       = BASE_CLIENT
+COMP       = APPLICATION_DEVELOPMENT_TOOLS
+COMP       = DB2_UPDATE_SERVICE
+* ----------------------------------------------
+*  Instance properties           
+* ----------------------------------------------
+INSTANCE       = inst1
+inst1.TYPE       = client
+*  Instance-owning user
+inst1.NAME       = rslee
+inst1.START_DURING_INSTALL       = NO
+*-----------------------------------------------
+*  Installed Languages 
+*-----------------------------------------------
+LANG       = EN

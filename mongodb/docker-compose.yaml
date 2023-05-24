@@ -2,18 +2,27 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  mongo:
-    image: mongo
-    container_name: mongodb
-    restart: always
+  v605:
+    image: mongo:6.0.5
+    deploy:
+      mode: replicated
+      replicas: 3
+    restart: no
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=Passw0rd
+      - MONGO_KEYFILE_DIR=/data/configdb/keyfile
     ports:
       - 27017  
     volumes:
-      - mongodb:/data/db   
+      - keyfile:/data/configdb/keyfile   
       - ./init.d:/docker-entrypoint-initdb.d
+    command: 
+      - mongod 
+      - --keyFile 
+      - /data/configdb/keyfile/mongodb.keyfile 
+      - --replSet 
+      - rs0
   mongo-express:
     image: mongo-express
     restart: always
@@ -29,5 +38,5 @@ networks:
     name: arcnet
     external: true
 volumes:
-  mongodb:
+  keyfile:
 
