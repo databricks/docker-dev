@@ -4,7 +4,7 @@ version: '3.8'
 services:
   metadata:
     image: postgres:14-alpine
-    container_name: arcion-metadata-test
+    container_name: arcion-metadata
     ports:
       - 5432
     environment:
@@ -16,46 +16,40 @@ services:
       - ./init.d:/docker-entrypoint-initdb.d
 
   ui:
-    image:  arcionlabs/replicant-on-premises:test
+    image:  arcionlabs/replicant-on-premises
+    container_name: ui
     ports:
-      - 8080
+      - 8080:8080
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
       - ARCION_LICENSE=${ARCION_LICENSE}
-      - DB_HOST=arcion-metadata-test
+      - DB_HOST=arcion-metadata
       - DB_PORT=5432
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
     volumes:
-      - ./arcion-share/data:/data
-      - ./arcion-share/config:/config
-      - ./arcion-share/libs:/libs
+      - arcion-share-data:/data
+      - arcion-share-config:/config
+      - arcion-share-libs:/libs
+      # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
       - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
-      - oraee1930:/opt/mnt/oraee1930/oradata:ro
+      - oraee1930:/opt/mnt/oraee1930/oradata:ro      
     depends_on:
       - metadata  
 
   workloads:
-    image:  robertslee/arcdemo:test
-    privileged: true
+    image:  robertslee/arcdemo
+    container_name: workloads
     ports:
-      - 7681
+      - 7681:7681
     environment:
       - ARCION_LICENSE=${ARCION_LICENSE}
-      # utf-8 for java, mysql, pgsql
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
-
-      # metadata
-      - METADATA_DB_HOST=arcion-metadata-test
-      - METADATA_DB_PORT=5432
-      - METADATA_DB_DATABASE=arcion
-      - METADATA_DB_USERNAME=arcion
-      - METADATA_DB_PASSWORD=Passw0rd
 
       # confluent
       - CFLT_SRC_ID=$CFLT_SRC_ID
@@ -99,24 +93,17 @@ services:
       - AWS_SRC_SECRET=$AWS_SRC_SECRET
 
       - AWS_DST_ID=$AWS_DST_ID
-      - AWS_DST_SECRET=$AWS_DST_SECRET    
+      - AWS_DST_SECRET=$AWS_DST_SECRET      
     volumes:
-      # same as the UI
-      - ./arcion-share/data:/opt/mnt/data
-      - ./arcion-share/config:/opt/mnt/config
-      - ./arcion-share/libs:/opt/mnt/libs
-      # loadgen specific
-      - ./arcion-share/loadgen:/opt/mnt/loadgen
-      # test specific to edit scripts
-      - ../../arcion-demo/scripts/:/scripts
-      # test specific to use different replicant cli
-      - arcion-bin-2304307:/arcion
+      - arcion-share-data:/data
+      - arcion-share-config:/config
+      - arcion-share-libs:/libs
+      - arcion-share-loadgen:/arcion/data
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
       - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
       - oraee1930:/opt/mnt/oraee1930/oradata:ro
-
     depends_on:
       - metadata  
 
@@ -124,14 +111,35 @@ networks:
   default:
     name: arcnet
     external: true
-
 volumes:
   arcion-metadata:
-  arcion-bin-2304307:
-    external: true     
+  arcion-share-data:
+  arcion-share-config:
+  arcion-share-libs:
+  arcion-share-loadgen:
+  # for oracle native reader
+  # oracle volumes
   oraxe11g:
-    external: true
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/11g"
   oraxe2130:
-    external: true
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/xe/2130"
   oraee1930:
-    external: true
+    driver: local
+    driver_opts:
+      type: "nfs"
+      # addr = nfs server IP address
+      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+      # device = dir from NFS server exposing to client
+      device: ":/oradata/ee/1930"

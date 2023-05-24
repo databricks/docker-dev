@@ -20,6 +20,7 @@ networks:
     external: true
 volumes:
   oraxe2130:
+    external: true
   #oraxe2130:
   #  driver: local
   #  driver_opts:

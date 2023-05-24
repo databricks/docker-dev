@@ -5,7 +5,6 @@ export REDO=/u01/app/oracle/oradata/XE
 export PASSWORD=oracle
 export FOOTER_LINES=3
 
-
 mkdir $ARCHREDO
 
 sqlplus sys/${PASSWORD}@XE as sysdba <<EOF
@@ -56,7 +55,6 @@ EOF
 for i in $(seq 1 $GROUP);do 
     echo "alter database drop logfile group ${i};" | sqlplus sys/${PASSWORD}@XE as sysdba
 done
-
 
 # check 
 sqlplus sys/${PASSWORD}@XE as sysdba <<'EOF'

@@ -33,6 +33,11 @@ services:
       - arcion-share-data:/data
       - arcion-share-config:/config
       - arcion-share-libs:/libs
+      # these are remapped to internal directories via volremap.sh in side docker
+      # these are oracle
+      - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
+      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee1930:/opt/mnt/oraee1930/oradata:ro      
     depends_on:
       - metadata  
 
@@ -94,6 +99,11 @@ services:
       - arcion-share-config:/config
       - arcion-share-libs:/libs
       - arcion-share-loadgen:/arcion/data
+      # these are remapped to internal directories via volremap.sh in side docker
+      # these are oracle
+      - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
+      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
+      - oraee1930:/opt/mnt/oraee1930/oradata:ro      
     depends_on:
       - metadata  
 
@@ -107,3 +117,9 @@ volumes:
   arcion-share-config:
   arcion-share-libs:
   arcion-share-loadgen:
+  oraxe11g:
+    external: true
+  oraxe2130:
+    external: true
+  oraee1930:
+    external: true
