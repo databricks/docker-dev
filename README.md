@@ -42,13 +42,12 @@ graph LR
     ```bash
     docker network create arcnet
     ```
-- (Optional) Create Docker Volume and NFS for Oracle Native Redo Reader
+- Create Docker Volume for Oracle Native Redo Reader (one time)
 
     ```bash
     docker volume create oraxe11g
     docker volume create oraxe2130
     docker volume create oraee1930
-    export NFS_SERVER=$(docker network inspect arcnet -f '{{ json .IPAM}}' | jq -r '.Config | .[] | .Subnet | split("/") | .[0] | split(".") | .[0:3] | join(".")').254
     ```
 
 - Start Arcion
