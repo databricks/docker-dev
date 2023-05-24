@@ -19,72 +19,86 @@ graph LR
 
 # Getting started
 
-- Setup Arcion License (one time)
+Assumptions:
 
-    ```bash
-    export ARCION_LICENSE="$(cat replicant.lic | base64)"
-    if [ -z "${ARCION_LICENSE}" ]; then echo "ERROR: ARCION_LICENSE is blank"; fi
-    echo "${ARCION_LICENSE}" | base64 -d
-    ```
+- running on Windows WSL, Liunx, Mac (Intel and Apple Silicon)
+- have Arcion License
+- have Docker 
 
-- Clone this repo (one time)
+# One Time Setup  
 
-    ```bash
-    git clone https://github.com/arcionlabs/docker-dev 
-    cd docker-dev
-    git fetch
-    ```
+Setup Arcion License
 
-- Create Docker network (one time)
+```bash
+export ARCION_LICENSE="$(cat replicant.lic | base64)"
+if [ -z "${ARCION_LICENSE}" ]; then echo "ERROR: ARCION_LICENSE is blank"; fi
+echo "${ARCION_LICENSE}" | base64 -d
+```
 
-    NFS_SERVER is used for Oracle Redo Native Reader.
+Clone this repo
 
-    ```bash
-    docker network create arcnet
-    ```
-- Create Docker Volume for Oracle Native Redo Reader (one time)
+```bash
+git clone https://github.com/arcionlabs/docker-dev 
+cd docker-dev
+git fetch
+```
 
-    ```bash
-    docker volume create oraxe11g
-    docker volume create oraxe2130
-    docker volume create oraee1930
-    ```
+Docker setup
 
-- Start Arcion
+```bash
+# network for contianer communications
+docker network create arcnet
 
-    ```bash
-    docker compose -f arcion-demo/docker-compose.yaml up -d
-    ```
+# oracle volume for native redo 
+docker volume create oraxe11g
+docker volume create oraxe2130
+docker volume create oraee1930
+```
 
-- Start one or more of Data source and destinations
+# Using the Demo Kit via CLI
 
-  An examaple of starting MySQL, PostgreSQL, Open Source Kakfa, and Minio 
+Assume you are in `docker-dev` directory for the below commands.
 
-    ```bash
-    docker compose -f mysql/docker-compose.yaml up -d
-    docker compose -f postgresql/docker-compose.yaml up -d
-    docker compose -f kafka/docker-compose.yaml up -d
-    docker compose -f minio/docker-compose.yaml up -d
-    ```
+Start the Demo Kit and couple of data source and destinations.
 
-- Generate data and activity for testing using Arcion CLI
+```bash
+# start the demo kit
+docker compose -f arcion-demo/docker-compose.yaml up -d
 
-    go to http://localhost:7681
+# start MySQL, PostgresSQL, Open Source Kafka and Minio
+docker compose -f mysql/docker-compose.yaml up -d
+docker compose -f postgresql/docker-compose.yaml up -d
+docker compose -f kafka/docker-compose.yaml up -d
+docker compose -f minio/docker-compose.yaml up -d
+```
 
-    each will run for 5 minutes and times out
+## Connect to the demo kit
 
-    ```bash
-    arcdemo.sh full mysql oskbroker
-    arcdemo.sh full postgresql minio
-    arcdemo.sh full postgresql mysql
-    arcdemo.sh full mysql postgresql
-    ```
+The demo kit uses `tmux`.  Based on your preference, use one or both methods below.  Both views will be in sync.
+
+- using browser: `http://localhost:7681`
+- using terminal: `docker exec -it workloads bash tmux attach`
+
+Generate data and activity for testing using Arcion CLI
+
+- go to http://localhost:7681
+
+each will run for 5 minutes and times out by default
+
+```bash
+arcdemo.sh full mysql oskbroker
+arcdemo.sh full postgresql minio
+arcdemo.sh full postgresql mysql
+arcdemo.sh full mysql postgresql
+```
+
+### Change Scale Factor Performance and Scale Tests
 
 - For 1GB volume test, change the scale factor to 10
 
     go to http://localhost:7681
 
-    each will run for 5 minutes and times out
+    each will run for 5 minutes and times out by default
 
     scale factor 10 will generate about 1GB of data on YCSB and 1GB TPC-C
 
@@ -123,19 +137,21 @@ graph LR
     `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 
     `-t 0`   run YCSB on 1 thread and TPC-C on 1 thread as fast as possible 
     
-- Use Arcion UI
+## To shutdown all data source and destination providers
 
-    go to http://localhost:8080 and sign in with user `admin` password `arcion`
+```bash
+for db in $( find * -maxdepth 1 -type d -prune ! -name "arcion*" ); do
+pushd $db; docker compose down; popd
+done
+```
 
-- To shutdown all databases
+# Use Arcion UI
 
-    ```bash
-    for db in $( find * -maxdepth 1 -type d -prune ! -name "arcion*" ); do
-    pushd $db; docker compose down; popd
-    done
-    ```
+go to http://localhost:8080 and sign in with user `admin` password `arcion`
 
-## Cloud Database Examples
+# Cloud Database Examples
+
+## Snowflake
 
 - Snowflake source to MySQL destination
 use default on mysql destination
@@ -153,7 +169,7 @@ source catalog is default `arcsrc` and source schema is `PUBLIC`
 arcdemo.sh -b 2:2 snpashot snowflake mysql
 ```
 
-## Oracle Docker Setup
+# Oracle Docker Setup
 
 Oracle requires container images to be build locally.
 Start with Oracle XE, then use Oracle EE for volume testing.
