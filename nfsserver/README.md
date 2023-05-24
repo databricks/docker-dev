@@ -1,5 +1,8 @@
 # overview
 
+```
+export NFS_SERVER=$(docker network inspect arcnet -f '{{ json .IPAM}}' | jq -r '.Config | .[] | .Subnet | split("/") | .[0] | split(".") | .[0:3] | join(".")').254
+```
 
 if any of the followng are changeed
 
