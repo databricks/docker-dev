@@ -2,23 +2,52 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  cockroach:
+  cockroach1:
     image: cockroachdb/cockroach:v22.2.3
-    container_name: cockroach
+    container_name: cockroach1
     ports:
       - 26257
       - 8080
     environment:
       - PGCLIENTENCODING=utf-8
-    volumes:
-      - cockroach:/cockroach/cockroach-data
     command: 
       - start-single-node
       - --insecure
-
+      - --advertise-addr=cockroach1
+      - --cluster-name=arcion
+  cockroach2:
+    image: cockroachdb/cockroach:v22.2.3
+    container_name: cockroach2
+    depends_on:
+      - cockroach1
+    ports:
+      - 26257
+      - 8080
+    environment:
+      - PGCLIENTENCODING=utf-8
+    command: 
+      - start
+      - --insecure
+      - --join=cockroach1
+      - --advertise-addr=cockroach2
+      - --cluster-name=arcion
+  cockroach3:
+    image: cockroachdb/cockroach:v22.2.3
+    container_name: cockroach3
+    depends_on:
+      - cockroach2
+    ports:
+      - 26257
+      - 8080
+    environment:
+      - PGCLIENTENCODING=utf-8
+    command: 
+      - start
+      - --insecure
+      - --join=cockroach1
+      - --advertise-addr=cockroach3
+      - --cluster-name=arcion
 networks:
   default:
     name: arcnet
     external: true
-volumes:
-  cockroach:

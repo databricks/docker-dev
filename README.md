@@ -77,7 +77,7 @@ docker compose -f minio/docker-compose.yaml up -d
 The demo kit uses `tmux`.  Based on your preference, use one or both methods below.  Both views will be in sync.
 
 - using browser: `http://localhost:7681`
-- using terminal: `docker exec -it workloads bash tmux attach`
+- using terminal: `docker exec -it workloads tmux attach`
 
 Generate data and activity for testing using Arcion CLI
 
