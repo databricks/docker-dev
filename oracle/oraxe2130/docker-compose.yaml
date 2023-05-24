@@ -11,6 +11,7 @@ services:
     environment:
       - ORACLE_PWD=Passw0rd 
     volumes:
+      - ./init.d:/docker-entrypoint-initdb.d/startup
       - oraxe2130:/opt/oracle/oradata
 
 networks:
@@ -19,10 +20,11 @@ networks:
     external: true
 volumes:
   oraxe2130:
-    driver: local
-    driver_opts:
-      type: "nfs"
-      # addr = nfs server IP address
-      o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
-      # device = dir from NFS server exposing to client
-      device: ":/oradata/xe/2130"
+  #oraxe2130:
+  #  driver: local
+  #  driver_opts:
+  #    type: "nfs"
+  #    # addr = nfs server IP address
+  #    o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
+  #    # device = dir from NFS server exposing to client
+  #    device: ":/oradata/xe/2130"

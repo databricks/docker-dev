@@ -52,12 +52,13 @@ graph LR
 
 - Start one or more of Data source and destinations
 
-  An examaple of starting MySQL, PostgreSQL, Open Source Kakfa
+  An examaple of starting MySQL, PostgreSQL, Open Source Kakfa, and Minio 
 
     ```bash
     docker compose -f mysql/docker-compose.yaml up -d
     docker compose -f postgresql/docker-compose.yaml up -d
     docker compose -f kafka/docker-compose.yaml up -d
+    docker compose -f minio/docker-compose.yaml up -d
     ```
 
 - Generate data and activity for testing using Arcion CLI
@@ -67,10 +68,10 @@ graph LR
     each will run for 5 minutes and times out
 
     ```bash
-    arcdemo.sh full mysql oskafka
-    arcdemo.sh full mysql postgresql
+    arcdemo.sh full mysql oskbroker
+    arcdemo.sh full postgresql minio
     arcdemo.sh full postgresql mysql
-    arcdemo.sh full postgresql oskafka
+    arcdemo.sh full mysql postgresql
     ```
 
 - For 1GB volume test, change the scale factor to 10
@@ -82,10 +83,10 @@ graph LR
     scale factor 10 will generate about 1GB of data on YCSB and 1GB TPC-C
 
     ```bash
-    arcdemo.sh -s 10 full mysql oskafka
-    arcdemo.sh -s 10 full mysql postgresql
+    arcdemo.sh -s 10 full mysql oskbroker
+    arcdemo.sh -s 10 full postgresql minio
     arcdemo.sh -s 10 full postgresql mysql
-    arcdemo.sh -s 10 full postgresql oskafka
+    arcdemo.sh -s 10 full mysql postgresql
     ```
 
 - For 10GB volume test, change the scale factor to 100
@@ -98,19 +99,19 @@ graph LR
     set snapshot inter table parallelism to 2 on the extractor and 2 on the applier
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 full mysql oskafka
+    arcdemo.sh -s 100 -b 2:2 full mysql oskbroker
     arcdemo.sh -s 100 -b 2:2 full mysql postgresql
     arcdemo.sh -s 100 -b 2:2 full postgresql mysql
-    arcdemo.sh -s 100 -b 2:2 full postgresql oskafka
+    arcdemo.sh -s 100 -b 2:2 full postgresql oskbroker
     ```
 
 - For stresing out CDC, change the workload update rate and increase threads on Arcion real-time threads
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full mysql oskafka
+    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full mysql oskbroker
     arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full mysql postgresql
     arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full postgresql mysql
-    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full postgresql oskafka
+    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full postgresql oskbroker
     ```
 
     `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 

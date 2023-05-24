@@ -14,6 +14,7 @@ run mkdir /export \
   && mkdir /oradata/rac \
   && mkdir /oradata/ee/1930 \
   && mkdir /oradata/xe/2130 \
+  && mkdir /oradata/rac/2130 \
   && mkdir /oradata/xe/11g \
   && mkdir /db2data \
   && chown -R oracle /oradata \

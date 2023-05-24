@@ -1,5 +1,13 @@
 # overview
 
+
+if any of the followng are changeed
+
+docker compose down
+docker image rm nfsserver-nfsserver
+docker container prune
+docker compose up -d
+
 NFS directory structure
 
 ```bash
