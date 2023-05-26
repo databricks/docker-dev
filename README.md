@@ -1,5 +1,4 @@
-These are Docker Compose files used for Data source and Data destination in [Demo Load Generator](https://github.com/arcionlabs/arcion-demo) and Release Testing.
-The diagram below depicts the components of the demo kit where where the Docker Compose files fit in.
+This is Arcion Demo Kit. This is design to demo and test Arcion replication from various data source to target. The diagram below describes the components of the demo kit.  Please refer to [https://docs.arcion.io](https://docs.arcion.io) for more info.
 
 - Load Generator
 - Data source
@@ -8,7 +7,7 @@ The diagram below depicts the components of the demo kit where where the Docker 
 
 ```mermaid
 graph LR
-    L[Load Generator<br>TPC-C<br>sysbench<br>YCSB] --> S
+    L[Load Generator<br>TPC-C<br>YCSB] --> S
     subgraph Arcion Cluster
         A1
         M[(Meta <br>Data)]
@@ -24,71 +23,30 @@ Assumptions:
 - Running on Windows WSL, Liunx, Mac (Intel and Apple Silicon)
 - Have Arcion License in the current directory (replicant.lic) 
 - Have Docker and git installed
+- Have access to a terminal and a browser
 
 # Install Demo Kit  
+
+Cut and paste the following in a terminal.
 
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
 ```
 
+# Using Demo Kit
 
-# Manual Setup
-
-Setup Arcion License
-
-```bash
-export ARCION_LICENSE="$(cat replicant.lic | base64)"
-if [ -z "${ARCION_LICENSE}" ]; then echo "ERROR: ARCION_LICENSE is blank"; fi
-echo "${ARCION_LICENSE}" | base64 -d
-```
-
-Clone this repo
-
-```bash
-git clone https://github.com/arcionlabs/docker-dev 
-cd docker-dev
-git fetch
-```
-
-Docker setup
-
-```bash
-# network for contianer communications
-docker network create arcnet
-
-# oracle volume for native redo 
-docker volume create oraxe11g
-docker volume create oraxe2130
-docker volume create oraee1930
-```
-
-# Using the Demo Kit via CLI
-
-Assume you are in `docker-dev` directory for the below commands.
-
-Start the Demo Kit and couple of data source and destinations.
-
-```bash
-# start the demo kit
-docker compose -f arcion-demo/docker-compose.yaml up -d
-
-# start MySQL, PostgresSQL, Open Source Kafka and Minio
-docker compose -f mysql/docker-compose.yaml up -d
-docker compose -f postgresql/docker-compose.yaml up -d
-docker compose -f kafka/docker-compose.yaml up -d
-docker compose -f minio/docker-compose.yaml up -d
-```
-
-## Connect to the demo kit
+## CLI
 
 The demo kit uses `tmux`.  Based on your preference, use one or both methods below.  Both views will be in sync.
 
-- using browser: `http://localhost:7681`
-- using terminal: `docker exec -it workloads tmux attach`
+- using a browser: `http://localhost:7681`
+- using a terminal: `docker exec -it workloads tmux attach`
 
-Generate data and activity for testing using Arcion CLI
+## UI
 
-- go to http://localhost:7681
+Go to [http://localhost:8080](http://localhost:8080) and sign in with user `admin` password `arcion`
+
+# Running a demo with CLI
 
 each will run for 5 minutes and times out by default
 
@@ -152,9 +110,6 @@ pushd $db; docker compose down; popd
 done
 ```
 
-# Use Arcion UI
-
-go to http://localhost:8080 and sign in with user `admin` password `arcion`
 
 # Cloud Database Examples
 
