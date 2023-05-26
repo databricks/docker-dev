@@ -21,11 +21,18 @@ graph LR
 
 Assumptions:
 
-- running on Windows WSL, Liunx, Mac (Intel and Apple Silicon)
-- have Arcion License
-- have Docker 
+- Running on Windows WSL, Liunx, Mac (Intel and Apple Silicon)
+- Have Arcion License in the current directory (replicant.lic) 
+- Have Docker and git installed
 
-# One Time Setup  
+# Install Demo Kit  
+
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
+```
+
+
+# Manual Setup
 
 Setup Arcion License
 
