@@ -11,7 +11,7 @@ services:
     environment:
       - ORACLE_PWD=Passw0rd 
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d/startup
+      #- ./init.d:/docker-entrypoint-initdb.d/startup
       - oraxe2130:/opt/oracle/oradata
 
 networks:

@@ -13,6 +13,7 @@ services:
       - ORACLE_PWD=Passw0rd 
       - ORACLE_ALLOW_REMOTE=true
     volumes:
+      #- ./init.d:/docker-entrypoint-initdb.d
       - oraxe11g:/u01/app/oracle/oradata
 
 networks:
