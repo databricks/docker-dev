@@ -33,6 +33,18 @@ Cut and paste the following in a terminal.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
 ```
 
+[![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
+
+## MySQL to PostgresSQL Migration Demo
+
+In Console Screen, type
+
+```bash
+arcdemo.sh full mysql postgresql
+```
+
+[![asciicast](https://asciinema.org/a/587771.svg)](https://asciinema.org/a/587771)
+
 # Using Demo Kit
 
 ## CLI
