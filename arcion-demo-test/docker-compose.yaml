@@ -38,6 +38,7 @@ services:
       - oraee1930:/opt/mnt/oraee1930/oradata:ro
     depends_on:
       - metadata  
+      - workloads
 
   workloads:
     image:  robertslee/arcdemo:test
@@ -65,6 +66,11 @@ services:
       - CFLT_DST_ID=$CFLT_DST_ID
       - CFLT_DST_SECRET=$CFLT_DST_SECRET
       - CFLT_DST_ENDPOINT=$CFLT_DST_ENDPOINT
+
+      # databricks
+      - DBX_DST_ID=$DBX_DST_ID
+      - DBX_DST_SECRET=$DBX_DST_SECRET
+      - DBX_DST_ENDPOINT=$CFLT_DST_ENDPOINT
 
       # minio
       - MINIO_SRC_ID=$MINIO_SRC_ID
