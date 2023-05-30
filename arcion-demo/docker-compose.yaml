@@ -40,6 +40,7 @@ services:
       - oraee1930:/opt/mnt/oraee1930/oradata:ro      
     depends_on:
       - metadata  
+      - workloads
 
   workloads:
     image:  robertslee/arcdemo
