@@ -1,0 +1,14 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  mysql:
+    image: nguoianphu/docker-sybase
+    container_name: sybasease
+    ports:
+      - 5000
+      - 5001
+networks:
+  default:
+    name: arcnet
+    external: true
