@@ -2,12 +2,15 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  mysql:
+  sybasease:
     image: nguoianphu/docker-sybase
     container_name: sybasease
     ports:
       - 5000
       - 5001
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d      
+    entrypoint: /docker-entrypoint-initdb.d/01_fix.sh
 networks:
   default:
     name: arcnet
