@@ -125,8 +125,7 @@ ttyd_started=$( docker compose -f docker-dev/arcion-demo/docker-compose.yaml log
 while [ -z "${ttyd_started}" ]; do
     sleep 1
     echo 'waiting on docker compose -f docker-dev/arcion-demo/docker-compose.yaml logs workloads | grep ttyd'
-    ttyd_started=$( docker compose -f docker-dev/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )
+    ttyd_started=$( docker compose -f docker-dev/arcion-demo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
 done
-docker compose -f docker-dev/arcion-demo/docker-compose.yaml exec workloads tmux attach
-
+docker compose -f docker-dev/arcion-demo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "sleep 5; arcdemo full mysql postgresql" enter; tmux attach'
 

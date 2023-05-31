@@ -6,6 +6,7 @@ export REDO=/opt/oracle/oradata/XE
 export PASSWORD=Passw0rd
 export FOOTER_LINES=4
 
+
 echo "Checking $ARCHREDO/arcion_arch.log this script already ran"
 if [ -f "$ARCHREDO/arcion_arch.log" ]; then
     cat $ARCHREDO/arcion_arch.log
