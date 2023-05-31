@@ -67,11 +67,6 @@ services:
       - CFLT_DST_SECRET=$CFLT_DST_SECRET
       - CFLT_DST_ENDPOINT=$CFLT_DST_ENDPOINT
 
-      # databricks
-      - DBX_DST_ID=$DBX_DST_ID
-      - DBX_DST_SECRET=$DBX_DST_SECRET
-      - DBX_DST_ENDPOINT=$CFLT_DST_ENDPOINT
-
       # minio
       - MINIO_SRC_ID=$MINIO_SRC_ID
       - MINIO_SRC_SECRET=$MINIO_SRC_SECRET
@@ -116,7 +111,7 @@ services:
       # test specific to edit scripts
       - ../../arcion-demo/scripts/:/scripts
       # test specific to use different replicant cli
-      - arcion-bin-2304307:/arcion
+      - arcion-bin-2304309:/arcion
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
@@ -133,7 +128,9 @@ networks:
 
 volumes:
   arcion-metadata:
-  arcion-bin-2304307:
+  arcion-bin-23033121:
+    external: true     
+  arcion-bin-2304309:
     external: true     
   oraxe11g:
     external: true

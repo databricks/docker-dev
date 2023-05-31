@@ -13,15 +13,15 @@ services:
       - ORACLE_PWD=Passw0rd 
       - ORACLE_ALLOW_REMOTE=true
     volumes:
-      #- ./init.d:/docker-entrypoint-initdb.d
-      - oraxe11g:/u01/app/oracle/oradata
+      - ./init.d:/docker-entrypoint-initdb.d
+      - oraxe11gtest:/u01/app/oracle/oradata
 
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  oraxe11g:
+  oraxe11gtest:
     external: true
   #oraxe11g:
   #  driver: local

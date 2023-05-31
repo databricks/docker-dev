@@ -3,7 +3,7 @@
 version: '3.8'
 services:
   cockroach1:
-    image: cockroachdb/cockroach:v22.2.3
+    image: cockroachdb/cockroach
     container_name: cockroach1
     ports:
       - 26257
@@ -16,7 +16,7 @@ services:
       - --advertise-addr=cockroach1
       - --cluster-name=arcion
   cockroach2:
-    image: cockroachdb/cockroach:v22.2.3
+    image: cockroachdb/cockroach
     container_name: cockroach2
     depends_on:
       - cockroach1
@@ -32,7 +32,7 @@ services:
       - --advertise-addr=cockroach2
       - --cluster-name=arcion
   cockroach3:
-    image: cockroachdb/cockroach:v22.2.3
+    image: cockroachdb/cockroach
     container_name: cockroach3
     depends_on:
       - cockroach2
