@@ -61,7 +61,7 @@ for v in ${oravols[*]}; do
         docker volume create $v >/tmp/install.$$ 2>&1
         if [[ "$?" != 0 ]]; then 
             cat /tmp/install.$$
-            abort "docker network create arcnet failed."
+            abort "docker create $v failed."
         fi
     fi    
 done
@@ -73,7 +73,7 @@ else
     git clone https://github.com/arcionlabs/docker-dev >/tmp/install.$$ 2>&1
     if [[ "$?" != 0 ]]; then 
         cat /tmp/install.$$
-        abort "docker network create arcnet failed."
+        abort "git clone https://github.com/arcionlabs/docker-dev failed."
     fi
 fi
 
@@ -83,22 +83,24 @@ cat <<EOF
 The following starter demo can be started for you.
 
     # start Arcion demo kit
-    docker compose -f docker-dev/arcion-demo/docker-compose.yaml up -d
+    docker compose -f $BASE_DIR/arcion-demo/docker-compose.yaml up -d
 
     # start MySQL, PostgresSQL
-    docker compose -f docker-dev/mysql/docker-compose.yaml up -d
-    docker compose -f docker-dev/postgresql/docker-compose.yaml up -d
+    docker compose -f $BASE_DIR/mysql/docker-compose.yaml up -d
+    docker compose -f $BASE_DIR/postgresql/docker-compose.yaml up -d
 
     # start Arcion demo kit CLI
-    docker compose -f docker-dev/arcion-demo/docker-compose.yaml exec workloads tmux attach
+    docker compose -f $BASE_DIR/arcion-demo/docker-compose.yaml exec workloads tmux attach
 
 When the demo starts, you will enter a tmux session.  
-To detach (exit) from from the demo kit, use the following tmux command:  
+To detach (exit) from the demo kit, use the following tmux command:  
 
     1. press <control> b
     2. type ":detach" wihout the quote
 
-Once in the demo kit, type the following to migration from mysql to postgresql
+Once in the demo kit, type the following will typed for you.
+This will start full replication mysql to postgresql.
+
     arcdemo.sh full mysql postgresql
 
 EOF
