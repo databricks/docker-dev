@@ -4,6 +4,8 @@ set -u
 
 # get dir where this script is at
 BASE_DIR=$( dirname "${BASH_SOURCE[0]}" )
+echo $BASE_DIR
+exit
 
 abort() {
   printf "%s\n" "$@" >&2
