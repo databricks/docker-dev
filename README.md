@@ -118,7 +118,7 @@ arcdemo.sh full mysql postgresql
 
 ```bash
 for db in $( find * -maxdepth 1 -type d -prune ! -name "arcion*" ); do
-pushd $db; docker compose down; popd
+pushd $db; docker compose stop; popd
 done
 ```
 
