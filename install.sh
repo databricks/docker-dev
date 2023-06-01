@@ -125,11 +125,9 @@ EOF
 # configs are relative to the script
 docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d
 
-# start MySQL, PostgresSQL, Open Source Kafka and Minio
+# start MySQL, PostgresSQL
 docker compose -f ${BASE_DIR}/mysql/docker-compose.yaml up -d
 docker compose -f ${BASE_DIR}/postgresql/docker-compose.yaml up -d
-docker compose -f ${BASE_DIR}/kafka/docker-compose.yaml up -d
-docker compose -f ${BASE_DIR}/minio/docker-compose.yaml up -d
 
 # start Arcion demo kit CLI
 ttyd_started=$( docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )
