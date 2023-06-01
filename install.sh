@@ -4,8 +4,11 @@ set -u
 
 # get dir where this script is at
 BASE_DIR=$( dirname "${BASH_SOURCE[0]}" )
-echo $BASE_DIR
-exit
+if [ -z "$BASE_DIR" ]; then
+    BASE_DIR=docker-dev
+else
+    echo "Manually running intall.sh from ${BASE_DIR}"
+fi
 
 abort() {
   printf "%s\n" "$@" >&2
