@@ -2,6 +2,9 @@
 
 set -u
 
+# get dir where this script is at
+BASE_DIR=$( dirname "${BASH_SOURCE[0]}" )
+
 abort() {
   printf "%s\n" "$@" >&2
   exit 1
@@ -112,20 +115,21 @@ When the demo starts, you will enter a tmux session.  To detach from tmux,
 
 EOF
 
-docker compose -f docker-dev/arcion-demo/docker-compose.yaml up -d
+# configs are relative to the script
+docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d
 
 # start MySQL, PostgresSQL, Open Source Kafka and Minio
-docker compose -f docker-dev/mysql/docker-compose.yaml up -d
-docker compose -f docker-dev/postgresql/docker-compose.yaml up -d
-docker compose -f docker-dev/kafka/docker-compose.yaml up -d
-docker compose -f docker-dev/minio/docker-compose.yaml up -d
+docker compose -f ${BASE_DIR}/mysql/docker-compose.yaml up -d
+docker compose -f ${BASE_DIR}/postgresql/docker-compose.yaml up -d
+docker compose -f ${BASE_DIR}/kafka/docker-compose.yaml up -d
+docker compose -f ${BASE_DIR}/minio/docker-compose.yaml up -d
 
 # start Arcion demo kit CLI
-ttyd_started=$( docker compose -f docker-dev/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )
+ttyd_started=$( docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )
 while [ -z "${ttyd_started}" ]; do
     sleep 1
-    echo 'waiting on docker compose -f docker-dev/arcion-demo/docker-compose.yaml logs workloads | grep ttyd'
-    ttyd_started=$( docker compose -f docker-dev/arcion-demo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
+    echo "waiting on docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd"
+    ttyd_started=$( docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
 done
-docker compose -f docker-dev/arcion-demo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "sleep 5; arcdemo full mysql postgresql" enter; tmux attach'
+docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "banner arcdemo;sleep 5; arcdemo.sh full mysql postgresql" enter; tmux attach'
 
