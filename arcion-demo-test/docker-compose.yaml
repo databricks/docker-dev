@@ -111,6 +111,7 @@ services:
       # test specific to edit scripts
       - ../../arcion-demo/scripts/:/scripts
       # test specific to use different replicant cli
+      - arcion-bin-latest:/arcion/latest
       - arcion-bin-2304309:/arcion/2304309
       - arcion-bin-23043012:/arcion
       # these are remapped to internal directories via volremap.sh in side docker
@@ -129,12 +130,17 @@ networks:
 
 volumes:
   arcion-metadata:
+
+  arcion-bin-latest:
+    external: true     
+
   arcion-bin-23033121:
     external: true     
   arcion-bin-2304309:
     external: true     
   arcion-bin-23043012:
     external: true       
+
   oraxe11g:
     external: true
   oraxe2130:
