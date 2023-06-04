@@ -3,7 +3,7 @@ replicant.lic
 ojdbc.jar
 oracle-docker-images/
 arcion-share/
-#.env
+*.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
