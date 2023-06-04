@@ -50,8 +50,13 @@ services:
       # utf-8 for java, mysql, pgsql
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
-  
+    env_file:
+      - ../.config/cloud-services.env  
     volumes:
+      # cache db2 sqllib install
+      - db2_sqllib:/home/arcion/sqllib
+      # cache oracle client install
+      - ora_client:/opt/oracle
       # same as the UI
       - ./arcion-share/data:/opt/mnt/data
       - ./arcion-share/config:/opt/mnt/config
@@ -79,6 +84,8 @@ networks:
     external: true
 
 volumes:
+  db2_sqllib:
+  ora_client:
   arcion-metadata:
 
   arcion-bin-latest:
@@ -88,7 +95,7 @@ volumes:
     external: true     
   arcion-bin-2304309:
     external: true     
-  arcion-bin-23043012:
+  arcion-bin-23043013:
     external: true       
 
   oraxe11g:
