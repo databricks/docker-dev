@@ -4,7 +4,6 @@ ojdbc.jar
 oracle-docker-images/
 arcion-share/
 *.env
-*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
