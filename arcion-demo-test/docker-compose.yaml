@@ -50,58 +50,13 @@ services:
       # utf-8 for java, mysql, pgsql
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
-
-      # metadata
-      - METADATA_DB_HOST=arcion-metadata-test
-      - METADATA_DB_PORT=5432
-      - METADATA_DB_DATABASE=arcion
-      - METADATA_DB_USERNAME=arcion
-      - METADATA_DB_PASSWORD=Passw0rd
-
-      # confluent
-      - CFLT_SRC_ID=$CFLT_SRC_ID
-      - CFLT_SRC_SECRET=$CFLT_SRC_SECRET
-      - CFLT_SRC_ENDPOINT=$CFLT_SRC_ENDPOINT
-
-      - CFLT_DST_ID=$CFLT_DST_ID
-      - CFLT_DST_SECRET=$CFLT_DST_SECRET
-      - CFLT_DST_ENDPOINT=$CFLT_DST_ENDPOINT
-
-      # minio
-      - MINIO_SRC_ID=$MINIO_SRC_ID
-      - MINIO_SRC_SECRET=$MINIO_SRC_SECRET
-      - MINIO_SRC_ENDPOINT=$MINIO_SRC_ENDPOINT
-  
-      - MINIO_DST_ID=$MINIO_DST_ID
-      - MINIO_DST_SECRET=$MINIO_DST_SECRET
-      - MINIO_DST_ENDPOINT=$MINIO_DST_ENDPOINT
-
-      # Snowflake
-      - SNOW_SRC_ID=$SNOW_SRC_ID
-      - SNOW_SRC_SECRET=$SNOW_SRC_SECRET
-      - SNOW_SRC_ENDPOINT=$SNOW_SRC_ENDPOINT
-      - SNOW_SRC_WAREHOUSE=$SNOW_SRC_WAREHOUSE
-
-      - SNOW_DST_ID=$SNOW_DST_ID
-      - SNOW_DST_SECRET=$SNOW_DST_SECRET
-      - SNOW_DST_ENDPOINT=$SNOW_DST_ENDPOINT
-      - SNOW_DST_WAREHOUSE=$SNOW_DST_WAREHOUSE
-
-      # Google Big Query the key is gzip | base64 -w 0
-      - GBQ_SRC_LOCATION=$GBQ_SRC_LOCATION	
-      - GBQ_SRC_SECRET=$GBQ_SRC_SECRET
-      - GBQ_SRC_ENDPOINT=$GBQ_SRC_ENDPOINT
-
-      - GBQ_DST_LOCATION=$GBQ_DST_LOCATION	
-      - GBQ_DST_SECRET=$GBQ_DST_SECRET
-      - GBQ_DST_ENDPOINT=$GBQ_DST_ENDPOINT
-      # AWS
-      - AWS_SRC_ID=$AWS_SRC_ID
-      - AWS_SRC_SECRET=$AWS_SRC_SECRET
-
-      - AWS_DST_ID=$AWS_DST_ID
-      - AWS_DST_SECRET=$AWS_DST_SECRET    
+    env_file:
+      - ../.config/cloud-services.env  
     volumes:
+      # cache db2 sqllib install
+      - db2_sqllib:/home/arcion/sqllib
+      # cache oracle client install
+      - ora_client:/opt/oracle
       # same as the UI
       - ./arcion-share/data:/opt/mnt/data
       - ./arcion-share/config:/opt/mnt/config
@@ -111,8 +66,9 @@ services:
       # test specific to edit scripts
       - ../../arcion-demo/scripts/:/scripts
       # test specific to use different replicant cli
+      - arcion-bin-latest:/arcion/latest
       - arcion-bin-2304309:/arcion/2304309
-      - arcion-bin-23043012:/arcion
+      - arcion-bin-23043013:/arcion
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
@@ -128,13 +84,20 @@ networks:
     external: true
 
 volumes:
+  db2_sqllib:
+  ora_client:
   arcion-metadata:
+
+  arcion-bin-latest:
+    external: true     
+
   arcion-bin-23033121:
     external: true     
   arcion-bin-2304309:
     external: true     
-  arcion-bin-23043012:
+  arcion-bin-23043013:
     external: true       
+
   oraxe11g:
     external: true
   oraxe2130:
