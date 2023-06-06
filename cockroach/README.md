@@ -1,5 +1,7 @@
 # Overview
 
+Start a 3 node CockroachDB cluster.
+
 - Start service
 
 ```bash
@@ -9,7 +11,7 @@ docker compose up -d
 - Common introspection commands
 
 ```bash
-docker compose down
+docker compose stop
 docker compose logs -f
 docker compose exec cockroach bash
 ```
