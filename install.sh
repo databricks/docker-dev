@@ -42,7 +42,7 @@ fi
 docker network inspect arcnet >/dev/null 2>/dev/null
 if [[ "$?" = "0" ]]; then
     echo "docker network arcnet found."
-elif [[ ${i} = "1" ]]; then
+else 
     echo "docker network create arcnet"
     docker network create arcnet >/tmp/install.$$ 2>&1
     if [[ "$?" != 0 ]]; then 
@@ -77,7 +77,6 @@ else
     fi
 fi
 
-clear
 cat <<EOF
 
 The following starter demo can be started for you.
