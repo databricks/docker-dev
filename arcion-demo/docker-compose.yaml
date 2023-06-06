@@ -20,6 +20,7 @@ services:
     container_name: ui
     ports:
       - 8080:8080
+      - 8050:8050
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
@@ -29,6 +30,7 @@ services:
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
+      - PROMETHEUS_ENABLE=true
     volumes:
       - arcion-share-data:/data
       - arcion-share-config:/config
@@ -72,7 +74,11 @@ services:
       - oraee1930:/opt/mnt/oraee1930/oradata:ro      
     depends_on:
       - metadata  
-
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+      
 networks:
   default:
     name: arcnet

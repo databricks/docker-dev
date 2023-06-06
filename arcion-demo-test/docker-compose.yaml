@@ -19,6 +19,7 @@ services:
     image:  arcionlabs/replicant-on-premises:test
     ports:
       - 8080
+      - 8050
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
@@ -28,6 +29,7 @@ services:
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
+      - PROMETHEUS_ENABLE=true      
     volumes:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
@@ -77,6 +79,10 @@ services:
 
     depends_on:
       - metadata  
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000
 
 networks:
   default:
