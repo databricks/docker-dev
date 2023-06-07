@@ -34,8 +34,11 @@ EOF
 
 ora_showarchdest() {
     sqlplus sys/${PASSWORD}@XE as sysdba <<'EOF'
+    select name,log_mode from v$database;
     archive log list;
     select destination, status from v$archive_dest where status='VALID';
+    select group#,sequence#,bytes,archived,status from v$log;
+    select group#, member from v$logfile order by group#, member;
 EOF
 }
 
@@ -43,7 +46,6 @@ ora_shutdown() {
     sqlplus sys/${PASSWORD}@XE as sysdba <<EOF
     -- set archive
     alter system set log_archive_dest_1='LOCATION=$ARCHREDO' scope=both;
-    archive log list;
     shutdown immediate;
 EOF
 }
@@ -54,12 +56,8 @@ ora_archenable() {
     -- enable archive log
     startup mount
     alter database archivelog;
-    recover database until cancel;
-    alter database open resetlogs;
+    alter database open;
     ALTER DATABASE FORCE LOGGING;
-    archive log list;
-    select group#,sequence#,bytes,archived,status from v$log;
-    select group#, member from v$logfile order by group#, member;
 EOF
 }
 
