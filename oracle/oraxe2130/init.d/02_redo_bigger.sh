@@ -4,10 +4,10 @@ manual_run=$1
 
 # do not use `exit`.  it won't start the next script
 
-export ARCHREDO=/u01/app/oracle/oradata/XE/arch
-export REDO=/u01/app/oracle/oradata/XE
-export PASSWORD=oracle
-export FOOTER_LINES=3
+export ARCHREDO=/opt/oracle/oradata/XE/arch
+export REDO=/opt/oracle/oradata/XE
+export PASSWORD=Passw0rd
+export FOOTER_LINES=4
 
 ora_redostatus() {
     sqlplus sys/${PASSWORD}@XE as sysdba <<'EOF' | tee /tmp/wait.$$.log 

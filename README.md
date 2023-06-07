@@ -105,10 +105,10 @@ arcdemo.sh full mysql postgresql
 - For stresing out CDC, change the workload update rate and increase threads on Arcion real-time threads
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full mysql oskbroker
-    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full mysql postgresql
-    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full postgresql mysql
-    arcdemo.sh -s 100 -b 2:2 -r 2:2 -t 0 full postgresql oskbroker
+    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full mysql oskbroker
+    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full mysql postgresql
+    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full postgresql mysql
+    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full postgresql oskbroker
     ```
 
     `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 
@@ -155,7 +155,7 @@ Oracle EE should be used for anything scale factor beyond 10.
 - Build the image
 
     ```bash
-    cd oraxe
+    cd oracle
     git clone https://github.com/oracle/docker-images oracle-docker-images
     pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
     ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
@@ -166,7 +166,7 @@ Oracle EE should be used for anything scale factor beyond 10.
 - Start service
 
     ```bash
-    docker compose -f oraxe/docker-compose.yaml up -d
+    docker compose -f oraxe2130/docker-compose.yaml up -d
     ``` 
 
 - A test examples

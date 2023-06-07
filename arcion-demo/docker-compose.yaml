@@ -54,8 +54,14 @@ services:
       - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
+      - DB_HOST=arcion-metadata
+      - DB_PORT=5432
+      - DB_DATABASE=arcion
+      - DB_USERNAME=arcion
+      - DB_PASSWORD=Passw0rd
+      - PROMETHEUS_ENABLE=true      
     env_file:
-      - ../config/cloud-services.env  
+      - ../config/cloud-services.sh
     volumes:
       # cache db2 sqllib install
       - db2_sqllib:/home/arcion/sqllib
