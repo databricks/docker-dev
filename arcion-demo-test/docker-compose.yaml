@@ -53,7 +53,7 @@ services:
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
     env_file:
-      - ../config/cloud-services.env  
+      - ../config/cloud-services.sh
     volumes:
       # cache db2 sqllib install
       - db2_sqllib:/home/arcion/sqllib
