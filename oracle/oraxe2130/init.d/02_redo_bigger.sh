@@ -19,9 +19,8 @@ EOF
 
 if [ -f "$REDO/redo.large.log" ]; then
     echo "skipping. $REDO/redo.large.log exists" 
-fi
+else
 
-if [ -n "${manual_run}" ]; then
 ######################### make redo bigger
 
 export MINGROUP=$(echo "select min(group#) from v\$log;" | sqlplus sys/${PASSWORD}@XE as sysdba | tail -n $FOOTER_LINES | head -n 1)

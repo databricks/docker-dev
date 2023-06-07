@@ -14,7 +14,7 @@ services:
       - ORACLE_ALLOW_REMOTE=true
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - oraxe11gtest:/u01/app/oracle/oradata
+      #- oraxe11gtest:/u01/app/oracle/oradata
 
 networks:
   default:

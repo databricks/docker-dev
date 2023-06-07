@@ -63,9 +63,9 @@ EOF
 
 # skip if already run
 echo "Checking $ARCHREDO/arcion_arch.log this script already ran"
-if [  -f "$ARCHREDO/arcion_arch.log" ]; then exit; fi
-
-if [ -n "${manual_run}" ]; then
+if [  -f "$ARCHREDO/arcion_arch.log" ]; then 
+    echo "skipping."
+else
     # create archive redo log
     mkdir $ARCHREDO
     ora_showarchdest
