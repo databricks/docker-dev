@@ -105,10 +105,10 @@ arcdemo.sh full mysql postgresql
 - For stresing out CDC, change the workload update rate and increase threads on Arcion real-time threads
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full mysql oskbroker
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full mysql postgresql
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full postgresql mysql
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full postgresql oskbroker
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql oskbroker
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql postgresql
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full postgresql mysql
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full postgresql oskbroker
     ```
 
     `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 
