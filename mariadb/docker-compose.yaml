@@ -10,8 +10,6 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Passw0rd
       - LANG=C.UTF-8
-    volumes:
-      - mariadb:/var/lib/mysql
     command: 
       - mysqld
       - --default-authentication-plugin=mysql_native_password
@@ -22,5 +20,3 @@ networks:
   default:
     name: arcnet
     external: true
-volumes:
-  mariadb:

@@ -10,6 +10,7 @@ cd oraee
 git clone https://github.com/oracle/docker-images oracle-docker-images
 pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
 ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
+./buildContainerImage.sh -v 21.3.0 -e -o '--build-arg SLIMMING=false'
 popd
 ```
 
