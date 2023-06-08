@@ -12,7 +12,6 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
     volumes:
-      - pg:/var/lib/postgresql/data
       - ./init.d:/docker-entrypoint-initdb.d
     command: 
       - postgres
@@ -35,6 +34,4 @@ networks:
   default:
     name: arcnet
     external: true
-volumes:
-  pg:
 

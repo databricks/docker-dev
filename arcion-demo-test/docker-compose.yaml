@@ -66,11 +66,11 @@ services:
       # loadgen specific
       - ./arcion-share/loadgen:/opt/mnt/loadgen
       # test specific to edit scripts
-      - ../../arcion-demo/scripts/:/scripts
+      - ../../arcion-loadgen/scripts/:/scripts
       # test specific to use different replicant cli
       - arcion-bin-latest:/arcion/latest
       - arcion-bin-2304309:/arcion/2304309
-      - arcion-bin-23043013:/arcion
+      - arcion-bin-23043016:/arcion
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
@@ -101,7 +101,7 @@ volumes:
     external: true     
   arcion-bin-2304309:
     external: true     
-  arcion-bin-23043013:
+  arcion-bin-23043016:
     external: true       
 
   oraxe11g:

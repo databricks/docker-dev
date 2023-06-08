@@ -10,8 +10,6 @@ services:
       - 9000    # admin
       - 5433    # pg
       - 9042    # cassandra
-    volumes:
-      - yugabyte:/home/yugabyte/yb_data
     command:
       - bin/yugabyted 
       - start
@@ -26,5 +24,3 @@ networks:
   default:
     name: arcnet
     external: true
-volumes:
-  yugabyte:
