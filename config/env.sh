@@ -1,3 +1,11 @@
+# standard id and passwords
+SRCDB_ARC_USER=arcsrc
+SRCDB_ARC_PW=Passw0rd
+SRCDB_DB=arcsrc
+
+DSTDB_ARC_USER=arcdst
+DSTDB_ARC_PW=Passw0rd
+DSTDB_DB=arcdst
 # confluent
 CFLT_SRC_ID=${CFLT_SRC_ID:-changeme}
 CFLT_SRC_SECRET=${CFLT_SRC_SECRET:-changeme}

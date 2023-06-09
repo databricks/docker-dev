@@ -4,12 +4,13 @@
 version: '3.8'
 services:
   v153:
-    build: Dockerfile.v153
+    build: v153
     ports:
       - 5432
     environment:
-      - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
+    env_file:
+      - ../config/env.sh      
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
     command: 
@@ -30,12 +31,34 @@ services:
       - ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
 
   v148:
-    build: 
+    build: v148
     ports:
       - 5432
     environment:
-      - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
+    env_file:
+      - ../config/env.sh      
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+    command: 
+      - postgres
+      - "-c" 
+      - wal_level=logical
+      - "-c" 
+      - max_replication_slots=10
+      - "-c" 
+      - max_connections=300
+      - "-c" 
+      - shared_buffers=80MB
+
+  v1311:
+    build: v1311
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_PASSWORD=Passw0rd 
+    env_file:
+      - ../config/env.sh      
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
     command: 
