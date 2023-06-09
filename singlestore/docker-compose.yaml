@@ -2,9 +2,9 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  singlestore:
-    image:  singlestore/cluster-in-a-box
-    container_name: singlestore
+  v815:
+    image:  singlestore/cluster-in-a-box:alma-8.1.5-8d722de5ee-4.0.11-1.16.0
+    #container_name: singlestore
     stdin_open: true  # docker run -i
     init: true        # docker run --init
     ports:

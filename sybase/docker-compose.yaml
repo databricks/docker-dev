@@ -2,7 +2,7 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  sybasease:
+  v1602:
     image: nguoianphu/docker-sybase
     container_name: sybasease
     ports:

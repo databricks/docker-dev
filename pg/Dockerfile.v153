@@ -1,4 +1,4 @@
-from postgres
+from postgres:15.3
 
 label maintainer sangkyulee@gmail.com
 

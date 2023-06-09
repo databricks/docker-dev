@@ -2,8 +2,8 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  v2022cu4:
+    image: mcr.microsoft.com/mssql/server:2022-CU4-ubuntu-20.04
     container_name: sqlserver
     ports:
       - 1433
@@ -15,5 +15,3 @@ networks:
   default:
     name: arcnet
     external: true
-volumes:
-  sqlserver:  

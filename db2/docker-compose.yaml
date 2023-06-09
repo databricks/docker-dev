@@ -2,9 +2,9 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  db2:
-    image: ibmcom/db2
-    container_name: db2
+  v11580:
+    image: ibmcom/db2:11.5.8.0
+    #container_name: db2
     privileged: true
     ports:
       - 50000
@@ -14,10 +14,8 @@ services:
       - DBNAME=db2inst1
     volumes:
       - ./init.d:/var/custom
-      - db2:/database
 networks:
   default:
     name: arcnet
     external: true
-volumes:
-  db2:
+

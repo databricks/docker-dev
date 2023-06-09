@@ -1,0 +1,19 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  v2130:
+    image: oracle/database:21.3.0-xe
+    #container_name: oraxe2130
+    ports:
+      - 1521
+      - 5500
+    environment:
+      - ORACLE_PWD=Passw0rd 
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d/startup
+      #- oraxe2130:/opt/oracle/oradata
+networks:
+  default:
+    name: arcnet
+    external: true

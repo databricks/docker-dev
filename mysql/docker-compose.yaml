@@ -2,9 +2,9 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  mysql:
+  latest:
     image: mysql
-    container_name: mysql
+    #container_name: mysql
     ports:
       - 3306
     environment:
@@ -14,7 +14,6 @@ services:
       - mysqld
       - --default-authentication-plugin=mysql_native_password
       - --local-infile=true
-        #- --lower_case_table_names=1
       - --innodb_redo_log_capacity=209715200  # 209715200 =  200*1024*1024
 
 networks:

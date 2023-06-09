@@ -2,9 +2,9 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  minio:
-    image: quay.io/minio/minio
-    container_name: minio
+  v230602:
+    image: quay.io/minio/minio:RELEASE.2023-06-02T23-17-26Z
+    #container_name: minio
     ports:
       - 9000
       - 9090

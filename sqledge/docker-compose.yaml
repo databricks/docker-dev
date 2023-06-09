@@ -2,8 +2,8 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  sqledge:
-    image: mcr.microsoft.com/azure-sql-edge
+  v107:
+    image: mcr.microsoft.com/azure-sql-edge:107
     container_name: sqledge
     cap_add:
       - SYS_PTRACE    
@@ -13,11 +13,9 @@ services:
       - ACCEPT_EULA=1
       - MSSQL_SA_PASSWORD=Passw0rd
       - CONFIG_EDGE_BUILD=0
-    volumes:
-      - sqledge:/var/opt/mssql
+
 networks:
   default:
     name: arcnet
     external: true
-volumes:
-  sqledge:    
+  

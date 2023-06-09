@@ -1,17 +1,13 @@
 ---
 version: '3.8'
 services:
-  redis:
-    image: redis
+  v7011:
+    image: redis:7.0.11
     container_name: redis
     environment:
       - REDIS_PASSWORD=Passw0rd
-    volumes:
-      - redis:/data
 
 networks:
   default:
     name: arcnet
     external: true
-volumes:
-  redis:

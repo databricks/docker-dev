@@ -2,8 +2,8 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  yugabyte:
-    image:  yugabytedb/yugabyte
+  v21801b4:
+    image:  yugabytedb/yugabyte:2.18.0.1-b4
     container_name: yugabyte
     ports:
       - 7001
