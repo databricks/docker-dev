@@ -10,8 +10,8 @@ services:
       - 5500
     environment:
       - ORACLE_PWD=Passw0rd
-      # for the init script 
       - ORACLE_SID=XE
+      # for the init script 
       - ARCHREDO=/opt/oracle/oradata/XE/arch
       - REDO=/opt/oracle/oradata/XE
       - FOOTER_LINES=4      

@@ -16,7 +16,8 @@ services:
       - ENABLE_ARCHIVELOG=true
       #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
       - ORACLE_PWD=Passw0rd 
-        - ARCHREDO=/opt/oracle/oradata/ORCL/arch
+      # for the init script 
+      - ARCHREDO=/opt/oracle/oradata/ORCL/arch
       - REDO=/opt/oracle/oradata/ORCL
       - FOOTER_LINES=4      
     env_file:

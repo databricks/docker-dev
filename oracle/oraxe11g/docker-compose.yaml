@@ -10,12 +10,11 @@ services:
       - 1521
       - 5500
     environment:
-      - ORACLE_ALLOW_REMOTE=true
-      # for the init script
+      - ORACLE_PWD=oracle
       - ORACLE_SID=XE
+      # for the init script
       - ARCHREDO=/u01/app/oracle/oradata/XE/arch
       - REDO=/u01/app/oracle/oradata/XE
-      - ORACLE_PWD=oracle
       - FOOTER_LINES=3      
     env_file:
       - ../../config/env.sh          
