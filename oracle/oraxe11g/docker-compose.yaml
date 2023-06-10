@@ -20,20 +20,11 @@ services:
       - ../../config/env.sh          
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d
-      #- oraxe11gtest:/u01/app/oracle/oradata
 
 networks:
   default:
     name: arcnet
     external: true
-volumes:
-  oraxe11gtest:
-    external: true
-  #oraxe11g:
-  #  driver: local
-  #  driver_opts:
-  #    type: "nfs"
-  #    # addr = nfs server IP address
-  #    o: addr=${NFS_SERVER},nfsvers=3 #,timeo=600 ,rsize=32768,wsize=32768,actime=0,noac
-  #    # device = dir from NFS server exposing to client
-  #    device: ":/oradata/xe/11g"
+
+
+  # https://stackoverflow.com/questions/39663096/docker-compose-creating-multiple-instances-for-the-same-image

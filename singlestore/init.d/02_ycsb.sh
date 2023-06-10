@@ -42,12 +42,6 @@ ycsb_load() {
     set +x
 }
 # 1M rows (2MB), 10M (25MB) and 100M (250MB) 1B (2.5G) rows
-
-(return 0 2>/dev/null) && sourced=1 || sourced=0
-if (( sourced == 0 )); then
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB}  
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100
-else
-    echo "sourced.  skipping" >&2
-fi
+ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB}  
+ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
+ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100

@@ -20,6 +20,7 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
       #- oraxe2130:/opt/oracle/oradata
+
 networks:
   default:
     name: arcnet

@@ -17,7 +17,12 @@ services:
     env_file:
       - ../config/env.sh        
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d      
+      - ./init.d:/docker-entrypoint-initdb.d   
+    deploy:
+      mode: replicated
+      replicas: 1
+    command: >
+      bash -c "/docker-entrypoint-initdb.d/00_run.sh"
 networks:
   default:
     name: arcnet
