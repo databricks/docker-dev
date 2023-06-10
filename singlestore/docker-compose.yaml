@@ -14,6 +14,10 @@ services:
       - LICENSE_KEY=${SINGLESTORE_LICENSE}  # having quote around license not accepted
       - ROOT_PASSWORD=Passw0rd
       - START_AFTER_INIT=Y
+    env_file:
+      - ../config/env.sh        
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d      
 networks:
   default:
     name: arcnet
