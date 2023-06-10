@@ -4,13 +4,8 @@ manual_run=$1
 
 # do not use `exit`.  it won't start the next script
 
-export ARCHREDO=/opt/oracle/oradata/XE/arch
-export REDO=/opt/oracle/oradata/XE
-export PASSWORD=Passw0rd
-export FOOTER_LINES=4
-
 ora_redostatus() {
-    sqlplus sys/${PASSWORD}@XE as sysdba <<'EOF' | tee /tmp/wait.$$.log 
+    sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<'EOF' | tee /tmp/wait.$$.log 
     select group#,sequence#,bytes,archived,status from v$log;
     select group#, member from v$logfile order by group#, member;
     alter system checkpoint;
@@ -23,14 +18,14 @@ else
 
 ######################### make redo bigger
 
-export MINGROUP=$(echo "select min(group#) from v\$log;" | sqlplus sys/${PASSWORD}@XE as sysdba | tail -n $FOOTER_LINES | head -n 1)
+export MINGROUP=$(echo "select min(group#) from v\$log;" | sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba | tail -n $FOOTER_LINES | head -n 1)
 echo "Min redo groups = $MINGROUP"
 
-export GROUP=$(echo "select max(group#) from v\$log;" | sqlplus sys/${PASSWORD}@XE as sysdba | tail -n $FOOTER_LINES | head -n 1)
+export GROUP=$(echo "select max(group#) from v\$log;" | sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba | tail -n $FOOTER_LINES | head -n 1)
 echo "Max redo groups = $GROUP"
 
 echo "adding 3 more redo groups"
-sqlplus sys/${PASSWORD}@XE as sysdba <<EOF
+sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
 alter database add logfile group $((GROUP + 1)) '$REDO/redo$((GROUP + 1)).log' size 1G;
 alter database add logfile group $((GROUP + 2)) '$REDO/redo$((GROUP + 2)).log' size 1G;
 alter database add logfile group $((GROUP + 3)) '$REDO/redo$((GROUP + 3)).log' size 1G;
@@ -41,8 +36,9 @@ EOF
 sleep 5
 
 for i in $(seq $MINGROUP $GROUP);do 
-    echo "switching redo group $i"
-    echo "alter system switch logfile;" | sqlplus sys/${PASSWORD}@XE as sysdba
+    echo "alter system switch logfile"
+    echo "alter system switch logfile;" | sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba
+    sleep 5
 done
 REDO_GROUP_TO_DROP=$(( $GROUP - $MINGROUP + 1 ))
 
@@ -58,7 +54,8 @@ done
 # drop the old redo
 for i in $(seq $MINGROUP $GROUP);do 
     echo "alter database drop logfile group ${i};"
-    echo "alter database drop logfile group ${i};" | sqlplus sys/${PASSWORD}@XE as sysdba
+    echo "alter database drop logfile group ${i};" | sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba
+    sleep 5
 done
 
 sleep 5

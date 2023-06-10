@@ -5,14 +5,9 @@ manual_run=$1
 # do not use `exit`.  it won't start the next script
 # when run automated, the script does not work.
 
-export ARCHREDO=/u01/app/oracle/oradata/XE/arch
-export REDO=/u01/app/oracle/oradata/XE
-export PASSWORD=oracle
-export FOOTER_LINES=3
-
 # the below are generic
 archstatus() {
-    sqlplus sys/${PASSWORD}@XE as sysdba <<'EOF'
+    sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<'EOF'
     SELECT i.instance_name, i.thread#,
     (SELECT DISTINCT DECODE(SUBSTR(f.member, 1, 1), '+', 'ASM', 'FS')
     FROM v$log l, v$logfile f
@@ -32,7 +27,7 @@ EOF
 }
 
 ora_showarchdest() {
-    sqlplus sys/${PASSWORD}@XE as sysdba <<'EOF'
+    sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<'EOF'
     select name,log_mode from v$database;
     archive log list;
     select destination, status from v$archive_dest where status='VALID';
@@ -42,16 +37,15 @@ EOF
 }
 
 ora_shutdown() {
-    sqlplus sys/${PASSWORD}@XE as sysdba <<EOF
+    sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
     -- set archive
     alter system set log_archive_dest_1='LOCATION=$ARCHREDO' scope=both;
     shutdown immediate;
 EOF
 }
 
-
 ora_archenable() {
-    sqlplus sys/${PASSWORD} as sysdba <<'EOF'
+    sqlplus sys/${ORACLE_PWD} as sysdba <<'EOF'
     -- enable archive log
     startup mount
     alter database archivelog;
@@ -62,7 +56,7 @@ EOF
 
 # skip if already run
 echo "Checking $ARCHREDO/arcion_arch.log this script already ran"
-if [  -f "$ARCHREDO/arcion_arch.log" ]; then 
+if [  -f "$ARCHREDO/arcion_arch.log" ] || [ "$ORACLE_SID^^" != "XE" ]; then 
     echo "skipping."
 else
     # create archive redo log
