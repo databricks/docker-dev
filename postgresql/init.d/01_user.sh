@@ -16,7 +16,7 @@ EOF
 
     if [ "${ROLE^^}" = "SRC" ]; then
 
-    psql --username "$POSTGRES_USER" <<EOF
+    PGPASSWORD=${DB_ARC_PW} psql --username "${DB_ARC_USER}${SIZE_FACTOR}" <<EOF
     SELECT 'init' FROM pg_create_logical_replication_slot('${DB_DB}${SIZE_FACTOR}_w2j', 'wal2json');
     SELECT * from pg_replication_slots;
 EOF
