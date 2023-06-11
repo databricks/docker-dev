@@ -2,15 +2,20 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  oraxe11g:
+  v1102:
     # sys and system password: oracle
     image: oracleinanutshell/oracle-xe-11g
-    container_name: oraxe11g
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraxe
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 1521
       - 5500
     environment:
-      - ORACLE_PWD=oracle
+      - ORACLE_PWD=oracle # harded coded and cannot change
       - ORACLE_SID=XE
       # for the init script
       - ARCHREDO=/u01/app/oracle/oradata/XE/arch

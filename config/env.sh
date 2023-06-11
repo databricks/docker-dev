@@ -1,3 +1,6 @@
+# DEBUG
+ARCDEMO_DEBUG=1
+
 # standard id and passwords
 SRCDB_ARC_USER=arcsrc
 SRCDB_ARC_PW=Passw0rd

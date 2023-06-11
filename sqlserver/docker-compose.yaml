@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v2022cu4:
     image: mcr.microsoft.com/mssql/server:2022-CU4-ubuntu-20.04
-    container_name: sqlserver
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: sqlserver
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 1433
     environment:

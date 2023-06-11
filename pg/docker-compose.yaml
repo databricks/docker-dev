@@ -3,8 +3,14 @@
 # the build adds wal2json 
 version: '3.8'
 services:
-  v153:
-    build: v153
+  v1503:
+    build: v1503
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: postgresql
+    deploy:
+      mode: replicated
+      replicas: 1    
     ports:
       - 5432
     environment:
@@ -30,8 +36,14 @@ services:
       - "-c" 
       - ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
 
-  v148:
-    build: v148
+  v1408:
+    build: v1408
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: postgresql
+    deploy:
+      mode: replicated
+      replicas: 1    
     ports:
       - 5432
     environment:
@@ -53,6 +65,12 @@ services:
 
   v1311:
     build: v1311
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: postgresql
+    deploy:
+      mode: replicated
+      replicas: 1    
     ports:
       - 5432
     environment:

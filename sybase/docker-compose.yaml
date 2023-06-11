@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v1602:
     image: nguoianphu/docker-sybase
-    container_name: sybasease
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: sybase
+    deploy:
+      mode: replicated
+      replicas: 1    
     ports:
       - 5000
       - 5001

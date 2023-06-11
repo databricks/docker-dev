@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v1930:
     image: oracle/database:19.3.0-ee
-    #container_name: oraee1930
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraee
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 1521
       - 5500

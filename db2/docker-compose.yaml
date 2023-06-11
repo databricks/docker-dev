@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v11580:
     image: ibmcom/db2:11.5.8.0
-    #container_name: db2
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: db2
+    deploy:
+      mode: replicated
+      replicas: 1
     privileged: true
     ports:
       - 50000

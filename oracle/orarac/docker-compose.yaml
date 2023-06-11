@@ -4,7 +4,12 @@ version: '3.8'
 services:
   orarac-2130:
     image: oracle/database-rac:21.3.0
-    container_name: orarac-2130
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: orarac
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 1521
       - 5500

@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v2130:
     image: oracle/database:21.3.0-xe
-    #container_name: oraxe2130
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraxe
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 1521
       - 5500

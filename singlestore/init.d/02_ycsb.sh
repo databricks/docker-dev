@@ -43,5 +43,7 @@ ycsb_load() {
 }
 # 1M rows (2MB), 10M (25MB) and 100M (250MB) 1B (2.5G) rows
 ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB}  
-ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
-ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100
+if [ -z "${ARCDEMO_DEBUG}" ]; then
+    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
+    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100
+fi

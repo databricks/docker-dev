@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v109:
     image: mariadb:10.9
-    #container_name: mariadb
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: mariadb
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 3306
     environment:

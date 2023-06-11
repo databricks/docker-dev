@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v815:
     image:  singlestore/cluster-in-a-box:alma-8.1.5-8d722de5ee-4.0.11-1.16.0
-    #container_name: singlestore
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: singlestore
+    deploy:
+      mode: replicated
+      replicas: 1    
     stdin_open: true  # docker run -i
     init: true        # docker run --init
     ports:
@@ -18,9 +23,6 @@ services:
       - ../config/env.sh        
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d   
-    deploy:
-      mode: replicated
-      replicas: 1
     command: >
       bash -c "/docker-entrypoint-initdb.d/00_run.sh"
 networks:

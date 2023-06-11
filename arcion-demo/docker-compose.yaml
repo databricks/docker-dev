@@ -61,7 +61,7 @@ services:
       - DB_PASSWORD=Passw0rd
       - PROMETHEUS_ENABLE=true      
     env_file:
-      - ../config/cloud-services.sh
+      - ../config/env.sh
     volumes:
       # cache db2 sqllib install
       - db2_sqllib:/home/arcion/sqllib

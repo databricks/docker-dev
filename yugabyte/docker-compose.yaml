@@ -4,7 +4,12 @@ version: '3.8'
 services:
   v21801b4:
     image:  yugabytedb/yugabyte:2.18.0.1-b4
-    container_name: yugabyte
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: yugabyte
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 7001
       - 9000    # admin

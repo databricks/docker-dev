@@ -3,7 +3,12 @@ version: '3.8'
 services:
   v7011:
     image: redis:7.0.11
-    container_name: redis
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: redis
+    deploy:
+      mode: replicated
+      replicas: 1
     environment:
       - REDIS_PASSWORD=Passw0rd
 
