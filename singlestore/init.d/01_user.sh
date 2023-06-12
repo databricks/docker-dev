@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-# src
+# dbname = username in order to match oracle setup
+# {username}{sizefactor}_{schema}
 create_user() {
     local ROLE=${1}
     local DB_ARC_USER=${2} 
     local DB_ARC_PW=${3} 
-    local DB_DB=${4} 
+    local DBS_COMMA=${4} 
     local SIZE_FACTOR=${5:-1}
-    local DB_NAMES_COMMA=${6:-"tpcc,tpch"}
     local SIZE_FACTOR_NAME
 
     if [ "${SIZE_FACTOR}" = "1" ]; then
@@ -15,34 +15,34 @@ create_user() {
     else
         SIZE_FACTOR_NAME=${SIZE_FACTOR}
     fi
-
-    for db in $(echo ${DB_NAMES_COMMA} | tr "," "\n"); do
-        DB_DB="${DB_DB},${DB_ARC_USER}_${db}"
-    done
+    DB_ARC_USER=${DB_ARC_USER}${SIZE_FACTOR_NAME}
 
     set -x
-    # create the user
-    singlestore -u root --password=${ROOT_PASSWORD} <<EOF
-    CREATE USER '${DB_ARC_USER}${SIZE_FACTOR_NAME}'@'%' IDENTIFIED BY '${DB_ARC_PW}';
-    CREATE USER '${DB_ARC_USER}${SIZE_FACTOR_NAME}'@'127.0.0.1' IDENTIFIED BY '${DB_ARC_PW}';
-EOF
 
-    # create databases for the user
-    for db in $(echo ${DB_DB} | tr "," "\n"); do
+    for db in $(echo ${DBS_COMMA} | tr "," "\n"); do
+
+        db="${DB_ARC_USER}_${db}"
+
         singlestore -u root --password=${ROOT_PASSWORD} <<EOF
-        CREATE DATABASE ${db}${SIZE_FACTOR_NAME};
-        GRANT ALL ON ${db}${SIZE_FACTOR_NAME}.* to '${DB_ARC_USER}${SIZE_FACTOR_NAME}'@'%';
-        GRANT ALL ON ${db}${SIZE_FACTOR_NAME}.* to '${DB_ARC_USER}${SIZE_FACTOR_NAME}'@'127.0.0.1';
+            CREATE USER '${db}'@'%' IDENTIFIED BY '${DB_ARC_PW}';
+            CREATE USER '${db}'@'127.0.0.1' IDENTIFIED BY '${DB_ARC_PW}';
+            CREATE DATABASE ${db};
+            GRANT ALL ON ${db}.* to '${db}'@'%';
+            GRANT ALL ON ${db}.* to '${db}'@'127.0.0.1';
 EOF
     done
     set +x
 }
 
-create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 1
-create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} ${DSTDB_DB} 1 
+create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SF1_DBS_COMMA}" 1
+create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
 
-create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
-create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} ${DSTDB_DB} 10 
+if [ -z "${ARCDEMO_DEBUG}" ]; then
 
-create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100 
-create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} ${DSTDB_DB} 100
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
+
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 100
+
+fi

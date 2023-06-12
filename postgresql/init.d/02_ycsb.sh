@@ -41,20 +41,24 @@ ycsb_load() {
     else
         SIZE_FACTOR_NAME=${SIZE_FACTOR}
     fi
+    DB_ARC_USER=${DB_ARC_USER}${SIZE_FACTOR_NAME}
+
     set -x
 
+    db="${DB_ARC_USER}_${DB_DB}"
+
     export PGPASSWORD=${DB_ARC_PW}
-    ycsb_create_postgres | psql --username ${DB_ARC_USER}${SIZE_FACTOR_NAME} --no-password 
+    ycsb_create_postgres | psql --username ${db} --no-password 
 
     seq 0 $(( 1000000*${SIZE_FACTOR} - 1 )) | \
-        psql --username ${DB_ARC_USER}${SIZE_FACTOR_NAME} --no-password \
+        psql --username ${db} --no-password \
         -c "copy theusertable (ycsb_key) from STDIN" 
 
     set +x
 }
 # 1M, 10M and 100M rows
-ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 1
+ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
 if [ -z "${ARCDEMO_DEBUG}" ]; then
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100
+    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 
+    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
 fi

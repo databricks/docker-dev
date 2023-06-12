@@ -1,10 +1,16 @@
 # DEBUG
 ARCDEMO_DEBUG=1
 
+# test dbs that are at scale factor = 1
+SF1_DBS_COMMA=ycsb,tpcc
+
+# test dbs that can take other scale factors
+SFN=DBS_COMMA=ycsb
+
 # standard id and passwords
 SRCDB_ARC_USER=arcsrc
 SRCDB_ARC_PW=Passw0rd
-SRCDB_DB=arcsrc
+SRCDB_DB=arcdst
 
 DSTDB_ARC_USER=arcdst
 DSTDB_ARC_PW=Passw0rd

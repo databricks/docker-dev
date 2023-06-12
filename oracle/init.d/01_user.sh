@@ -5,30 +5,48 @@ create_user() {
     local ROLE=${1}
     local DB_ARC_USER=${2} 
     local DB_ARC_PW=${3} 
-    local DB_DB=${4} 
-    local SIZE_FACTOR=${5}
-    local DB_USER_PREFIX="c##"
+    local DBS_COMMA=${4} 
+    local SIZE_FACTOR=${5:-1}
+    local SIZE_FACTOR_NAME
 
-    sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
-    CREATE USER ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR} IDENTIFIED BY ${DB_ARC_PW};
+    if [ "${SIZE_FACTOR}" = "1" ]; then
+        SIZE_FACTOR_NAME=""
+    else
+        SIZE_FACTOR_NAME=${SIZE_FACTOR}
+    fi
+    DB_ARC_USER="c##${DB_ARC_USER}${SIZE_FACTOR_NAME}"
 
-    ALTER USER ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR} default tablespace USERS;
+    set -x
 
-    ALTER USER ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR} quota unlimited on USERS;
+    for db in $(echo ${DBS_COMMA} | tr "," "\n"); do
 
-    GRANT CREATE SESSION TO ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR};
+        db="${DB_ARC_USER}_${db}"
 
-    grant connect,resource to ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR};
-    grant execute_catalog_role to ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR};
-    grant select_catalog_role to ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR};
+        sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
+        CREATE USER ${db} IDENTIFIED BY ${DB_ARC_PW};
+
+        ALTER USER ${db} default tablespace USERS;
+
+        ALTER USER ${db} quota unlimited on USERS;
+
+        GRANT CREATE SESSION TO ${db};
+
+        grant connect,resource to ${db};
+        grant execute_catalog_role to ${db};
+        grant select_catalog_role to ${db};
 EOF
+    done
 }
 
-create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB}  
-create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} ${DSTDB_DB}  
+create_user "SRC" ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
+create_user "DST" ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
 
-create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
-create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} ${DSTDB_DB} 10 
+if [ -z "${ARCDEMO_DEBUG}" ]; then
 
-create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100 
-create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} ${DSTDB_DB} 100
+    create_user "SRC" ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
+    create_user "DST" ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
+
+    create_user "SRC" ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
+    create_user "DST" ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
+
+fi

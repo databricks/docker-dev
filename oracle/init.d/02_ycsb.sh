@@ -20,11 +20,21 @@ ycsb_load() {
     local DB_ARC_USER=${2} 
     local DB_ARC_PW=${3} 
     local DB_DB=${4} 
-    local SIZE_FACTOR=${5}
-    local DB_USER_PREFIX="c##"
+    local SIZE_FACTOR=${5:-1}
+    local SIZE_FACTOR_NAME
+
+    if [ "${SIZE_FACTOR}" = "1" ]; then
+        SIZE_FACTOR_NAME=""
+    else
+        SIZE_FACTOR_NAME=${SIZE_FACTOR}
+    fi
+    DB_ARC_USER=C##${DB_ARC_USER}${SIZE_FACTOR_NAME}
+
     set -x
 
-    ycsb_create_oracle | sqlplus ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR}/${DB_ARC_PW} 
+    db="${DB_ARC_USER}_${DB_DB}"
+
+    ycsb_create_oracle | sqlplus ${db}/${DB_ARC_PW} 
 
     # setup name pipe for the table
     rm /tmp/ycsb.fifo.$$ 2>/dev/null
@@ -44,10 +54,10 @@ EOF
 
     # don't generate logging for batch load
     echo "alter table THEUSERTABLE nologging;" | \
-    sqlplus ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR}/${DB_ARC_PW} 
+        sqlplus ${db}/${DB_ARC_PW} 
 
     # load
-    sqlldr ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR}/${DB_ARC_PW} \
+    sqlldr ${db}/${DB_ARC_PW} \
         control=/tmp/ycsb.ctl.$$ \
         data=/tmp/ycsb.fifo.$$ \
         log=/tmp/ycsb.log.$$ \
@@ -57,7 +67,7 @@ EOF
 
     # done.  generate logging
     echo "alter table THEUSERTABLE logging;" | \
-    sqlplus ${DB_USER_PREFIX}${DB_ARC_USER}${SIZE_FACTOR}/${DB_ARC_PW} 
+    sqlplus ${db}/${DB_ARC_PW} 
 
     # show report of the load
     cat /tmp/ycsb.log.$$
@@ -67,8 +77,8 @@ EOF
 }
 
 # 1M, 10M and 100M rows
-ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB}  
+ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
 if [ -z "${ARCDEMO_DEBUG}" ]; then
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100
+    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 
+    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
 fi
