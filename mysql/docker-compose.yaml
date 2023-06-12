@@ -9,7 +9,7 @@ services:
     hostname: mysql
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
     ports:
       - 3306
     environment:
@@ -33,7 +33,7 @@ services:
     hostname: mysql
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
     ports:
       - 3306
     environment:

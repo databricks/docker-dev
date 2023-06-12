@@ -10,7 +10,7 @@ services:
     hostname: postgresql
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
     ports:
       - 5432
     environment:
@@ -43,7 +43,7 @@ services:
     hostname: postgresql
     deploy:
       mode: replicated
-      replicas: 2    
+      replicas: 1    
     ports:
       - 5432
     environment:
@@ -70,7 +70,7 @@ services:
     hostname: postgresql
     deploy:
       mode: replicated
-      replicas: 2    
+      replicas: 1    
     ports:
       - 5432
     environment:

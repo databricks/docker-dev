@@ -22,27 +22,38 @@ ycsb_load() {
     local DB_ARC_USER=${2} 
     local DB_ARC_PW=${3} 
     local DB_DB=${4} 
-    local SIZE_FACTOR=${5}
+    local SIZE_FACTOR=${5:-1}
+    local SIZE_FACTOR_NAME
+
+    if [ "${SIZE_FACTOR}" = "1" ]; then
+        SIZE_FACTOR_NAME=""
+    else
+        SIZE_FACTOR_NAME=${SIZE_FACTOR}
+    fi
+
     set -x
 
     rm /tmp/ycsb.fifo.$$ 2>/dev/null
     mkfifo /tmp/ycsb.fifo.$$
-    seq 0 $(( 1000000*${SIZE_FACTOR:-1} - 1 )) > /tmp/ycsb.fifo.$$ &
-    ycsb_create_singlestore | singlestore -u ${DB_ARC_USER}${SIZE_FACTOR} --password=${DB_ARC_PW} -D ${DB_DB}${SIZE_FACTOR} --init-command="use ${DB_DB}${SIZE_FACTOR};"
+    seq 0 $(( 1000000*${SIZE_FACTOR} - 1 )) > /tmp/ycsb.fifo.$$ &
 
-    # singlestore -D and --database does not switch database
+    # --init-command="use ${DB_DB}${SIZE_FACTOR_NAME};"
+    # singlestore -D and --database options do not switch database
+
+    ycsb_create_singlestore | singlestore -u ${DB_ARC_USER}${SIZE_FACTOR_NAME} --password=${DB_ARC_PW} -D ${DB_DB}${SIZE_FACTOR_NAME} --init-command="use ${DB_DB}${SIZE_FACTOR_NAME};"
+
     echo "load data local infile '/tmp/ycsb.fifo.$$' into table THEUSERTABLE (YCSB_KEY);" | \
-        singlestore -u ${DB_ARC_USER}${SIZE_FACTOR} \
+        singlestore -u ${DB_ARC_USER}${SIZE_FACTOR_NAME} \
             --password=${DB_ARC_PW} \
-            -D ${DB_DB}${SIZE_FACTOR} \
+            -D ${DB_DB}${SIZE_FACTOR_NAME} \
             --local-infile \
-             --init-command="use ${DB_DB}${SIZE_FACTOR};"
+             --init-command="use ${DB_DB}${SIZE_FACTOR_NAME};"
     rm /tmp/ycsb.fifo.$$
 
     set +x
 }
 # 1M rows (2MB), 10M (25MB) and 100M (250MB) 1B (2.5G) rows
-ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB}  
+ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 1
 if [ -z "${ARCDEMO_DEBUG}" ]; then
     ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 10 
     ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ${SRCDB_DB} 100
