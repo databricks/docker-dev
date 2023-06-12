@@ -9,7 +9,7 @@ services:
     hostname: oraxe
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 2
     ports:
       - 1521
       - 5500
