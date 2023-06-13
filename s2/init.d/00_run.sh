@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 # run singlestore startup
+# docker hub version 
 bash /startup & 
+# ghcr version bash /scripts/start.sh & 
 S2=$!
 
 echo "Waiting for background process $S2"
@@ -15,10 +17,15 @@ done
 
 # initialize 
 echo "Staring /docker-entrypoint-initdb.d"
-for f in $(find /docker-entrypoint-initdb.d/ ! -name "00_run.sh" -type f); do
-    echo "$f"
-    $f
-done
+if [ -f ~/docker-entrypoint-initdb.d.started ]; then
+  echo "ran before. skipping"
+else
+  for f in $(find /docker-entrypoint-initdb.d/ ! -name "00_run.sh" -type f); do
+      echo "$f"
+      $f
+  done
+  touch ~/docker-entrypoint-initdb.d.started
+fi
 
 # dont exit as S2 will be tailing the log
 echo "Waiting for background process $S2"

@@ -1,9 +1,8 @@
 ---
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
-services:
-  v8033:
-    image: mysql:8.0.33
+
+x-mysql: &default-mysql
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
     hostname: mysql
@@ -26,32 +25,47 @@ services:
       - --secure-file-priv=/tmp                # allow load data
       - --innodb_redo_log_capacity=1073741824  # 1024*1024*1024
 
-  v5742:
-    image: mysql:5.7.42
-    # container_name: must be unqiue and can't replicate
-    # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: mysql
-    deploy:
-      mode: replicated
-      replicas: 1
-    ports:
-      - 3306
-    environment:
-      - MYSQL_ROOT_PASSWORD=Passw0rd
-      - LANG=C.UTF-8
-    env_file:
-      - ../config/env.sh        
+services:
+  v8033-src:
+    << : *default-mysql
+    image: mysql:8.0.33
+    hostname: mysql-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-    command: 
-      - mysqld
-      - --default-authentication-plugin=mysql_native_password
-      - --local-infile=true               # allow load data local 
-      - --secure-file-priv=/tmp           # allow load data
-      - --innodb_log_file_size=1073741824 # 1024*1024*1024
+      - v8033-src:/var/lib/mysql
+  v8033-dst:
+    << : *default-mysql
+    image: mysql:8.0.33
+    hostname: mysql-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - v8033-dst:/var/lib/mysql
+
+  v5742-src:
+    << : *default-mysql
+    image: mysql:5.7.42
+    hostname: mysql-src
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - v5742-src:/var/lib/mysql
+    deploy:
+      replicas: 0  
+  v5742-dst:
+    << : *default-mysql
+    image: mysql:5.7.42
+    hostname: mysql-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - v5742-dst:/var/lib/mysql
+    deploy:
+      replicas: 0
 
 networks:
   default:
     name: arcnet
     external: true
-
+volumes:    
+  v8033-src:
+  v5742-src:  
+  v8033-dst:
+  v5742-dst:  

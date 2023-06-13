@@ -50,9 +50,16 @@ ycsb_load() {
 
     set +x
 }
-# 1M, 10M and 100M rows
-ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
-if [ -z "${ARCDEMO_DEBUG}" ]; then
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
+create_src() {
+    # 1M rows (2MB), 10M (25MB) and 100M (250MB) 1B (2.5G) rows
+    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
+
+    if [ -z "${ARCDEMO_DEBUG}" ]; then
+        ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 
+        ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
+    fi
+}
+
+if [[ $(hostname) =~ src$ ]]; then
+    create_src
 fi

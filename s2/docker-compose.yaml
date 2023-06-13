@@ -1,0 +1,58 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+# default using docker hub
+x-s2: &default-s2
+    # https://github.com/singlestore-labs/singlestoredb-dev-image#how-to-upgrade-from-singlestorecluster-in-a-box
+    # tags https://github.com/singlestore-labs/singlestoredb-dev-image/pkgs/container/singlestoredb-dev/versions
+    # changelogs: https://github.com/singlestore-labs/singlestoredb-dev-image/blob/main/CHANGELOG.md
+    #image: ghcr.io/singlestore-labs/singlestoredb-dev:0.2.6
+
+    # docker hub has newer s2 images
+    image: singlestore/cluster-in-a-box:alma-8.1.5-8d722de5ee-4.0.11-1.16.0
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    deploy:
+      mode: replicated
+      replicas: 1
+    stdin_open: true  # docker run -i
+    init: true        # docker run --init
+    ports:
+      - 9000
+      - 8080
+      - 3306
+    environment:
+      - LICENSE_KEY=${SINGLESTORE_LICENSE}  # having quote around license not accepted
+      - ROOT_PASSWORD=Passw0rd
+      - START_AFTER_INIT=Y
+    env_file:
+      - ../config/env.sh        
+    command: >
+      bash -c "/docker-entrypoint-initdb.d/00_run.sh"
+
+services:
+  v815-src:
+    << : *default-s2
+    image: singlestore/cluster-in-a-box:alma-8.1.5-8d722de5ee-4.0.11-1.16.0
+    hostname: s2-src
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v815-src:/var/lib/memsql
+  v815-dst:
+    << : *default-s2
+    image: singlestore/cluster-in-a-box:alma-8.1.5-8d722de5ee-4.0.11-1.16.0
+    hostname: s2-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v815-dst:/var/lib/memsql
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  v815-src:
+  v815-dst:
+
+
+   

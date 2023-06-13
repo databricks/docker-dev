@@ -16,5 +16,10 @@ docker compose logs -f
 docker compose exec singlestore bash
 ```
 
+To remove volumes
+```
+docker compose down -v
+```
+
 # References
 

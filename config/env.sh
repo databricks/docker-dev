@@ -1,6 +1,11 @@
 # DEBUG
 ARCDEMO_DEBUG=1
 
+# Replicant 
+REPLICANT_USER=replicant
+REPLICANT_DB=io_blitzz
+REPLICANT_PW=Replicant#123
+
 # test dbs that are at scale factor = 1
 SF1_DBS_COMMA=ycsb,tpcc
 

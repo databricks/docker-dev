@@ -26,6 +26,9 @@ create_user() {
         ALTER USER ${db} CREATEDB;
         ALTER ROLE ${db} WITH REPLICATION;
         CREATE DATABASE ${db} WITH OWNER ${db} ENCODING 'UTF8';
+
+        -- heartbeat table
+        GRANT ALL ON DATABASE ${REPLICANT_DB} to ${db};
 EOF
 
 
@@ -42,15 +45,27 @@ EOF
     set -x
 }
 
-create_user "SRC" ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
-create_user "DST" ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
+create_src() {
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SF1_DBS_COMMA}" 1
+    if [ -z "${ARCDEMO_DEBUG}" ]; then 
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
+    fi
+}
 
-if [ -z "${ARCDEMO_DEBUG}" ]; then
+create_dst() {
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
+    if [ -z "${ARCDEMO_DEBUG}" ]; then 
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 100
+    fi
+}
 
-    create_user "SRC" ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
-    create_user "DST" ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
-
-    create_user "SRC" ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
-    create_user "DST" ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
-
+if [[ $(hostname) =~ src$ ]]; then
+    create_src
+elif [[ $(hostname) =~ dst$ ]]; then
+    create_dst
+else 
+    create_src
+    create_dst
 fi

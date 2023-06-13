@@ -1,13 +1,12 @@
 ---
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
-services:
-  v1102:
-    # sys and system password: oracle
+
+x-xe11g: &default-xe11g
     image: oracleinanutshell/oracle-xe-11g
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: oraxe
+    hostname: oraxe11g
     deploy:
       mode: replicated
       replicas: 1
@@ -26,10 +25,27 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d
 
+services:
+  v1102-src:
+    # sys and system password: oracle
+    << : *default-xe11g
+    hostname: v1102-src
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d
+      - v1102-src:/u01/app/oracle/oradata
+
+  v1102-dst:
+    # sys and system password: oracle
+    << : *default-xe11g
+    hostname: v1102-dst
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d
+      - v1102-dst:/u01/app/oracle/oradata
+
 networks:
   default:
     name: arcnet
     external: true
-
-
-  # https://stackoverflow.com/questions/39663096/docker-compose-creating-multiple-instances-for-the-same-image
+volumes:
+  v1102-src:
+  v1102-dst:

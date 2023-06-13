@@ -1,0 +1,97 @@
+---
+# 3.8 required for the volume relative path name to config file 
+# the build adds wal2json 
+version: '3.8'
+
+x-pg: &default-pg
+    hostname: pg
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_PASSWORD=Passw0rd 
+    env_file:
+      - ../config/env.sh      
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+    command: 
+      - postgres
+      - "-c" 
+      - wal_level=logical
+      - "-c" 
+      - max_replication_slots=10
+      - "-c" 
+      - max_connections=300
+      - "-c" 
+      - shared_buffers=80MB
+
+services:
+  v1503-src:
+    build: v1503
+    << : *default-pg
+    hostname: pg-src
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v1503-src:/var/lib/postgresql/data
+
+  v1503-dst:
+    build: v1503
+    << : *default-pg
+    hostname: pg-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v1503-dst:/var/lib/postgresql/data
+
+  v1408-src:
+    build: v1408
+    << : *default-pg
+    hostname: pg-src
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v1408-src:/var/lib/postgresql/data
+    deploy:
+      replicas: 0  
+
+  v1408-dst:
+    build: v1408
+    << : *default-pg
+    hostname: pg-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v1408-dst:/var/lib/postgresql/data
+    deploy:
+      replicas: 0  
+
+  v1311-src:
+    build: v1311
+    << : *default-pg
+    hostname: pg-src
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v1311-src:/var/lib/postgresql/data
+    deploy:
+      replicas: 0  
+
+  v1311-dst:
+    build: v1311
+    << : *default-pg
+    hostname: pg-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - v1311-dst:/var/lib/postgresql/data
+    deploy:
+      replicas: 0  
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  v1503-src:
+  v1408-src:  
+  v1311-src:  
+  v1503-dst:
+  v1408-dst:  
+  v1311-dst:  
