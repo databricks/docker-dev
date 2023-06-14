@@ -1,25 +1,24 @@
 # DEBUG
 ARCDEMO_DEBUG=1
 
-# Replicant 
+# DB for heartbeat table 
+REPLICANT_DB=io_replicate
+# Replicant user / password 
 REPLICANT_USER=replicant
-REPLICANT_DB=io_blitzz
 REPLICANT_PW=Replicant#123
 
-# test dbs that are at scale factor = 1
-SF1_DBS_COMMA=ycsb,tpcc
-
-# test dbs that can take other scale factors
-SFN=DBS_COMMA=ycsb
+# create separate DB for these db names
+ARCDEMO_DB_NAMES=tpcc
 
 # standard id and passwords
 SRCDB_ARC_USER=arcsrc
 SRCDB_ARC_PW=Passw0rd
-SRCDB_DB=arcdst
+SRCDB_DB=arcsrc
 
 DSTDB_ARC_USER=arcdst
 DSTDB_ARC_PW=Passw0rd
 DSTDB_DB=arcdst
+
 # confluent
 CFLT_SRC_ID=${CFLT_SRC_ID:-changeme}
 CFLT_SRC_SECRET=${CFLT_SRC_SECRET:-changeme}

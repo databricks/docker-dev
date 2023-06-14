@@ -1,6 +1,33 @@
 #!/usr/bin/env bash
 
-# src
+create_user_db() {
+
+    set -x
+    mysql -u root --password=${MYSQL_ROOT_PASSWORD} <<EOF
+        CREATE USER '${db}'@'%' IDENTIFIED WITH mysql_native_password BY '${DB_ARC_PW}';
+        CREATE USER '${db}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_ARC_PW}';
+        GRANT ALL ON ${db}.* to '${db}'@'%';
+        GRANT ALL ON ${db}.* to '${db}'@'127.0.0.1';
+        CREATE DATABASE ${db};
+EOF
+
+    if [ "${ROLE^^}" = "SRC" ]; then
+
+        mysql -u root --password=${MYSQL_ROOT_PASSWORD} <<EOF
+        -- heartbeat table
+        GRANT ALL ON ${REPLICANT_DB}.* to '${db}'@'%';
+        GRANT ALL ON ${REPLICANT_DB}.* to '${db}'@'127.0.0.1';
+        -- replication
+        -- these grants cannot be limit to database.  has to be *.*
+        GRANT REPLICATION CLIENT ON *.* TO '${db}'@'%';
+        GRANT REPLICATION SLAVE ON *.* TO '${db}'@'%';
+EOF
+    fi
+    set +x
+}
+
+# below is the same of all of the databases
+
 create_user() {
     local ROLE=${1}
     local DB_ARC_USER=${2} 
@@ -16,56 +43,26 @@ create_user() {
     fi
     DB_ARC_USER=${DB_ARC_USER}${SIZE_FACTOR_NAME}
 
-    set -x
+    # create names arcsrc arcsrc_ycsb srcsrc_tpcc 
+    DB_NAMES=( ${DB_ARC_USER} \
+         $(echo ${DBS_COMMA} | tr "," "\n" | xargs -I '{}' -n1 echo "${DB_ARC_USER}_{}") )
 
-    for db in $(echo ${DBS_COMMA} | tr "," "\n"); do
-
-        db="${DB_ARC_USER}_${db}"
-
-        mysql -u root --password=${MYSQL_ROOT_PASSWORD} <<EOF
-            CREATE USER '${db}'@'%' IDENTIFIED WITH mysql_native_password BY '${DB_ARC_PW}';
-            CREATE USER '${db}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_ARC_PW}';
-            GRANT ALL ON ${db}.* to '${db}'@'%';
-            GRANT ALL ON ${db}.* to '${db}'@'127.0.0.1';
-            CREATE DATABASE ${db};
-            -- heartbeat table
-            GRANT ALL ON ${REPLICANT_DB}.* to '${db}'@'%';
-            GRANT ALL ON ${REPLICANT_DB}.* to '${db}'@'127.0.0.1';
-EOF
-
-        if [ "${ROLE^^}" = "SRC" ]; then
-
-            mysql -u root --password=${MYSQL_ROOT_PASSWORD} <<EOF
-            -- CDC
-            -- these grants cannot be limit to database.  has to be *.*
-            GRANT REPLICATION CLIENT ON *.* TO '${db}'@'%';
-            GRANT REPLICATION SLAVE ON *.* TO '${db}'@'%';
-EOF
-
-        fi
+    for db in ${DB_NAMES[@]}; do
+        create_user_db
     done
-    set -x
 }
 
 create_src() {
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SF1_DBS_COMMA}" 1
-    if [ -z "${ARCDEMO_DEBUG}" ]; then 
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
-    fi
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1
 }
 
 create_dst() {
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
-    if [ -z "${ARCDEMO_DEBUG}" ]; then 
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 100
-    fi
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 
 }
 
-if [[ $(hostname) =~ src$ ]]; then
+if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
     create_src
-elif [[ $(hostname) =~ dst$ ]]; then
+elif [[ $(uname -a | awk '{print $2}') =~ dst$ ]]; then
     create_dst
 else 
     create_src
