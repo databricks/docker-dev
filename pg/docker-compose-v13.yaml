@@ -1,0 +1,33 @@
+---
+# 3.8 required for the volume relative path name to config file 
+# the build adds wal2json 
+version: '3.8'
+
+services:
+  src-v1311:
+    extends: 
+      file: ./docker-pg.yaml
+      service: pg    
+    build: v1311
+    hostname: pg-src
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - src-v1311:/var/lib/postgresql/data 
+
+  dst-v1311:
+    extends: 
+      file: ./docker-pg.yaml
+      service: pg    
+    image: pg-src-v1311
+    hostname: pg-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d        
+      - dst-v1311:/var/lib/postgresql/data
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  src-v1311:  
+  dst-v1311:  
