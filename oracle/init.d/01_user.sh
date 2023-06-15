@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# src
+export USER_PREFIX=c##
 
 setup_cdc() {
 
@@ -9,6 +9,29 @@ setup_cdc() {
         ALTER DATABASE ADD SUPPLEMENTAL LOG DATA (ALL) COLUMNS;
 EOF
 }
+
+create_user_db() {
+
+    set -x 
+    sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
+    CREATE USER ${USER_PREFIX}${db} IDENTIFIED BY ${DB_ARC_PW};
+
+    ALTER USER ${USER_PREFIX}${db} default tablespace USERS;
+
+    ALTER USER ${USER_PREFIX}${db} quota unlimited on USERS;
+
+    GRANT CREATE SESSION TO ${USER_PREFIX}${db};
+
+    grant connect,resource to ${USER_PREFIX}${db};
+    grant execute_catalog_role to ${USER_PREFIX}${db};
+    grant select_catalog_role to ${USER_PREFIX}${db};
+
+    grant dba to ${USER_PREFIX}${db};
+EOF
+    set +x
+}
+
+# below is the same of all of the databases
 
 create_user() {
     local ROLE=${1}
@@ -23,53 +46,28 @@ create_user() {
     else
         SIZE_FACTOR_NAME=${SIZE_FACTOR}
     fi
-    DB_ARC_USER="c##${DB_ARC_USER}${SIZE_FACTOR_NAME}"
+    DB_ARC_USER=${DB_ARC_USER}${SIZE_FACTOR_NAME}
 
-    set -x
+    # create names arcsrc arcsrc_ycsb srcsrc_tpcc 
+    DB_NAMES=( ${DB_ARC_USER} \
+         $(echo ${DBS_COMMA} | tr "," "\n" | xargs -I '{}' -n1 echo "${DB_ARC_USER}_{}") )
 
-    for db in $(echo ${DBS_COMMA} | tr "," "\n"); do
-
-        db="${DB_ARC_USER}_${db}"
-
-        sqlplus sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
-        CREATE USER ${db} IDENTIFIED BY ${DB_ARC_PW};
-
-        ALTER USER ${db} default tablespace USERS;
-
-        ALTER USER ${db} quota unlimited on USERS;
-
-        GRANT CREATE SESSION TO ${db};
-
-        grant connect,resource to ${db};
-        grant execute_catalog_role to ${db};
-        grant select_catalog_role to ${db};
-
-         grant dba to  ${db};
-EOF
+    for db in ${DB_NAMES[@]}; do
+        create_user_db
     done
 }
 
 create_src() {
-    setup_cdc
-
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SF1_DBS_COMMA}" 1
-    if [ -z "${ARCDEMO_DEBUG}" ]; then 
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${SFN_DBS_COMMA}" 100 
-    fi
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1
 }
 
 create_dst() {
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SF1_DBS_COMMA}" 1 
-    if [ -z "${ARCDEMO_DEBUG}" ]; then 
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 10 
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${SFN_DBS_COMMA}" 100
-    fi
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 
 }
 
-if [[ $(hostname) =~ src$ ]]; then
+if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
     create_src
-elif [[ $(hostname) =~ dst$ ]]; then
+elif [[ $(uname -a | awk '{print $2}') =~ dst$ ]]; then
     create_dst
 else 
     create_src

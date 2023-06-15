@@ -1,5 +1,18 @@
 # DEBUG
 ARCDEMO_DEBUG=1
+# column and row databaes
+# column ycsb initial dataset is setup to compress 10x
+#                  Column               Row
+#           DELTATABLE  USERTABLE   DELTATABLE  USERTABLE
+#   1       2M          159M        20M         1.6G
+#   10      25M         1.6G        250M        16.7G
+#   100     250M        17G         2.5G        161G
+#   1000    2.4G                    20.4G
+ARCDEMO_COL_DELTA_SF=100      
+ARCDEMO_ROW_DELTA_SF=100
+
+ARCDEMO_COL_USER_SF=10         
+ARCDEMO_ROW_USER_SF=1          
 
 # DB for heartbeat table 
 REPLICANT_DB=io_replicate
@@ -8,7 +21,7 @@ REPLICANT_USER=replicant
 REPLICANT_PW=Replicant#123
 
 # create separate DB for these db names
-ARCDEMO_DB_NAMES=tpcc
+ARCDEMO_DB_NAMES=autionmarks,epinions,seats
 
 # standard id and passwords
 SRCDB_ARC_USER=arcsrc
