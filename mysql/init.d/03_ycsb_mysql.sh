@@ -26,7 +26,7 @@ db_enable_logging() {
     set +x
 }
 
-ycsb_create_db() {
+ycsb_create_sparse_table() {
 cat <<EOF
 CREATE TABLE IF NOT EXISTS THEUSERTABLE${SIZE_FACTOR_NAME} (
     YCSB_KEY INT PRIMARY KEY,
@@ -39,19 +39,69 @@ CREATE TABLE IF NOT EXISTS THEUSERTABLE${SIZE_FACTOR_NAME} (
 EOF
 }
 
-ycsb_load_db() {    
-    ycsb_create_db | cli_user
+ycsb_create_dense_table() {
+cat <<EOF
+CREATE TABLE IF NOT EXISTS DENSETABLE${SIZE_FACTOR_NAME} (
+    YCSB_KEY INT PRIMARY KEY,
+    FIELD0 TEXT, FIELD1 TEXT,
+    FIELD2 TEXT, FIELD3 TEXT,
+    FIELD4 TEXT, FIELD5 TEXT,
+    FIELD6 TEXT, FIELD7 TEXT,
+    FIELD8 TEXT, FIELD9 TEXT
+);
+EOF
+}
+
+ycsb_load_sparse_table() {
+
+    # boiler plate code
+    ycsb_set_param ${*}
+    ycsb_create_sparse_table | cli_user
+    # the real code
 
     datafile=/tmp/ycsb_sparse.${SIZE_FACTOR}.fifo.$$
     ycsb_sparse_data $datafile
-        
+    
     set -x
     echo "load data local infile '${datafile}' into table THEUSERTABLE${SIZE_FACTOR_NAME} (YCSB_KEY);" | \
         cli_user
     set +x
 }
 
+ycsb_load_dense_table() {    
+    
+    # boiler plate code
+    ycsb_set_param ${*}
+    ycsb_create_dense_table | cli_user
+    # the real code
+
+    datafile=/tmp/ycsb_dense.${SIZE_FACTOR}.fifo.$$
+    ycsb_dense_data $datafile      
+
+    set -x
+    echo "load data local infile '${datafile}' into table DENSETABLE${SIZE_FACTOR_NAME} (YCSB_KEY);" | \
+        cli_user
+    set +x
+}
+
 # below is the same of all of the databases
+
+ycsb_set_param() {
+    export ROLE=${1}
+    export DB_ARC_USER=${2} 
+    export DB_ARC_PW=${3} 
+    export DB_DB=${4} 
+    export SIZE_FACTOR=${5:-1}
+    export SIZE_FACTOR_NAME
+
+    if [ "${SIZE_FACTOR}" = "1" ]; then
+        SIZE_FACTOR_NAME=""
+    else
+        SIZE_FACTOR_NAME=${SIZE_FACTOR}
+    fi
+
+    db="${DB_ARC_USER}"
+}
 
 ycsb_rm_data() {
     rm /tmp/ycsb_*.fifo.* 2>/dev/null    
@@ -68,26 +118,7 @@ ycsb_dense_data() {
     mkfifo ${datafile}
     seq 0 $(( 1000000*${SIZE_FACTOR} - 1 )) | \
         awk '{printf "%d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d\n", \
-            $1,$1,$1,$1,$1,$1,$1,$1,$1,$1,$1}' > /tmp/usertable.fifo.$$ &    
-}
-
-ycsb_load() {
-    local ROLE=${1}
-    local DB_ARC_USER=${2} 
-    local DB_ARC_PW=${3} 
-    local DB_DB=${4} 
-    local SIZE_FACTOR=${5:-1}
-    local SIZE_FACTOR_NAME
-
-    if [ "${SIZE_FACTOR}" = "1" ]; then
-        SIZE_FACTOR_NAME=""
-    else
-        SIZE_FACTOR_NAME=${SIZE_FACTOR}
-    fi
-
-    db="${DB_ARC_USER}"
-
-    ycsb_load_db
+            $1,$1,$1,$1,$1,$1,$1,$1,$1,$1,$1}' > ${datafile} &   
 }
 
 create_src() {
@@ -95,11 +126,11 @@ create_src() {
     ycsb_rm_data
     db_disable_logging
 
-    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
-    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
-    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
-
-    # time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1000
+    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
+    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
+    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
+    time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
+    time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
 
     db_enable_logging
     ycsb_rm_data

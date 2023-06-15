@@ -26,61 +26,74 @@ x-pg: &default-pg
       - max_connections=300
       - "-c" 
       - shared_buffers=80MB
+      - "-c" 
+      - max_wal_size=4GB
 
 services:
-  v1503-src:
+  src-v1503:
     build: v1503
     << : *default-pg
     hostname: pg-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - v1503-src:/var/lib/postgresql/data
-
-  v1503-dst:
-    build: v1503
+      - src-v1503:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases: 
+          - pg-src
+          
+  dst-v1503:
+    image: pg-src-v1503
+    depends_on: [src-v1503]
     << : *default-pg
     hostname: pg-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - v1503-dst:/var/lib/postgresql/data
+      - dst-v1503:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases: 
+          - pg-dst
 
-  v1408-src:
+  src-v1408:
     build: v1408
     << : *default-pg
     hostname: pg-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - v1408-src:/var/lib/postgresql/data
+      - src-v1408:/var/lib/postgresql/data
     deploy:
       replicas: 0  
 
-  v1408-dst:
-    build: v1408
+  dst-v1408:
+    image: pg-src-v1408
+    depends_on: [src-v1408]
     << : *default-pg
     hostname: pg-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - v1408-dst:/var/lib/postgresql/data
+      - src-v1408:/var/lib/postgresql/data
     deploy:
       replicas: 0  
 
-  v1311-src:
+  src-v1311:
     build: v1311
     << : *default-pg
     hostname: pg-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - v1311-src:/var/lib/postgresql/data
+      - src-v1311:/var/lib/postgresql/data
     deploy:
       replicas: 0  
 
-  v1311-dst:
-    build: v1311
+  dst-v1311:
+    image: pg-src-v1311
+    depends_on: [src-v1311]
     << : *default-pg
     hostname: pg-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - v1311-dst:/var/lib/postgresql/data
+      - dst-v1311:/var/lib/postgresql/data
     deploy:
       replicas: 0  
 
@@ -89,9 +102,9 @@ networks:
     name: arcnet
     external: true
 volumes:
-  v1503-src:
-  v1408-src:  
-  v1311-src:  
-  v1503-dst:
-  v1408-dst:  
-  v1311-dst:  
+  src-v1503:
+  src-v1408:  
+  src-v1311:  
+  dst-v1503:
+  dst-v1408:  
+  dst-v1311:  
