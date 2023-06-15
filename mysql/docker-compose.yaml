@@ -26,37 +26,44 @@ x-mysql: &default-mysql
       - --innodb_redo_log_capacity=1073741824  # 1024*1024*1024
 
 services:
-  v8033-src:
+  src-v8033:
     << : *default-mysql
     image: mysql:8.0.33
     hostname: mysql-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - v8033-src:/var/lib/mysql
-  v8033-dst:
+      - src-v8033:/var/lib/mysql
+    networks:
+      default:
+        aliases: 
+          - mysql-src
+  dst-v8033:
     << : *default-mysql
     image: mysql:8.0.33
     hostname: mysql-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - v8033-dst:/var/lib/mysql
-
-  v5742-src:
+      - dst-v8033:/var/lib/mysql
+    networks:
+      default:
+        aliases:
+          - mysql-dst
+  src-v5742:
     << : *default-mysql
     image: mysql:5.7.42
     hostname: mysql-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - v5742-src:/var/lib/mysql
+      - src-v5742:/var/lib/mysql
     deploy:
       replicas: 0  
-  v5742-dst:
+  dst-v5742:
     << : *default-mysql
     image: mysql:5.7.42
     hostname: mysql-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - v5742-dst:/var/lib/mysql
+      - dst-v5742:/var/lib/mysql
     deploy:
       replicas: 0
 
@@ -65,7 +72,7 @@ networks:
     name: arcnet
     external: true
 volumes:    
-  v8033-src:
-  v5742-src:  
-  v8033-dst:
-  v5742-dst:  
+  src-v8033:
+  src-v5742:  
+  dst-v8033:
+  dst-v5742:  

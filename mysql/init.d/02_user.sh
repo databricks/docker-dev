@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# convention: db name is thee same as user name
 create_user_db() {
 
     set -x
@@ -11,10 +12,10 @@ create_user_db() {
         CREATE DATABASE ${db};
 EOF
 
-    if [ "${ROLE^^}" = "SRC" ]; then
+    if [[ "${ROLE^^}" = "SRC" ]]; then
 
         mysql -u root --password=${MYSQL_ROOT_PASSWORD} <<EOF
-        -- heartbeat table
+        -- optional heartbeat table
         GRANT ALL ON ${REPLICANT_DB}.* to '${db}'@'%';
         GRANT ALL ON ${REPLICANT_DB}.* to '${db}'@'127.0.0.1';
         -- replication
@@ -53,18 +54,21 @@ create_user() {
 }
 
 create_src() {
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1
+    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
+    if [[ "${ROLE^^}" = "SRC" ]]; then
+        create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1
+    fi
 }
 
 create_dst() {
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 
+    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
+    if [[ "${ROLE^^}" = "DST" ]]; then
+        create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 
+    fi
 }
 
-if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
-    create_src
-elif [[ $(uname -a | awk '{print $2}') =~ dst$ ]]; then
-    create_dst
-else 
+# run if not being manually sourced
+if [[ -z "${1}" ]]; then
     create_src
     create_dst
 fi

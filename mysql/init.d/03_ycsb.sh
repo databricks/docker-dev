@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# change below for each database
+
 cli_user() {
     mysql -u ${db} \
         --password=${DB_ARC_PW} \
@@ -10,6 +12,18 @@ cli_user() {
 cli_root() {
     mysql -u root \
         --password=${MYSQL_ROOT_PASSWORD}
+}
+
+db_disable_logging() {
+    set -x
+    echo "ALTER INSTANCE DISABLE INNODB REDO_LOG;" | cli_root
+    set +x
+}
+
+db_enable_logging() {
+    set -x
+    echo "ALTER INSTANCE ENABLE INNODB REDO_LOG;" | cli_root
+    set +x
 }
 
 ycsb_create_db() {
@@ -25,28 +39,37 @@ CREATE TABLE IF NOT EXISTS THEUSERTABLE${SIZE_FACTOR_NAME} (
 EOF
 }
 
-ycsb_load_db() {
-    set -x
-
-    datafile=/tmp/ycsb.fifo.$$
-    rm  ${datafile} 2>/dev/null
-    mkfifo ${datafile}
-    seq 0 $(( 1000000*${SIZE_FACTOR:-1} - 1 )) > ${datafile} &
+ycsb_load_db() {    
     ycsb_create_db | cli_user
 
-    echo "ALTER INSTANCE DISABLE INNODB REDO_LOG;" | cli_root
-
+    datafile=/tmp/ycsb_sparse.${SIZE_FACTOR}.fifo.$$
+    ycsb_sparse_data $datafile
+        
+    set -x
     echo "load data local infile '${datafile}' into table THEUSERTABLE${SIZE_FACTOR_NAME} (YCSB_KEY);" | \
         cli_user
-
-    rm ${datafile}
-
-    echo "ALTER INSTANCE ENABLE INNODB REDO_LOG;" | cli_root
-
     set +x
 }
 
 # below is the same of all of the databases
+
+ycsb_rm_data() {
+    rm /tmp/ycsb_*.fifo.* 2>/dev/null    
+}
+
+ycsb_sparse_data() {
+    datafile=$1
+    mkfifo ${datafile}
+    seq 0 $(( 1000000*${SIZE_FACTOR:-1} - 1 )) > ${datafile} &
+}
+
+ycsb_dense_data() {
+    datafile=$1
+    mkfifo ${datafile}
+    seq 0 $(( 1000000*${SIZE_FACTOR} - 1 )) | \
+        awk '{printf "%d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d\n", \
+            $1,$1,$1,$1,$1,$1,$1,$1,$1,$1,$1}' > /tmp/usertable.fifo.$$ &    
+}
 
 ycsb_load() {
     local ROLE=${1}
@@ -69,16 +92,24 @@ ycsb_load() {
 
 create_src() {
     # 1M rows (2MB), 10M (25MB) and 100M (250MB) 1B (2.5G) rows
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
-    ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1000
+    ycsb_rm_data
+    db_disable_logging
+
+    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
+    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
+    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
+
+    # time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1000
+
+    db_enable_logging
+    ycsb_rm_data
 }
 
-(return 0 2>/dev/null) && sourced=1 || sourced=0
+# pass argument to to not run (mainly for testing)
+if [[ -z "${1}" ]]; then
+    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
 
-if (( sourced != 1 )); then
-    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
+    if [[ "${ROLE^^}" = "SRC" ]]; then
         create_src
     fi
 fi
