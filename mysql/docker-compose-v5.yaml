@@ -1,0 +1,28 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+services:
+  src-v5742:
+    extends: 
+      file: ./docker-mysql.yaml
+      service: mysql  
+    image: mysql:5.7.42
+    hostname: mysql-src
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - src-v5742:/var/lib/mysql 
+
+  dst-v5742:
+    extends: 
+      file: ./docker-mysql.yaml
+      service: mysql  
+    image: mysql:5.7.42
+    hostname: mysql-dst
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - dst-v5742:/var/lib/mysql
+
+volumes:    
+  src-v5742:  
+  dst-v5742:  
