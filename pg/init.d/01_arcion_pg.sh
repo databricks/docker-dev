@@ -2,7 +2,7 @@
 
 cli_user() {
     export PGPASSWORD=${REPLICANT_PW} 
-    psql --username "${REPLICANT_USER}" --dbname "${REPLICANT_DB}" ${*}
+    psql --username "${REPLICANT_USER}" --dbname "${REPLICANT_DB}"${*}
 }
 
 cli_root() {

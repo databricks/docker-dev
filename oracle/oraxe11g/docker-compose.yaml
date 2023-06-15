@@ -26,26 +26,26 @@ x-xe11g: &default-xe11g
       - ../init.d:/docker-entrypoint-initdb.d
 
 services:
-  v1102-src:
+  src-v1102:
     # sys and system password: oracle
     << : *default-xe11g
-    hostname: v1102-src
+    hostname: oraxe-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d
-      - v1102-src:/u01/app/oracle/oradata
+      - src-v1102:/u01/app/oracle/oradata
 
-  v1102-dst:
+  dst-v1102:
     # sys and system password: oracle
     << : *default-xe11g
-    hostname: v1102-dst
+    hostname: oraxe-dst
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d
-      - v1102-dst:/u01/app/oracle/oradata
+      - dst-v1102:/u01/app/oracle/oradata
 
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  v1102-src:
-  v1102-dst:
+  src-v1102:
+  dst-v1102:

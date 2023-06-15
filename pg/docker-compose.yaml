@@ -1,38 +1,16 @@
 ---
 # 3.8 required for the volume relative path name to config file 
-# the build adds wal2json 
+# this shares image pg-src-v1503  
+# docker compose build
+# docker compose up -d
 version: '3.8'
-
-x-pg: &default-pg
-    hostname: pg
-    deploy:
-      mode: replicated
-      replicas: 1
-    ports:
-      - 5432
-    environment:
-      - POSTGRES_PASSWORD=Passw0rd 
-    env_file:
-      - ../config/env.sh      
-    volumes:
-      - ./init.d:/docker-entrypoint-initdb.d
-    command: 
-      - postgres
-      - "-c" 
-      - wal_level=logical
-      - "-c" 
-      - max_replication_slots=10
-      - "-c" 
-      - max_connections=300
-      - "-c" 
-      - shared_buffers=80MB
-      - "-c" 
-      - max_wal_size=4GB
 
 services:
   src-v1503:
+    extends: 
+      file: ./docker-pg.yaml
+      service: pg
     build: v1503
-    << : *default-pg
     hostname: pg-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
@@ -43,9 +21,10 @@ services:
           - pg-src
           
   dst-v1503:
+    extends: 
+      file: ./docker-pg.yaml
+      service: pg
     image: pg-src-v1503
-    depends_on: [src-v1503]
-    << : *default-pg
     hostname: pg-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
@@ -55,56 +34,10 @@ services:
         aliases: 
           - pg-dst
 
-  src-v1408:
-    build: v1408
-    << : *default-pg
-    hostname: pg-src
-    volumes:
-      - ./init.d:/docker-entrypoint-initdb.d        
-      - src-v1408:/var/lib/postgresql/data
-    deploy:
-      replicas: 0  
-
-  dst-v1408:
-    image: pg-src-v1408
-    depends_on: [src-v1408]
-    << : *default-pg
-    hostname: pg-dst
-    volumes:
-      - ./init.d:/docker-entrypoint-initdb.d        
-      - src-v1408:/var/lib/postgresql/data
-    deploy:
-      replicas: 0  
-
-  src-v1311:
-    build: v1311
-    << : *default-pg
-    hostname: pg-src
-    volumes:
-      - ./init.d:/docker-entrypoint-initdb.d        
-      - src-v1311:/var/lib/postgresql/data
-    deploy:
-      replicas: 0  
-
-  dst-v1311:
-    image: pg-src-v1311
-    depends_on: [src-v1311]
-    << : *default-pg
-    hostname: pg-dst
-    volumes:
-      - ./init.d:/docker-entrypoint-initdb.d        
-      - dst-v1311:/var/lib/postgresql/data
-    deploy:
-      replicas: 0  
-
 networks:
   default:
     name: arcnet
     external: true
 volumes:
   src-v1503:
-  src-v1408:  
-  src-v1311:  
   dst-v1503:
-  dst-v1408:  
-  dst-v1311:  

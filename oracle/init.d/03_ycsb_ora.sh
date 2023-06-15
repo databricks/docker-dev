@@ -3,7 +3,7 @@
 export USER_PREFIX=c##
 
 cli_user() {
-    sqlplus ${db}/${DB_ARC_PW}    
+    sqlplus ${db}/${DB_ARC_PW}@${ORACLE_SID}    
 }
 
 cli_root() {
@@ -20,6 +20,19 @@ CREATE TABLE THEUSERTABLE${SIZE_FACTOR_NAME} (
     FIELD6 VARCHAR2(255), FIELD7 VARCHAR2(255),
     FIELD8 VARCHAR2(255), FIELD9 VARCHAR2(255)
 ) organization index; 
+EOF
+}
+
+ycsb_create_dense_table() {
+cat <<EOF
+CREATE TABLE IF NOT EXISTS DENSETABLE${SIZE_FACTOR_NAME} (
+    YCSB_KEY INT PRIMARY KEY,
+    FIELD0 TEXT, FIELD1 TEXT,
+    FIELD2 TEXT, FIELD3 TEXT,
+    FIELD4 TEXT, FIELD5 TEXT,
+    FIELD6 TEXT, FIELD7 TEXT,
+    FIELD8 TEXT, FIELD9 TEXT
+) organization index;
 EOF
 }
 
@@ -91,7 +104,6 @@ create_src() {
     time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
     time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 
     time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
-    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 500
 }
 
 (return 0 2>/dev/null) && sourced=1 || sourced=0
