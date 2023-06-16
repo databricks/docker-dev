@@ -2,11 +2,11 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  v1930:
+  v1930-src:
     image: oracle/database:19.3.0-ee
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: oraee
+    hostname: oraee-src
     deploy:
       mode: replicated
       replicas: 1
@@ -28,10 +28,17 @@ services:
     env_file:
       - ../../config/env.sh           
     volumes:
-      - ../init.d:/docker-entrypoint-initdb.d/startup      
+      - ../init.d:/docker-entrypoint-initdb.d/startup    
+      - v1930-src:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraee
+          - oraee-src
 networks:
   default:
     name: arcnet
     external: true
-
-# https://stackoverflow.com/questions/39663096/docker-compose-creating-multiple-instances-for-the-same-image
+    
+volumes:
+  v1930-src:

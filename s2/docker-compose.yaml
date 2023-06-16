@@ -37,7 +37,7 @@ services:
     image: singlestore/cluster-in-a-box:alma-8.1.5-8d722de5ee-4.0.11-1.16.0
     hostname: s2-src
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d        
+      - ./init.d:/docker-entrypoint-initdb.d
       - v815-src:/var/lib/memsql
   v815-dst:
     << : *default-s2

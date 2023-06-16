@@ -30,19 +30,28 @@ services:
     # sys and system password: oracle
     << : *default-xe21
     image: oracle/database:21.3.0-xe
-    hostname: v2130-src
+    hostname: oraxe-src
     volumes:
-      - ../init.d:/docker-entrypoint-initdb.d
+      - ../init.d:/docker-entrypoint-initdb.d/startup
       - v2130-src:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraxe
+          - oraxe-src      
 
   v2130-dst:
     # sys and system password: oracle
     << : *default-xe21
     image: oracle/database:21.3.0-xe
-    hostname: v2130-dst
+    hostname: oraxe-dst
     volumes:
-      - ../init.d:/docker-entrypoint-initdb.d
+      - ../init.d:/docker-entrypoint-initdb.d/startup
       - v2130-dst:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraxe-dst
 
 networks:
   default:

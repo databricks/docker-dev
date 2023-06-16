@@ -18,7 +18,9 @@ services:
     networks:
       default:
         aliases: 
+          - pg
           - pg-src
+          - postgresql
           
   dst-v1503:
     extends: 

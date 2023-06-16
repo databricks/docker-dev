@@ -15,6 +15,7 @@ services:
     networks:
       default:
         aliases: 
+          - mysql
           - mysql-src
   dst-v8033:
     extends: 

@@ -1,5 +1,54 @@
 #!/usr/bin/env bash
 
+choose_data_providers() {
+
+whiptail --title "Select data Source and Destinations to install" \
+--checklist \
+"List of packages" 0 0 0 \
+"MySQL" "MySQL V8 source and destionation" ON \
+"Oracle" "Oracle XE 21c source and destionation" ON \
+"Postgres" "Postgres V15 source and destionation" ON \
+"Kafka" "Opensource Kafka destionation" ON \
+"Minio" "S3 destination" ON
+}
+
+install_oraxe() {
+    pushd ${BASE_DIR}/oracle
+        if [ ! -d oracle-docker-images ]; then
+            git clone https://github.com/oracle/docker-images oracle-docker-images
+        fi
+
+        local found=$(docker images "oracle/database:21.3.0-xe")
+        if [[ -z "${found}" ]]; then 
+            pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+                ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
+            popd
+        fi
+
+        pushd oraxe
+            docker compose build
+            docker compose up -d
+        popd
+    popd    
+}
+
+install_mysql() {
+    pushd ${BASE_DIR}/mysql
+        docker compose build
+        docker compose up -d
+    popd        
+}
+
+install_pg() {
+    pushd ${BASE_DIR}/pg
+        local found=$(docker images "pg-src-v1503")
+        if [[ -z "${found}" ]]; then 
+            docker compose build
+        fi
+        docker compose up -d
+    popd        
+}
+
 # get dir where this script is at
 DIR_NAME="${BASH_SOURCE[0]}"
 if [ -z "${DIR_NAME}" ]; then
@@ -77,7 +126,8 @@ else
     fi
 fi
 
-cat <<EOF
+about_textbox=/tmp/arcdemo-about.txt
+cat <<EOF >${about_textbox}
 
 The following starter demo can be started for you.
 
@@ -104,6 +154,9 @@ This will start full replication mysql to postgresql.
 
 EOF
 
+whiptail --textbox --scrolltext ${about_textbox} 0 0    
+
+
 read -p "Would you like to try the starter demo now (y/n)? " answer
 case ${answer:0:1} in
     n|N )
@@ -113,6 +166,9 @@ case ${answer:0:1} in
     ;;
 esac
 
+# show menu
+SELECTED=$(choose_data_providers 3>&1 1>&2 2>&3)
+
 cat <<EOF
 When the demo starts, you will enter a tmux session.  To detach from tmux, 
 
@@ -121,12 +177,18 @@ When the demo starts, you will enter a tmux session.  To detach from tmux,
 
 EOF
 
+for s in ${SELETED[@]}; do
+    case ${s,,} in
+        mysql) install_mysql;;
+        oraxe) install_oraxe;;
+        pg) install_pg;;
+        minio) install_minio;;
+        kafka) install_kafka;;
+    esac
+done
+
 # configs are relative to the script
 docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d
-
-# start MySQL, PostgresSQL
-docker compose -f ${BASE_DIR}/mysql/docker-compose.yaml up -d
-docker compose -f ${BASE_DIR}/postgresql/docker-compose.yaml up -d
 
 # start Arcion demo kit CLI
 ttyd_started=$( docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )

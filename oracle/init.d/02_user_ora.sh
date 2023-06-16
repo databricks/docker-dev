@@ -58,18 +58,20 @@ create_user() {
 }
 
 create_src() {
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 | tee -a ~/02_user.txt
 }
 
 create_dst() {
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 | tee -a ~/02_user.txt
 }
 
-if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
-    create_src
-elif [[ $(uname -a | awk '{print $2}') =~ dst$ ]]; then
-    create_dst
-else 
-    create_src
-    create_dst
+if [ ! -f ~/02_user.txt ]; then
+    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
+        create_src 
+    elif [[ $(uname -a | awk '{print $2}') =~ dst$ ]]; then
+        create_dst 
+    else 
+        create_src 
+        create_dst 
+    fi
 fi
