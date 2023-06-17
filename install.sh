@@ -18,7 +18,7 @@ install_oraxe() {
             git clone https://github.com/oracle/docker-images oracle-docker-images
         fi
 
-        local found=$(docker images "oracle/database:21.3.0-xe")
+        local found=$(docker images -q "oracle/database:21.3.0-xe")
         if [[ -z "${found}" ]]; then 
             pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
                 ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
@@ -26,7 +26,6 @@ install_oraxe() {
         fi
 
         pushd oraxe
-            docker compose build
             docker compose up -d
         popd
     popd    
@@ -34,17 +33,24 @@ install_oraxe() {
 
 install_mysql() {
     pushd ${BASE_DIR}/mysql
-        docker compose build
         docker compose up -d
     popd        
 }
 
 install_pg() {
     pushd ${BASE_DIR}/pg
-        local found=$(docker images "pg-src-v1503")
-        if [[ -z "${found}" ]]; then 
-            docker compose build
-        fi
+        docker compose up -d
+    popd        
+}
+
+install_kafka() {
+    pushd ${BASE_DIR}/kafka
+        docker compose up -d
+    popd        
+}
+
+install_minio() {
+    pushd ${BASE_DIR}/minio
         docker compose up -d
     popd        
 }
@@ -128,30 +134,30 @@ fi
 
 about_textbox=/tmp/arcdemo-about.txt
 cat <<EOF >${about_textbox}
+The following Arcion demo environment can be setup for you.
+ 
++-----------+    +-----------+    +----------+    +-------------+
+|    Load   |    |  Source   |    |  Arcion  |    | Destination |  
+| Generator |    |           |    |          |    |             |
+|           | -->|   MySQL   | -->|  UI/CLI  | -->|    MySQL    |
+|   TPCC    |    | Oracle XE |    |          |    |  Oracle XE  |
+|   YCSB    |    | Postgres  |    | Metadata |    |  Postgres   |
+|           |    |           |    | Grafana  |    |   Minio     |
+|           |    |           |    |          |    |   Kafka     |
++-----------+    +-----------+    +----------+    +-------------+  
 
-The following starter demo can be started for you.
+1) UI, open browser to http://localhost:8080
 
-    # start Arcion demo kit
-    docker compose -f $BASE_DIR/arcion-demo/docker-compose.yaml up -d
+2) CLI, using tmux terminal to start Arcion full replication from MySql to Postgre is:
 
-    # start MySQL, PostgresSQL
-    docker compose -f $BASE_DIR/mysql/docker-compose.yaml up -d
-    docker compose -f $BASE_DIR/postgresql/docker-compose.yaml up -d
+      arcdemo.sh full mysql pg
+      arcdemo.sh full oraxe kafka
+      arcdemo.sh full pg minio
 
-    # start Arcion demo kit CLI
-    docker compose -f $BASE_DIR/arcion-demo/docker-compose.yaml exec workloads tmux attach
+   To tmux detach (exit) from the demo kit:  
 
-When the demo starts, you will enter a tmux session.  
-To detach (exit) from the demo kit, use the following tmux command:  
-
-    1. press <control> b
-    2. type ":detach" wihout the quote
-
-Once in the demo kit, type the following will typed for you.
-This will start full replication mysql to postgresql.
-
-    arcdemo.sh full mysql postgresql
-
+      1. press <control> b
+      2. type ":detach" wihout the quote
 EOF
 
 whiptail --textbox --scrolltext ${about_textbox} 0 0    
@@ -177,11 +183,12 @@ When the demo starts, you will enter a tmux session.  To detach from tmux,
 
 EOF
 
-for s in ${SELETED[@]}; do
+for s in ${SELECTED[@]}; do
+    s=$(echo ${s,,} | sed 's/"//g' ) # remove the quote surrounding the name 
     case ${s,,} in
         mysql) install_mysql;;
         oraxe) install_oraxe;;
-        pg) install_pg;;
+        postgres|pg) install_pg;;
         minio) install_minio;;
         kafka) install_kafka;;
     esac

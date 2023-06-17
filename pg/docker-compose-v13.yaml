@@ -18,7 +18,7 @@ services:
     extends: 
       file: ./docker-pg.yaml
       service: pg    
-    image: pg-src-v1311
+    image: postgres:13.11
     hostname: pg-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
