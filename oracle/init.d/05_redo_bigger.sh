@@ -64,3 +64,5 @@ ora_redostatus
 touch $REDO/redo.large.log
 
 fi
+
+#  alter database tempfile '/oradata/ORCLCDB/ORCLPDB/temp01.dbf' resize 24g;
