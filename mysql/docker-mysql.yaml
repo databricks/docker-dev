@@ -24,8 +24,3 @@ services:
       - --local-infile=true                    # allow load data local
       - --secure-file-priv=/tmp                # allow load data
       - --innodb_redo_log_capacity=1073741824  # 1024*1024*1024
-
-networks:
-  default:
-    name: arcnet
-    external: true
