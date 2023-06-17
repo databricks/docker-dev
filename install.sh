@@ -1,10 +1,101 @@
 #!/usr/bin/env bash
 
+abort() {
+  printf "%s\n" "$@" >&2
+  exit 1
+}
+
+choose_start_setup() {
+    about_textbox='
+    The following Arcion demo environment can be setup for you.
+    
+    +-----------+    +-----------+    +----------+    +-------------+
+    |    Load   |    |  Source   |    |  Arcion  |    | Destination |  
+    | Generator |    |           |    |          |    |             |
+    |           | -->|   MySQL   | -->|  UI/CLI  | -->|    MySQL    |
+    |   TPCC    |    | Oracle XE |    |          |    |  Oracle XE  |
+    |   YCSB    |    | Postgres  |    | Metadata |    |  Postgres   |
+    |           |    |           |    | Grafana  |    |   Minio     |
+    |           |    |           |    |          |    |   Kafka     |
+    +-----------+    +-----------+    +----------+    +-------------+  
+
+    The source databases will have 100 million rows of data.  
+    The setup of about dozen containers will be take about 15 minutes.  
+
+    To access the demo using:
+
+    1) UI, open browser to http://localhost:8080
+    2) CLI, using tmux terminal.
+
+    Would you like to start the setup?
+    '
+
+    if [[ $(which whiptail) ]]; then 
+        whiptail --title "Arcion Demo Kit" \
+            --yesno "${about_textbox}" 0 0 0
+        if (( $? != 0 )); then 
+            abort "Exiting the setup."
+        fi
+    else
+        echo "${about_textbox}"
+        read -p "Would you like to try the starter demo now (y/n)? " answer
+        case ${answer:0:1} in
+            n|N )
+            abort "Exiting the setup."
+            ;;
+            * )
+            ;;
+        esac
+    fi
+}
+
+choose_start_cli() {
+about_textbox='
+Containers are setup.
+
+To access the demo using:
+
+1) UI, open browser to http://localhost:8080 username "admin" password "arcion"
+2) CLI, using tmux terminal, 
+
+Enter tmux terminal
+    docker exec -it arcion-demo-workloads-1 tmux attach
+
+To start replication:
+    arcdemo.sh full mysql pg
+    arcdemo.sh full pg kafka
+    arcdemo.sh full oraxe minio
+
+To exit the tmux session:
+    1. press <control> b
+    2. type ":detach" at the bottom status bar wihout the quote
+
+Whould you like to be placed into the CLI?
+'
+    if [[ $(which whiptail) ]]; then 
+        whiptail --title "Arcion Demo Kit" \
+            --yesno "${about_textbox}" 0 0 0
+        if (( $? != 0 )); then 
+            abort "Exiting the setup."
+        fi
+    else
+        echo "${about_textbox}"
+        read -p "Would you like to enter the CLI demo now (y/n)? " answer
+        case ${answer:0:1} in
+            n|N )
+            abort "Exiting the setup."
+            ;;
+            * )
+            ;;
+        esac
+    fi
+}
+
 choose_data_providers() {
 
-whiptail --title "Select data Source and Destinations to install" \
+whiptail --title "Choose Source and Destinations Providers" \
 --checklist \
-"List of packages" 0 0 0 \
+"Selet / Unslect data providers" 0 0 0 \
 "MySQL" "MySQL V8 source and destionation" ON \
 "Oracle" "Oracle XE 21c source and destionation" ON \
 "Postgres" "Postgres V15 source and destionation" ON \
@@ -65,10 +156,6 @@ else
     echo "Manually running intall.sh from ${BASE_DIR}"
 fi
 
-abort() {
-  printf "%s\n" "$@" >&2
-  exit 1
-}
 
 if [[ ! -z "${ARCION_LICENSE}" ]]; then  
     echo "ARCION_LICENSE found."  
@@ -93,6 +180,8 @@ if [[ $(type -P "docker") ]]; then
 else     
     abort "docker is NOT in PATH"
 fi
+
+choose_start_setup
 
 docker network inspect arcnet >/dev/null 2>/dev/null
 if [[ "$?" = "0" ]]; then
@@ -132,56 +221,9 @@ else
     fi
 fi
 
-about_textbox=/tmp/arcdemo-about.txt
-cat <<EOF >${about_textbox}
-The following Arcion demo environment can be setup for you.
- 
-+-----------+    +-----------+    +----------+    +-------------+
-|    Load   |    |  Source   |    |  Arcion  |    | Destination |  
-| Generator |    |           |    |          |    |             |
-|           | -->|   MySQL   | -->|  UI/CLI  | -->|    MySQL    |
-|   TPCC    |    | Oracle XE |    |          |    |  Oracle XE  |
-|   YCSB    |    | Postgres  |    | Metadata |    |  Postgres   |
-|           |    |           |    | Grafana  |    |   Minio     |
-|           |    |           |    |          |    |   Kafka     |
-+-----------+    +-----------+    +----------+    +-------------+  
-
-1) UI, open browser to http://localhost:8080
-
-2) CLI, using tmux terminal to start Arcion full replication from MySql to Postgre is:
-
-      arcdemo.sh full mysql pg
-      arcdemo.sh full oraxe kafka
-      arcdemo.sh full pg minio
-
-   To tmux detach (exit) from the demo kit:  
-
-      1. press <control> b
-      2. type ":detach" wihout the quote
-EOF
-
-whiptail --textbox --scrolltext ${about_textbox} 0 0    
-
-
-read -p "Would you like to try the starter demo now (y/n)? " answer
-case ${answer:0:1} in
-    n|N )
-        abort
-    ;;
-    * )
-    ;;
-esac
 
 # show menu
 SELECTED=$(choose_data_providers 3>&1 1>&2 2>&3)
-
-cat <<EOF
-When the demo starts, you will enter a tmux session.  To detach from tmux, 
-
-    1. press <control> b
-    2. type ":detach" wihout the quote
-
-EOF
 
 for s in ${SELECTED[@]}; do
     s=$(echo ${s,,} | sed 's/"//g' ) # remove the quote surrounding the name 
@@ -193,6 +235,8 @@ for s in ${SELECTED[@]}; do
         kafka) install_kafka;;
     esac
 done
+
+choose_start_cli
 
 # configs are relative to the script
 docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d
