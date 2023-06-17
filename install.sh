@@ -93,14 +93,18 @@ Whould you like to be placed into the CLI?
 
 choose_data_providers() {
 
-whiptail --title "Choose Source and Destinations Providers" \
---checklist \
-"Selet / Unslect data providers" 0 0 0 \
-"MySQL" "MySQL V8 source and destionation" ON \
-"Oracle" "Oracle XE 21c source and destionation" ON \
-"Postgres" "Postgres V15 source and destionation" ON \
-"Kafka" "Opensource Kafka destionation" ON \
-"Minio" "S3 destination" ON
+    if [[ $(which whiptail) ]]; then 
+        whiptail --title "Choose Source and Destinations Providers" \
+        --checklist \
+        "Select / Unslect data providers" 0 0 0 \
+        MySQL "MySQL V8 source and destionation" ON \
+        Oracle "Oracle XE 21c source and destionation" ON \
+        Postgres "Postgres V15 source and destionation" ON \
+        Kafka "Opensource Kafka destionation" ON \
+        Minio "S3 destination" ON
+    else
+        echo "MySQL Oracle Postgres Kafka Minio" >&3
+    fi
 }
 
 install_oraxe() {
