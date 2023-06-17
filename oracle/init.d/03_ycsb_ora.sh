@@ -143,14 +143,14 @@ ycsb_set_param() {
 
 ycsb_sparse_data() {
     datafile=$1
-    rm $datafile >&2
+    rm $datafile >/dev/null 2>&1
     mkfifo ${datafile}
     seq 0 $(( 1000000*${SIZE_FACTOR:-1} - 1 )) > ${datafile} &
 }
 
 ycsb_dense_data() {
     datafile=$1
-    rm $datafile >&2
+    rm $datafile >/dev/null 2>&1
     mkfifo ${datafile}
     seq 0 $(( 1000000*${SIZE_FACTOR} - 1 )) | \
         awk '{printf "%d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d\n", \

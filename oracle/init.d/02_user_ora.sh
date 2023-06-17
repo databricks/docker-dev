@@ -58,6 +58,7 @@ create_user() {
 }
 
 create_src() {
+    setup_cdc
     create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 | tee -a ~/02_user.txt
 }
 
