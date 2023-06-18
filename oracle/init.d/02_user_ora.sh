@@ -69,6 +69,7 @@ create_dst() {
 if [ ! -f ~/02_user.txt ]; then
     if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
         create_src 
+        create_dst 
     elif [[ $(uname -a | awk '{print $2}') =~ dst$ ]]; then
         create_dst 
     else 

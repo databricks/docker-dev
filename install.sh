@@ -122,6 +122,11 @@ install_oraxe() {
 
         pushd oraxe
             docker compose up -d
+            while [ -z "$( docker compose logs oraxe-v2130-src 2>&1 | grep 'DONE: Executing user defined scripts' )" ]; do 
+                echo waiting 10 sec for mysql-src-8033; sleep 10; 
+            done
+
+            
         popd
     popd    
 }
@@ -129,12 +134,18 @@ install_oraxe() {
 install_mysql() {
     pushd ${BASE_DIR}/mysql
         docker compose up -d
+        while [ -z "$( docker compose logs src-v1503 2>&1 | grep 'mysqld: ready for connections' )" ]; do 
+            echo waiting 10 sec for mysql-src-8033; sleep 10; 
+        done
     popd        
 }
 
 install_pg() {
     pushd ${BASE_DIR}/pg
         docker compose up -d
+        while [ -z "$( docker compose logs src-v1503 2>&1 | grep 'database system is ready to accept connections' )" ]; do 
+            echo waiting 10 sec for pg-src-v1503; sleep 10; 
+        done
     popd        
 }
 

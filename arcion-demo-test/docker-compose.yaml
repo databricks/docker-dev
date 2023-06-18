@@ -48,7 +48,7 @@ services:
     ports:
       - 7681
     environment:
-      - ARCION_HOME=/arcion/2304309
+      - ARCION_HOME=/arcion
       - ARCION_LICENSE=${ARCION_LICENSE}
       # utf-8 for java, mysql, pgsql
       - LANG=C.UTF-8
@@ -69,9 +69,7 @@ services:
       # test specific to edit scripts
       - ../../arcion-loadgen/scripts/:/scripts
       # test specific to use different replicant cli
-      #- arcion-bin-latest:/arcion/latest
-      - arcion-bin-2304309:/arcion/2304309
-      #- arcion-bin-23043016:/arcion
+      - arcion-bin:/arcion
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
@@ -95,15 +93,8 @@ volumes:
   ora_client:
   arcion-metadata:
 
-  arcion-bin-latest:
+  arcion-bin:
     external: true     
-
-  arcion-bin-23033121:
-    external: true     
-  arcion-bin-2304309:
-    external: true     
-  arcion-bin-23043016:
-    external: true       
 
   oraxe11g:
     external: true

@@ -71,9 +71,7 @@ create_src() {
 
 create_dst() {
     if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
-    if [[ "${ROLE^^}" = "DST" ]]; then
-        create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 
-    fi
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 
 }
 
 # run if not being manually sourced
