@@ -6,7 +6,7 @@ services:
     image: quay.io/minio/minio:RELEASE.2023-06-02T23-17-26Z
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: miniol
+    hostname: minio
     deploy:
       mode: replicated
       replicas: 1
@@ -23,6 +23,10 @@ services:
       - /data 
       - --console-address 
       - :9090
+    networks:
+      default:
+        aliases: 
+          - minio
 networks:
   default:
     name: arcnet

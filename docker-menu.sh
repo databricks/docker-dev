@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+#export NEWT_COLORS='
+#  window=,blue
+#  border=white,blue
+#  textbox=white,blue
+#  button=black,white'
+
 docker ps --format '{{.Names}}'
 
 SELECTED=$( whiptail --title "Select database to start" \
