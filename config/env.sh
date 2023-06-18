@@ -21,7 +21,7 @@ REPLICANT_USER=replicant
 REPLICANT_PW=Replicant#123
 
 # create separate DB for these db names
-ARCDEMO_DB_NAMES=autionmarks,epinions,seats
+ARCDEMO_DB_NAMES=auctionmarks,epinions,seats
 
 # standard id and passwords
 SRCDB_ARC_USER=arcsrc
