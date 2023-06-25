@@ -9,6 +9,7 @@ PROG_DIR=$(dirname "${BASH_SOURCE[0]}")
 load_dense_data() {
     local SIZE_FACTOR=${1:-${SIZE_FACTOR:-1}}
     local SIZE_FACTOR_NAME=$(sf_to_name $SIZE_FACTOR)
+    echo "Starting dense table $SIZE_FACTOR" 
 
     # create table
     heredoc_file ${PROG_DIR}/lib/03_densetable.sql | tee ${INITDB_LOG_DIR}/03_densetable.sql 
@@ -22,15 +23,19 @@ load_dense_data() {
     ycsb_dense_data $datafile ${SIZE_FACTOR}
     
     # run the bulk loader
-    time /opt/mssql-tools/bin/bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_densetable.fmt 2>&1 | tee ${INITDB_LOG_DIR}/03_densetable.log
+    # batch of 1M
+    time /opt/mssql-tools/bin/bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_densetable.fmt -b 1000000 | tee ${INITDB_LOG_DIR}/03_densetable.log
 
     # delete datafile
     rm $datafile
+
+    echo "Finished dense table $SIZE_FACTOR" 
 }
 
 load_sparse_data() {
     local SIZE_FACTOR=${1:-${SIZE_FACTOR:-1}}
     local SIZE_FACTOR_NAME=$(sf_to_name $SIZE_FACTOR)
+    echo "Starting sparse table $SIZE_FACTOR" 
 
     # create table
     heredoc_file ${PROG_DIR}/lib/03_sparsetable.sql | tee ${INITDB_LOG_DIR}/03_sparsetable.sql 
@@ -44,10 +49,13 @@ load_sparse_data() {
     ycsb_sparse_data $datafile ${SIZE_FACTOR}
     
     # run the bulk loader
-    time /opt/mssql-tools/bin/bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_sparsetable.fmt  2>&1 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
+    # batch of 1M
+    time /opt/mssql-tools/bin/bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 1000000 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
 
     # delete datafile
     rm $datafile   
+
+    echo "Finished sparse table $SIZE_FACTOR" 
 }
 
 ycsb_sparse_data() {
@@ -70,3 +78,18 @@ ycsb_dense_data() {
             $1,$1,$1,$1,$1,$1,$1,$1,$1,$1,$1}' > ${datafile}
 }
 
+if [[ $(uname -a | awk '{print $2}') =~ 'src' ]]; then ROLE=SRC; else ROLE=DST; fi
+
+if [ -f ${INITDB_LOG_DIR}/03_ycsb.txt ]; then
+    echo "$0: skipping. found ${INITDB_LOG_DIR}/03_ycsb.txt"
+else
+
+    if [[ "${ROLE^^}" = "SRC" ]]; then
+
+        load_sparse_data 1
+        load_sparse_data 10
+        load_sparse_data 100
+        load_dense_data 1
+    fi
+    touch ${INITDB_LOG_DIR}/03_ycsb.txt
+fi

@@ -2,11 +2,11 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  v2022cu4:
+  v2022cu4-src:
     image: mcr.microsoft.com/mssql/server:2022-CU4-ubuntu-20.04
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: sqlserver
+    hostname: sqlserver-src
     deploy:
       mode: replicated
       replicas: 1
@@ -21,11 +21,16 @@ services:
       - ../config/env.sh
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - v2022cu4:/var/opt/mssql  
+      - v2022cu4-src:/var/opt/mssql  
     entrypoint: /docker-entrypoint-initdb.d/00_run.sh
+    networks:
+      default:
+        aliases: 
+          - sqlserver
+          - sqlserver-src    
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  v2022cu4:
+  v2022cu4-src:

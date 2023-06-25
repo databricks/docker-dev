@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROG_DIR=$(dirname "${BASH_SOURCE[0]}")
-. ${PROG_DIR}/util.sh
+. ${PROG_DIR}/utils.sh
 
 # cut and paste from
 # https://github.com/microsoft/mssql-docker/blob/master/linux/preview/examples/mssql-customize/entrypoint.sh
@@ -45,7 +45,8 @@ echo "Starting /docker-entrypoint-initdb.d scripts"
 if [ -f ${INITDB_LOG_DIR}/docker-entrypoint-initdb.d.started ]; then
   echo "ran before. skipping"
 else
-  for f in $(find ${INITDB_DIR} ! -maxdepth 1 -name "$THIS_SCRIPT" -name "*.sh" -type f -executable); do
+  THIS_SCRIPT=$(basename $0)
+  for f in $(find ${INITDB_DIR} -maxdepth 1 ! -name "$THIS_SCRIPT" -name "*.sh" -type f -executable | sort); do
       echo "Starting $f"
       $f
       echo "Finished $f"
