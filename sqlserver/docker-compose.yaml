@@ -15,8 +15,17 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=Passw0rd
-      - CONFIG_EDGE_BUILD=0    
+      - CONFIG_EDGE_BUILD=0
+      - DATA_VOL=/var/opt/mssql  
+    env_file:
+      - ../config/env.sh
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - v2022cu4:/var/opt/mssql  
+    entrypoint: /docker-entrypoint-initdb.d/00_run.sh
 networks:
   default:
     name: arcnet
     external: true
+volumes:
+  v2022cu4:

@@ -13,10 +13,19 @@ services:
     ports:
       - 5000
       - 5001
+    environment:
+      - SYBASE_ROOT=sa
+      - SYBASE_PASSWORD=myPassword
+      - SYBASE_SID=MYSYBASE
+    env_file:
+      - ../../config/env.sh
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d      
-    entrypoint: /docker-entrypoint-initdb.d/01_fix.sh
+      - ./init.d:/docker-entrypoint-initdb.d
+      - v1602:/opt/sybase/datadock      
+    entrypoint: /docker-entrypoint-initdb.d/00_run.sh
 networks:
   default:
     name: arcnet
     external: true
+volumes:
+  v1602:    

@@ -126,21 +126,19 @@ create_src() {
     ycsb_rm_data
     db_disable_logging
 
-    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
-    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
-    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
-    time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
-    time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
+    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ~/03_ycsb.txt
+    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt
+    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100 | tee -a ~/03_ycsb.txt
+    time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ~/03_ycsb.txt
+    time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt
 
     db_enable_logging
     ycsb_rm_data
 }
 
-# pass argument to to not run (mainly for testing)
-if [[ -z "${1}" ]]; then
-    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
-
-    if [[ "${ROLE^^}" = "SRC" ]]; then
+echo "starting $0 with ${*}"
+if [ ! -f ~/03_ycsb.txt ]; then
+    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
         create_src
     fi
 fi
