@@ -1,4 +1,5 @@
-create database ${DB_DB} on master = '100G' LOG ON master = '20G' WITH OVERRIDE
+-- make sure combined does not exceed the master size of 100G
+create database ${DB_DB} on master = '40G' LOG ON master = '20G' WITH OVERRIDE
 go
 
 sp_addlogin ${DB_ARC_USER}, ${DB_ARC_PW}, ${DB_DB}

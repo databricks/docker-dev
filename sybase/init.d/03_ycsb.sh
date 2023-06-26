@@ -23,10 +23,11 @@ load_dense_data() {
     ycsb_dense_data $datafile ${SIZE_FACTOR}
     
     # run the bulk loader
-    # batch of 1M
-    time bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_densetable.fmt -b 10000 
+    # don't batch dense
+    echo "Start loading"
+    time bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_densetable.fmt
     # 2>&1 | tee ${INITDB_LOG_DIR}/03_densetable.log
-
+    echo "Finished loading"
     # delete datafile
     rm -rf $datafile
 
@@ -51,12 +52,13 @@ load_sparse_data() {
     ycsb_sparse_data $datafile ${SIZE_FACTOR}
     
     # run the bulk loader
-    # batch of 1M
+    # batch of 1M is too large
+    echo "Start loading"
     time bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 100000 
     # 2>&1 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
-
+    echo "Finished loading"
     # delete datafile
-    #rm -rf $datafile   
+    rm -rf $datafile   
 
     echo "Finished sparse table $SIZE_FACTOR" 
 }
@@ -88,12 +90,14 @@ if [ -f ${INITDB_LOG_DIR}/03_ycsb.txt ]; then
 else
 
     if [[ "${ROLE^^}" = "SRC" ]]; then
-
+        # need to load densetable first
+        # dense does not work anymore
+        # load_dense_data 1
+        # then the sparse.  otherwise, there is hang 
         load_sparse_data 1
         load_sparse_data 10
         load_sparse_data 100
-        #load_sparse_data 1000
-        load_dense_data 1
+        load_sparse_data 1000
     fi
     touch ${INITDB_LOG_DIR}/03_ycsb.txt
 fi
