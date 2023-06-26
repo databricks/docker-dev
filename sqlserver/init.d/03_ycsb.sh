@@ -19,7 +19,7 @@ load_dense_data() {
     heredoc_file ${PROG_DIR}/lib/03_densetable.fmt | tee ${INITDB_LOG_DIR}/03_densetable.fmt
 
     # prepare data file
-    datafile=$(mktemp)
+    datafile=$(mktemp -p $INITDB_LOG_DIR)
     ycsb_dense_data $datafile ${SIZE_FACTOR}
     
     # run the bulk loader
@@ -45,7 +45,7 @@ load_sparse_data() {
     heredoc_file ${PROG_DIR}/lib/03_sparsetable.fmt | tee ${INITDB_LOG_DIR}/03_sparsetable.fmt
 
     # prepare data file
-    datafile=$(mktemp)
+    datafile=$(mktemp -p $INITDB_LOG_DIR)
     ycsb_sparse_data $datafile ${SIZE_FACTOR}
     
     # run the bulk loader
@@ -59,7 +59,7 @@ load_sparse_data() {
 }
 
 ycsb_sparse_data() {
-    local datafile=${1:-$(mktemp)}
+    local datafile=${1:-$(mktemp -p $INITDB_LOG_DIR)}
     local SIZE_FACTOR=${2:-${SIZE_FACTOR:-1}}
 
     rm -rf $datafile >/dev/null 2>&1
@@ -68,7 +68,7 @@ ycsb_sparse_data() {
 }
 
 ycsb_dense_data() {
-    local datafile=${1:-$(mktemp)}
+    local datafile=${1:-$(mktemp -p $INITDB_LOG_DIR)}
     local SIZE_FACTOR=${2:-${SIZE_FACTOR:-1}}
 
     rm -rf $datafile >/dev/null 2>&1

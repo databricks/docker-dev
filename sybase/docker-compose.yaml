@@ -1,6 +1,7 @@
 ---
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
+
 services:
   v1602-src:
     image: nguoianphu/docker-sybase
@@ -29,9 +30,37 @@ services:
         aliases: 
           - sybase
           - sybase-src     
+  v1602-dst:
+    image: nguoianphu/docker-sybase
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: sybase-dst
+    deploy:
+      mode: replicated
+      replicas: 1    
+    ports:
+      - 5000
+      - 5001
+    environment:
+      - SYBASE_ROOT=sa
+      - SYBASE_PASSWORD=myPassword
+      - SYBASE_SID=MYSYBASE
+      - DATA_VOL=/opt/sybase/data 
+    env_file:
+      - ../config/env.sh
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - v1602-dst:/opt/sybase/data   
+    entrypoint: /docker-entrypoint-initdb.d/00_run.sh
+    networks:
+      default:
+        aliases: 
+          - sybase-dst     
+
 networks:
   default:
     name: arcnet
     external: true
 volumes:
   v1602-src:    
+  v1602-dst:      
