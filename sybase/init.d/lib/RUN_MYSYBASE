@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# SAP ASE page size (KB):       16k
+# Master device path:   /opt/sybase/data/master.dat
+# Error log path:       /opt/sybase/ASE-16_0/install/MYSYBASE.log
+# Configuration file path:      /opt/sybase/ASE-16_0/MYSYBASE.cfg
+# Directory for shared memory files:    /opt/sybase/ASE-16_0
+# License properties file:      /opt/sybase/ASE-16_0/sysam/MYSYBASE.properties
+# Interfaces file directory:    /opt/sybase
+# SAP Adaptive Server Enterprise name:  MYSYBASE
+#
+/opt/sybase/ASE-16_0/bin/dataserver \
+-d/opt/sybase/data/master.dat \
+-e/opt/sybase/ASE-16_0/install/MYSYBASE.log \
+-c/opt/sybase/ASE-16_0/MYSYBASE.cfg \
+-M/opt/sybase/ASE-16_0 \
+-N/opt/sybase/ASE-16_0/sysam/MYSYBASE.properties \
+-i/opt/sybase \
+-sMYSYBASE \
+-T11889
