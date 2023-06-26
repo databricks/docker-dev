@@ -16,7 +16,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=Passw0rd
       - CONFIG_EDGE_BUILD=0
-      - DATA_VOL=/var/opt/mssql  
+      - DATA_VOL=/var/opt/mssql
     env_file:
       - ../config/env.sh
     volumes:

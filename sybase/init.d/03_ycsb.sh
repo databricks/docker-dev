@@ -24,10 +24,11 @@ load_dense_data() {
     
     # run the bulk loader
     # batch of 1M
-    time /opt/mssql-tools/bin/bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_densetable.fmt -b 1000000 | tee ${INITDB_LOG_DIR}/03_densetable.log
+    time bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_densetable.fmt -b 10000 
+    # 2>&1 | tee ${INITDB_LOG_DIR}/03_densetable.log
 
     # delete datafile
-    rm $datafile
+    rm -rf $datafile
 
     echo "Finished dense table $SIZE_FACTOR" 
 }
@@ -45,15 +46,17 @@ load_sparse_data() {
     heredoc_file ${PROG_DIR}/lib/03_sparsetable.fmt | tee ${INITDB_LOG_DIR}/03_sparsetable.fmt
 
     # prepare data file
+    #datafile=/tmp/tmp.WLkdsbnc2m #$(mktemp)
     datafile=$(mktemp)
     ycsb_sparse_data $datafile ${SIZE_FACTOR}
     
     # run the bulk loader
     # batch of 1M
-    time /opt/mssql-tools/bin/bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 1000000 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
+    time bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 100000 
+    # 2>&1 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
 
     # delete datafile
-    rm $datafile   
+    #rm -rf $datafile   
 
     echo "Finished sparse table $SIZE_FACTOR" 
 }
