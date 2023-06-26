@@ -98,9 +98,9 @@ choose_data_providers() {
         --checklist \
         "Select / Unslect data providers" 0 0 0 \
         MySQL "MySQL V8 source and destionation" ON \
-        Oracle "Oracle XE 21c source and destionation" ON \
-        Postgres "Postgres V15 source and destionation" ON \
-        Kafka "Opensource Kafka destionation" ON \
+        Oracle "Oracle XE 21c source and destionation" OFF \
+        Postgres "Postgres V15 source and destionation" OFF \
+        Kafka "Opensource Kafka destionation" OFF \
         Minio "S3 destination" ON
     else
         echo "MySQL Oracle Postgres Kafka Minio" >&3
@@ -122,11 +122,9 @@ install_oraxe() {
 
         pushd oraxe
             docker compose up -d
-            while [ -z "$( docker compose logs oraxe-v2130-src 2>&1 | grep 'DONE: Executing user defined scripts' )" ]; do 
-                echo waiting 10 sec for mysql-src-8033; sleep 10; 
+            while [ -z "$( docker compose logs v2130-src 2>&1 | grep 'DONE: Executing user defined scripts' )" ]; do 
+                echo waiting 10 sec for oraxe-v2130-src; sleep 10; 
             done
-
-            
         popd
     popd    
 }
@@ -134,8 +132,8 @@ install_oraxe() {
 install_mysql() {
     pushd ${BASE_DIR}/mysql
         docker compose up -d
-        while [ -z "$( docker compose logs src-v1503 2>&1 | grep 'mysqld: ready for connections' )" ]; do 
-            echo waiting 10 sec for mysql-src-8033; sleep 10; 
+        while [ -z "$( docker compose logs v8033-src 2>&1 | grep 'mysqld: ready for connections' )" ]; do 
+            echo waiting 10 sec for mysql-v8033-src; sleep 10; 
         done
     popd        
 }
@@ -143,8 +141,8 @@ install_mysql() {
 install_pg() {
     pushd ${BASE_DIR}/pg
         docker compose up -d
-        while [ -z "$( docker compose logs src-v1503 2>&1 | grep 'database system is ready to accept connections' )" ]; do 
-            echo waiting 10 sec for pg-src-v1503; sleep 10; 
+        while [ -z "$( docker compose logs v1503-src 2>&1 | grep 'database system is ready to accept connections' )" ]; do 
+            echo waiting 10 sec for v1503-src; sleep 10; 
         done
     popd        
 }
@@ -210,7 +208,7 @@ else
     fi
 fi
 
-oravols=(oraxe11g oraxe2130 oraee1930)
+oravols=(oraxe11g oraxe2130 oraee1930 arcion-bin)
 for v in ${oravols[*]}; do
     docker volume inspect $v >/dev/null 2>/dev/null
     if [[ "$?" = "0" ]]; then
@@ -244,13 +242,17 @@ for s in ${SELECTED[@]}; do
     s=$(echo ${s,,} | sed 's/"//g' ) # remove the quote surrounding the name 
     case ${s,,} in
         mysql) install_mysql;;
-        oraxe) install_oraxe;;
+        oracle) install_oraxe;;
         postgres|pg) install_pg;;
         minio) install_minio;;
         kafka) install_kafka;;
     esac
 done
 
+# pull 
+docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml pull
+
+# ask to continue
 choose_start_cli
 
 # configs are relative to the script

@@ -69,7 +69,7 @@ services:
       # test specific to edit scripts
       - ../../arcion-loadgen/scripts/:/scripts
       # test specific to use different replicant cli
-      - arcion-bin:/arcion
+      - arcion-bin:/opt/arcion
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraxe11g:/opt/mnt/oraxe11g/oradata:ro

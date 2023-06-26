@@ -21,6 +21,10 @@ services:
       - RUN_FILE_POST_INIT=informix.root.sh 
     volumes:
       - ./init.d/informix.root.sh:/opt/ibm/config/informix.root.sh
+    networks:
+      default:
+        aliases:
+          - informix
 networks:
   default:
     name: arcnet

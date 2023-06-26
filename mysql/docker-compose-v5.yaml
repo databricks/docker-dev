@@ -3,7 +3,7 @@
 version: '3.8'
 
 services:
-  src-v5742:
+  v5742-src:
     extends: 
       file: ./docker-mysql.yaml
       service: mysql  
@@ -13,7 +13,7 @@ services:
       - ./init.d:/docker-entrypoint-initdb.d
       - src-v5742:/var/lib/mysql 
 
-  dst-v5742:
+  v5742-dst:
     extends: 
       file: ./docker-mysql.yaml
       service: mysql  

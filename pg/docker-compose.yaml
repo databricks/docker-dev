@@ -6,7 +6,7 @@
 version: '3.8'
 
 services:
-  src-v1503:
+  v1503-src:
     extends: 
       file: ./docker-pg.yaml
       service: pg
@@ -22,7 +22,7 @@ services:
           - pg-src
           - postgresql
           
-  dst-v1503:
+  v1503-dst:
     extends: 
       file: ./docker-pg.yaml
       service: pg

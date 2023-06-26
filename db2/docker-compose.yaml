@@ -19,6 +19,10 @@ services:
       - DBNAME=db2inst1
     volumes:
       - ./init.d:/var/custom
+    networks:
+      default:
+        aliases:
+          - db2
 networks:
   default:
     name: arcnet

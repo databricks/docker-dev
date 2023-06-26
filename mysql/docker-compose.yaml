@@ -3,7 +3,7 @@
 version: '3.8'
 
 services:
-  src-v8033:
+  v8033-src:
     extends: 
       file: ./docker-mysql.yaml
       service: mysql  
@@ -17,7 +17,7 @@ services:
         aliases: 
           - mysql
           - mysql-src
-  dst-v8033:
+  v8033-dst:
     extends: 
       file: ./docker-mysql.yaml
       service: mysql  

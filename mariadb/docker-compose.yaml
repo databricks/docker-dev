@@ -19,13 +19,20 @@ services:
       - ../config/env.sh        
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d      
+      - v109:/var/lib/mysql
     command: 
       - mysqld
       - --default-authentication-plugin=mysql_native_password
       - --local-infile=true               # allow load data local 
       - --secure-file-priv=/tmp           # allow load data
       - --innodb_log_file_size=1073741824 # 1024*1024*1024
+    networks:
+      default:
+        aliases: 
+          - mariadb
 networks:
   default:
     name: arcnet
     external: true
+volumes:
+  v109:
