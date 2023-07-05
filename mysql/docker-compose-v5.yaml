@@ -11,7 +11,12 @@ services:
     hostname: mysql-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - src-v5742:/var/lib/mysql 
+      - v5742-src:/var/lib/mysql 
+    command: 
+      - mysqld
+      - --default-authentication-plugin=mysql_native_password
+      - --local-infile=true                    # allow load data local
+      - --secure-file-priv=/tmp                # allow load data
 
   v5742-dst:
     extends: 
@@ -21,8 +26,13 @@ services:
     hostname: mysql-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-      - dst-v5742:/var/lib/mysql
+      - v5742-dst:/var/lib/mysql
+    command: 
+      - mysqld
+      - --default-authentication-plugin=mysql_native_password
+      - --local-infile=true                    # allow load data local
+      - --secure-file-priv=/tmp                # allow load data
 
 volumes:    
-  src-v5742:  
-  dst-v5742:  
+  v5742-src:  
+  v5742-dst:  

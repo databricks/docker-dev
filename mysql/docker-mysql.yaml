@@ -14,13 +14,9 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Passw0rd
       - LANG=C.UTF-8
+      - LOGDIR=/var/lib/mysql
     env_file:
       - ../config/env.sh        
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
-    command: 
-      - mysqld
-      - --default-authentication-plugin=mysql_native_password
-      - --local-infile=true                    # allow load data local
-      - --secure-file-priv=/tmp                # allow load data
-      - --innodb_redo_log_capacity=1073741824  # 1024*1024*1024
+

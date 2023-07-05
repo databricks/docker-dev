@@ -137,8 +137,12 @@ create_src() {
 }
 
 echo "starting $0 with ${*}"
-if [ ! -f ~/03_ycsb.txt ]; then
-    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
-        create_src
+if [[ -z "${1}" ]]; then
+    if [ ! -f ${LOGDIR}/03_ycsb.txt ]; then
+        if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
+
+        if [[ "${ROLE^^}" = "SRC" ]]; then
+            create_src 2>&1 | tee -a ${LOGDIR}/03_ycsb.txt
+        fi
     fi
 fi
