@@ -13,12 +13,14 @@ services:
     privileged: true
     ports:
       - 50000
+
     environment:
       - LICENSE=accept
       - DB2INST1_PASSWORD=Passw0rd
       - DBNAME=db2inst1
     volumes:
       - ./init.d:/var/custom
+      - v11580-src:/database
     networks:
       default:
         aliases:
@@ -28,3 +30,5 @@ networks:
     name: arcnet
     external: true
 
+volumes:
+  v11580-src:

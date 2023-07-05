@@ -10,6 +10,10 @@ create_user_db() {
         GRANT ALL ON ${db}.* to '${db}'@'%';
         GRANT ALL ON ${db}.* to '${db}'@'127.0.0.1';
         CREATE DATABASE ${db};
+        CREATE TABLE IF NOT EXISTS ${db}.REPLICATE_IO_CDC_HEARTBEAT(
+            TIMESTAMP BIGINT NOT NULL,
+            PRIMARY KEY(TIMESTAMP)
+        );
 EOF
 
     if [[ "${ROLE^^}" = "SRC" ]]; then

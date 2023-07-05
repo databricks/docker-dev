@@ -10,6 +10,8 @@ services:
       - 8080
     environment:
       - PGCLIENTENCODING=utf-8
+    volumes:
+      - v2311-src-1:/cockroach/cockroach-data
     command: 
       - start-single-node
       - --insecure
@@ -25,6 +27,8 @@ services:
       - 8080
     environment:
       - PGCLIENTENCODING=utf-8
+    volumes:
+      - v2311-src-2:/cockroach/cockroach-data
     command: 
       - start
       - --insecure
@@ -41,6 +45,8 @@ services:
       - 8080
     environment:
       - PGCLIENTENCODING=utf-8
+    volumes:
+      - v2311-src-3:/cockroach/cockroach-data
     command: 
       - start
       - --insecure
@@ -51,3 +57,8 @@ networks:
   default:
     name: arcnet
     external: true
+
+volumes:
+  v2311-src-1:
+  v2311-src-2:  
+  v2311-src-3:      

@@ -2,11 +2,11 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  v14107w:
+  v14107:
     image: ibmcom/informix-developer-database:14.10.FC7W1DE
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: informix
+    hostname: informix-src
     deploy:
       mode: replicated
       replicas: 1
@@ -21,6 +21,7 @@ services:
       - RUN_FILE_POST_INIT=informix.root.sh 
     volumes:
       - ./init.d/informix.root.sh:/opt/ibm/config/informix.root.sh
+      - v14107-src:/home/informix/data
     networks:
       default:
         aliases:
@@ -30,3 +31,5 @@ networks:
     name: arcnet
     external: true
 
+volumes:
+  v14107-src:

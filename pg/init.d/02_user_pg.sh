@@ -30,6 +30,10 @@ EOF
         cat <<EOF | cli_user
             SELECT 'init' FROM pg_create_logical_replication_slot('${db}_w2j', 'wal2json');
             SELECT * from pg_replication_slots;
+            CREATE TABLE IF NOT EXISTS "REPLICATE_IO_CDC_HEARTBEAT"(
+                TIMESTAMP BIGINT NOT NULL,
+                PRIMARY KEY(TIMESTAMP)
+            );            
 EOF
 
     fi
