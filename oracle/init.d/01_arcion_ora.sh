@@ -37,10 +37,10 @@ EOF
 
 }
 
-if [ ! -f ~/01_arcion.txt ]; then
+if [ ! -f ${REDO}/01_arcion.txt ]; then
     if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
 
     if [[ "${ROLE^^}" = "SRC" ]]; then
-        create_heartbeat | tee -a  ~/01_arcion.txt
+        create_heartbeat | tee -a  ${REDO}/01_arcion.txt
     fi
 fi

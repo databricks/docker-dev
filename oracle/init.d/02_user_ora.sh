@@ -59,14 +59,14 @@ create_user() {
 
 create_src() {
     setup_cdc
-    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 | tee -a ~/02_user.txt
+    create_user SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 | tee -a ${REDO}/02_user.txt
 }
 
 create_dst() {
-    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 | tee -a ~/02_user.txt
+    create_user DST ${DSTDB_ARC_USER} ${DSTDB_ARC_PW} "${ARCDEMO_DB_NAMES}" 1 | tee -a ${REDO}/02_user.txt
 }
 
-if [ ! -f ~/02_user.txt ]; then
+if [ ! -f ${REDO}/02_user.txt ]; then
     if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
         create_src 
         create_dst 
