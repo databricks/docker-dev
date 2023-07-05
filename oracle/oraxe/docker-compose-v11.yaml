@@ -20,6 +20,7 @@ x-xe11g: &default-xe11g
       - ARCHREDO=/u01/app/oracle/oradata/XE/arch
       - REDO=/u01/app/oracle/oradata/XE
       - FOOTER_LINES=3      
+      - LOGDIR=/u01/app/oracle/oradata/XE
     env_file:
       - ../../config/env.sh          
     volumes:

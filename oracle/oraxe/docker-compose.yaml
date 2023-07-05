@@ -19,6 +19,7 @@ x-xe21: &default-xe21
       - ARCHREDO=/opt/oracle/oradata/XE/arch
       - REDO=/opt/oracle/oradata/XE
       - FOOTER_LINES=4      
+      - LOGDIR=/opt/oracle/oradata/XE
     env_file:
       - ../../config/env.sh           
     volumes:

@@ -133,9 +133,11 @@ create_src() {
 
 # pass argument to to not run (mainly for testing)
 if [[ -z "${1}" ]]; then
-    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
+    if [ ! -f ${LOGDIR}/03_ycsb.txt ]; then
+        if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
 
-    if [[ "${ROLE^^}" = "SRC" ]]; then
-        create_src
+        if [[ "${ROLE^^}" = "SRC" ]]; then
+            create_src | tee -a ${LOGDIR}/02_ycsb.txt
+        fi
     fi
 fi

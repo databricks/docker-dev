@@ -76,6 +76,8 @@ create_dst() {
 
 # run if not being manually sourced
 if [[ -z "${1}" ]]; then
-    create_src
-    create_dst
+    if [ ! -f ${LOGDIR}/02_user.txt ]; then
+        create_src | tee -a ${LOGDIR}/02_user.txt
+        create_dst | tee -a ${LOGDIR}/02_user.txt
+    fi
 fi
