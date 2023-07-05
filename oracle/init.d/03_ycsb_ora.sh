@@ -85,10 +85,10 @@ ycsb_load_dense_table() {
     ycsb_set_param ${*}
     ycsb_create_dense_table | cli_user
     # the real code
-    logfile=${REDO}/ycsb_dense.${SIZE_FACTOR}.log.$$
-    dscfile=${REDO}/ycsb_dense.${SIZE_FACTOR}.dsc.$$
-    ctlfile=${REDO}/ycsb_dense.${SIZE_FACTOR}.ctl.$$
-    datafile=${REDO}/ycsb_dense.${SIZE_FACTOR}.fifo.$$
+    logfile=${LOGDIR}/ycsb_dense.${SIZE_FACTOR}.log.$$
+    dscfile=${LOGDIR}/ycsb_dense.${SIZE_FACTOR}.dsc.$$
+    ctlfile=${LOGDIR}/ycsb_dense.${SIZE_FACTOR}.ctl.$$
+    datafile=${LOGDIR}/ycsb_dense.${SIZE_FACTOR}.fifo.$$
 
     if [ -f $logfile ]; then echo "$logfile exists. skipping" >&2; return 0; fi
 
@@ -179,17 +179,17 @@ ycsb_load() {
 create_src() {
     # 1M rows (2MB), 10M (25MB) and 100M (250MB) 1B (2.5G) rows
     if [ ! -f ~/03_ycsb.txt ]; then
-        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ${REDO}/03_ycsb.txt
-        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10  | tee -a ${REDO}/03_ycsb.txt
-        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100  | tee -a ${REDO}/03_ycsb.txt
-        time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1  | tee -a ${REDO}/03_ycsb.txt
+        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ${LOGDIR}/03_ycsb.txt
+        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10  | tee -a ${LOGDIR}/03_ycsb.txt
+        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100  | tee -a ${LOGDIR}/03_ycsb.txt
+        time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1  | tee -a ${LOGDIR}/03_ycsb.txt
     else
-        echo "${REDO}/03_ycsb.txt exists. skipping" 
+        echo "${LOGDIR}/03_ycsb.txt exists. skipping" 
     fi
 }
 
 echo "starting $0 with ${*}"
-if [ ! -f ${REDO}/03_ycsb.txt ]; then
+if [ ! -f ${LOGDIR}/03_ycsb.txt ]; then
     if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
         create_src
     fi

@@ -24,7 +24,8 @@ services:
       # for the init script 
       - ARCHREDO=/opt/oracle/oradata/ORCL/arch
       - REDO=/opt/oracle/oradata/ORCL
-      - FOOTER_LINES=4      
+      - FOOTER_LINES=4     
+      - LOGDIR=/opt/oracle/oradata/ORCL
     env_file:
       - ../../config/env.sh           
     volumes:
