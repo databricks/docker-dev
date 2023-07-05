@@ -15,6 +15,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Passw0rd
       - LANG=C.UTF-8
+      - LOGDIR=/var/lib/mysql
     env_file:
       - ../config/env.sh        
     volumes:
