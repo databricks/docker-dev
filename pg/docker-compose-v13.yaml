@@ -12,7 +12,7 @@ services:
     hostname: pg-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - src-v1311:/var/lib/postgresql/data 
+      - v1311-src:/var/lib/postgresql/data 
 
   v1311-dst:
     extends: 
@@ -22,12 +22,12 @@ services:
     hostname: pg-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - dst-v1311:/var/lib/postgresql/data
+      - v1311-dst:/var/lib/postgresql/data
 
 networks:
   default:
     name: arcnet
     external: true
 volumes:
-  src-v1311:  
-  dst-v1311:  
+  v1311-src:  
+  v1311-dst:  
