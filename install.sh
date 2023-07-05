@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# osx=arm
+# linux=x86_64
+set_machine() {
+    export MACHINE=$(uname -p)    
+}
+
 abort() {
   printf "%s\n" "$@" >&2
   exit 1
@@ -19,7 +25,7 @@ choose_start_setup() {
     |           |    |           |    |          |    |   Kafka     |
     +-----------+    +-----------+    +----------+    +-------------+  
 
-    The source databases will have 100 million rows of data.  
+    The source databases will have 100 million sparse rows.  
     The setup of about dozen containers will be take about 15 minutes.  
 
     To access the demo using:
@@ -50,28 +56,29 @@ choose_start_setup() {
 }
 
 choose_start_cli() {
-about_textbox='
-Containers are setup.
+    about_textbox='
+    Containers are setup.
 
-To access the demo using:
+    To access the demo using:
 
-1) UI, open browser to http://localhost:8080 username "admin" password "arcion"
-2) CLI, using tmux terminal, 
+    1) UI, open browser to http://localhost:8080 username "admin" password "arcion"
+    2) CLI, using tmux terminal. 
 
-Enter tmux terminal
-    docker exec -it arcion-demo-workloads-1 tmux attach
+    Enter tmux terminal
+        docker exec -it arcion-demo-workloads-1 tmux attach
 
-To start replication:
-    arcdemo.sh full mysql pg
-    arcdemo.sh full pg kafka
-    arcdemo.sh full oraxe minio
+    To start replication:
+        arcdemo.sh full mysql pg
+        arcdemo.sh full pg kafka
+        arcdemo.sh full oraxe minio
 
-To exit the tmux session:
-    1. press <control> b
-    2. type ":detach" at the bottom status bar wihout the quote
+    To exit the tmux session:
+        1. press <control> b
+        2. type ":detach" at the bottom status bar wihout the quote
 
-Whould you like to be placed into the CLI?
-'
+    Whould you like to be placed into the CLI?
+    '
+    
     if [[ $(which whiptail) ]]; then 
         whiptail --title "Arcion Demo Kit" \
             --yesno "${about_textbox}" 0 0 0
@@ -92,22 +99,29 @@ Whould you like to be placed into the CLI?
 }
 
 choose_data_providers() {
+    local ora_whiptail_prompt="OFF"
+    local ora_selected
 
     if [[ $(which whiptail) ]]; then 
-        whiptail --title "Choose Source and Destinations Providers" \
+        whiptail --title "Choose Source and Destination Providers" \
         --checklist \
         "Select / Unslect data providers" 0 0 0 \
-        MySQL "MySQL V8 source and destionation" ON \
-        Oracle "Oracle XE 21c source and destionation" OFF \
-        Postgres "Postgres V15 source and destionation" OFF \
-        Kafka "Opensource Kafka destionation" OFF \
-        Minio "S3 destination" ON
+        MySQL "MySQL V8 source and destination" ON \
+        Postgres "Postgres V15 source and destination" ON \
+        Kafka "Opensource Kafka destination" ON \
+        Minio "S3 destination" ON \
+        Oracle "Oracle XE 21c source and destination" ${ora_whiptail_prompt}
     else
-        echo "MySQL Oracle Postgres Kafka Minio" >&3
+        echo "MySQL ${ora_selected} Postgres Kafka Minio" >&3
     fi
 }
 
 install_oraxe() {
+    if [[ "${MACHINE}" != "x86_64" ]]; then 
+        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
+        return 1
+    fi    
+
     pushd ${BASE_DIR}/oracle
         if [ ! -d oracle-docker-images ]; then
             git clone https://github.com/oracle/docker-images oracle-docker-images
@@ -122,7 +136,7 @@ install_oraxe() {
 
         pushd oraxe
             docker compose up -d
-            while [ -z "$( docker compose logs v2130-src 2>&1 | grep 'DONE: Executing user defined scripts' )" ]; do 
+            while [ -z "$( docker compose logs v2130-src 2>&1 | grep -m 1 'DONE: Executing user defined scripts' )" ]; do 
                 echo waiting 10 sec for oraxe-v2130-src; sleep 10; 
             done
         popd
@@ -132,7 +146,7 @@ install_oraxe() {
 install_mysql() {
     pushd ${BASE_DIR}/mysql
         docker compose up -d
-        while [ -z "$( docker compose logs v8033-src 2>&1 | grep 'mysqld: ready for connections' )" ]; do 
+        while [ -z "$( docker compose logs v8033-src 2>&1 | grep -m 1 'mysqld: ready for connections' )" ]; do 
             echo waiting 10 sec for mysql-v8033-src; sleep 10; 
         done
     popd        
@@ -141,7 +155,7 @@ install_mysql() {
 install_pg() {
     pushd ${BASE_DIR}/pg
         docker compose up -d
-        while [ -z "$( docker compose logs v1503-src 2>&1 | grep 'database system is ready to accept connections' )" ]; do 
+        while [ -z "$( docker compose logs v1503-src 2>&1 | grep -m 1 'database system is ready to accept connections' )" ]; do 
             echo waiting 10 sec for v1503-src; sleep 10; 
         done
     popd        
@@ -159,6 +173,9 @@ install_minio() {
     popd        
 }
 
+
+set_machine
+
 # get dir where this script is at
 DIR_NAME="${BASH_SOURCE[0]}"
 if [ -z "${DIR_NAME}" ]; then
@@ -170,7 +187,7 @@ else
 fi
 
 
-if [[ ! -z "${ARCION_LICENSE}" ]]; then  
+if [[ -n "${ARCION_LICENSE}" ]]; then  
     echo "ARCION_LICENSE found."  
 elif [[ -f replicant.lic ]]; then
     echo "ARCION_LICENSE environmental varibale not found."
@@ -197,7 +214,7 @@ fi
 choose_start_setup
 
 docker network inspect arcnet >/dev/null 2>/dev/null
-if [[ "$?" = "0" ]]; then
+if [[ "$?" == "0" ]]; then
     echo "docker network arcnet found."
 else 
     echo "docker network create arcnet"
