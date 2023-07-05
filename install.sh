@@ -256,8 +256,9 @@ fi
 SELECTED=$(choose_data_providers 3>&1 1>&2 2>&3)
 
 for s in ${SELECTED[@]}; do
-    s=$(echo ${s,,} | sed 's/"//g' ) # remove the quote surrounding the name 
-    case ${s,,} in
+    echo $s
+    s=$(echo ${s} | tr '[:upper:]' '[:lower:]' | sed 's/"//g' ) # remove the quote surrounding the name 
+    case ${s} in
         mysql) install_mysql;;
         oracle) install_oraxe;;
         postgres|pg) install_pg;;
