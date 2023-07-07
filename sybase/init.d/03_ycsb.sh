@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-
+#
+##!/usr/bin/env bash
 # https://learn.microsoft.com/en-us/sql/tools/bcp-utility?view=sql-server-ver16
 # does not support pipe
 
@@ -25,8 +25,7 @@ load_dense_data() {
     # run the bulk loader
     # don't batch dense
     echo "Start loading"
-    time bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_densetable.fmt
-    # 2>&1 | tee ${INITDB_LOG_DIR}/03_densetable.log
+    time bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_densetable.fmt -b 1000 2>&1 | tee ${INITDB_LOG_DIR}/03_densetable.log
     echo "Finished loading"
     # delete datafile
     rm -rf $datafile
@@ -54,8 +53,7 @@ load_sparse_data() {
     # run the bulk loader
     # batch of 1M is too large
     echo "Start loading"
-    time bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 100000 
-    # 2>&1 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
+    time bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 1000000 2>&1 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
     echo "Finished loading"
     # delete datafile
     rm -rf $datafile   
@@ -78,7 +76,7 @@ ycsb_dense_data() {
 
     rm -rf $datafile >/dev/null 2>&1
     #mkfifo ${datafile}
-    seq 0 $(( 1000000*${SIZE_FACTOR:-1} - 1 )) | \
+    seq 0 $(( 10000*${SIZE_FACTOR:-1} - 1 )) | \
         awk '{printf "%10d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d\n", \
             $1,$1,$1,$1,$1,$1,$1,$1,$1,$1,$1}' > ${datafile}
 }
@@ -90,14 +88,15 @@ if [ -f ${INITDB_LOG_DIR}/03_ycsb.txt ]; then
 else
 
     if [[ "${ROLE^^}" = "SRC" ]]; then
-        # need to load densetable first
-        # dense does not work anymore
-        # load_dense_data 1
+        # dense loads at 64 rows per second.  only load 10K instead of 1M
+        # TODO: see if there is a way to spped up dense
+        load_dense_data 1
+        #load_dense_data 10
         # then the sparse.  otherwise, there is hang 
         load_sparse_data 1
-        load_sparse_data 10
         load_sparse_data 100
-        load_sparse_data 1000
+        load_sparse_data 10
+        # load_sparse_data 1000
     fi
     touch ${INITDB_LOG_DIR}/03_ycsb.txt
 fi

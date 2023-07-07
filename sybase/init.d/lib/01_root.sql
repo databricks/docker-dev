@@ -4,8 +4,8 @@ go
 sp_cacheconfig "default data cache", "25M"
 go
 
-master..sp_dboption master 'select into/bulkcopy/pllsort' enable
-go
+-- master..sp_dboption master 'select into/bulkcopy/pllsort' enable
+-- go
 
 sp_addlogin ${DB_ARC_USER}, ${DB_ARC_PW}, master 
 go

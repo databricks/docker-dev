@@ -46,6 +46,7 @@ services:
       - SYBASE_PASSWORD=myPassword
       - SYBASE_SID=MYSYBASE
       - DATA_VOL=/opt/sybase/data 
+      - INITDB_LOG_DIR=/opt/sybase/data
     env_file:
       - ../config/env.sh
     volumes:
