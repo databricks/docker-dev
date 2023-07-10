@@ -105,10 +105,10 @@ arcdemo.sh full mysql postgresql
 - For stresing out CDC, change the workload update rate and increase threads on Arcion real-time threads
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full mysql oskbroker
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full mysql postgresql
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full postgresql mysql
-    arcdemo.sh -s 100 -b 2:2 -t 2:2 -r 0 full postgresql oskbroker
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql oskbroker
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql postgresql
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full postgresql mysql
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full postgresql oskbroker
     ```
 
     `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 
@@ -117,8 +117,21 @@ arcdemo.sh full mysql postgresql
 ## To shutdown all data source and destination providers
 
 ```bash
-for db in $( find * -maxdepth 1 -type d -prune ! -name "arcion*" ); do
-pushd $db; docker compose stop; popd
+for db in $( find * -maxdepth 2 -name docker-compose.yaml ); do
+pushd $(dirname $db) 2>/dev/null; docker compose stop; popd 2>/dev/null
+done
+```
+
+- down removes the container and its running image
+```bash
+for db in $( find * -maxdepth 2 -name docker-compose.yaml ); do
+pushd $(dirname $db) 2>/dev/null; docker compose down; popd 2>/dev/null
+done
+```
+
+```bash
+for db in $( find * -maxdepth 2 -name docker-compose.yaml ); do
+pushd $(dirname $db); docker compose up -d; popd
 done
 ```
 

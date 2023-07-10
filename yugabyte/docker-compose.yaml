@@ -2,16 +2,21 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  yugabyte:
-    image:  yugabytedb/yugabyte
-    container_name: yugabyte
+  v21801b4:
+    image:  yugabytedb/yugabyte:2.18.0.1-b4
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: yugabyte
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 7001
       - 9000    # admin
       - 5433    # pg
       - 9042    # cassandra
     volumes:
-      - yugabyte:/home/yugabyte/yb_data
+      - v21801b4-src:/home/yugabyte/yb_data    
     command:
       - bin/yugabyted 
       - start
@@ -26,5 +31,6 @@ networks:
   default:
     name: arcnet
     external: true
+
 volumes:
-  yugabyte:
+  v21801b4-src:

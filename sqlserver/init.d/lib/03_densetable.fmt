@@ -1,0 +1,13 @@
+14.0
+11
+1       SQLCHAR             0       12      ","    1     YCSB_KEY                             ""
+2       SQLCHAR             0       0       ","    2     FIELD0                               SQL_Latin1_General_CP1_CI_AS
+3       SQLCHAR             0       0       ","    3     FIELD1                               SQL_Latin1_General_CP1_CI_AS
+4       SQLCHAR             0       0       ","    4     FIELD2                               SQL_Latin1_General_CP1_CI_AS
+5       SQLCHAR             0       0       ","    5     FIELD3                               SQL_Latin1_General_CP1_CI_AS
+6       SQLCHAR             0       0       ","    6     FIELD4                               SQL_Latin1_General_CP1_CI_AS
+7       SQLCHAR             0       0       ","    7     FIELD5                               SQL_Latin1_General_CP1_CI_AS
+8       SQLCHAR             0       0       ","    8     FIELD6                               SQL_Latin1_General_CP1_CI_AS
+9       SQLCHAR             0       0       ","    9     FIELD7                               SQL_Latin1_General_CP1_CI_AS
+10      SQLCHAR             0       0       ","    10    FIELD8                               SQL_Latin1_General_CP1_CI_AS
+11      SQLCHAR             0       0       "\n"   11    FIELD9                               SQL_Latin1_General_CP1_CI_AS

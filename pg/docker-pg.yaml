@@ -1,0 +1,34 @@
+---
+# 3.8 required for the volume relative path name to config file 
+# the build adds wal2json 
+version: '3.8'
+
+services:
+  pg:
+    hostname: pg
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=Passw0rd 
+      - LOGDIR=/var/lib/postgresql/data
+    env_file:
+      - ../config/env.sh      
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+    command: 
+      - postgres
+      - "-c" 
+      - wal_level=logical
+      - "-c" 
+      - max_replication_slots=10
+      - "-c" 
+      - max_connections=300
+      - "-c" 
+      - shared_buffers=80MB
+      - "-c" 
+      - max_wal_size=4GB
+

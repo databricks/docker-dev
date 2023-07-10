@@ -2,22 +2,33 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  db2:
-    image: ibmcom/db2
-    container_name: db2
+  v11580:
+    image: ibmcom/db2:11.5.8.0
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: db2
+    deploy:
+      mode: replicated
+      replicas: 1
     privileged: true
     ports:
       - 50000
+
     environment:
       - LICENSE=accept
       - DB2INST1_PASSWORD=Passw0rd
       - DBNAME=db2inst1
     volumes:
       - ./init.d:/var/custom
-      - db2:/database
+      - v11580-src:/database
+    networks:
+      default:
+        aliases:
+          - db2
 networks:
   default:
     name: arcnet
     external: true
+
 volumes:
-  db2:
+  v11580-src:

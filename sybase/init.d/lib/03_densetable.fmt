@@ -1,0 +1,13 @@
+10.0
+11
+1       SYBCHAR             0       10        ","    1     YCSB_KEY                             
+2       SYBCHAR             0       100       ","    2     FIELD0                               
+3       SYBCHAR             0       100       ","    3     FIELD1                               
+4       SYBCHAR             0       100       ","    4     FIELD2                               
+5       SYBCHAR             0       100       ","    5     FIELD3                               
+6       SYBCHAR             0       100       ","    6     FIELD4                               
+7       SYBCHAR             0       100       ","    7     FIELD5                               
+8       SYBCHAR             0       100       ","    8     FIELD6                               
+9       SYBCHAR             0       100       ","    9     FIELD7                               
+10      SYBCHAR             0       100       ","    10    FIELD8                               
+11      SYBCHAR             0       100       "\n"   11    FIELD9                               

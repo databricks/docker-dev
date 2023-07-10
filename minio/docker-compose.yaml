@@ -2,9 +2,14 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  minio:
-    image: quay.io/minio/minio
-    container_name: minio
+  v230602:
+    image: quay.io/minio/minio:RELEASE.2023-06-02T23-17-26Z
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: minio
+    deploy:
+      mode: replicated
+      replicas: 1
     ports:
       - 9000
       - 9090
@@ -18,6 +23,10 @@ services:
       - /data 
       - --console-address 
       - :9090
+    networks:
+      default:
+        aliases: 
+          - minio
 networks:
   default:
     name: arcnet

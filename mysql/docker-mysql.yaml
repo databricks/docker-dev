@@ -1,0 +1,22 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+services:
+  mysql: 
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: mysql
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=Passw0rd
+      - LANG=C.UTF-8
+      - LOGDIR=/var/lib/mysql
+    env_file:
+      - ../config/env.sh        
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+

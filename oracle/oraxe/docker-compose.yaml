@@ -1,0 +1,63 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+x-xe21: &default-xe21
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraxe
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 1521
+      - 5500
+    environment:
+      - ORACLE_PWD=Passw0rd
+      - ORACLE_SID=XE
+      # for the init script 
+      - ARCHREDO=/opt/oracle/oradata/XE/arch
+      - REDO=/opt/oracle/oradata/XE
+      - FOOTER_LINES=4      
+      - LOGDIR=/opt/oracle/oradata/XE
+    env_file:
+      - ../../config/env.sh           
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+
+
+services:
+  v2130-src:
+    # sys and system password: oracle
+    << : *default-xe21
+    image: oracle/database:21.3.0-xe
+    hostname: oraxe-src
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - v2130-src:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraxe
+          - oraxe-src      
+
+  v2130-dst:
+    # sys and system password: oracle
+    << : *default-xe21
+    image: oracle/database:21.3.0-xe
+    hostname: oraxe-dst
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - v2130-dst:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraxe-dst
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  v2130-src:
+  v2130-dst:

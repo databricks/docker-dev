@@ -2,52 +2,63 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  cockroach1:
-    image: cockroachdb/cockroach
-    container_name: cockroach1
+  v2311-1:
+    image: cockroachdb/cockroach:v23.1.1
+    container_name: cockroach-v2311-1
     ports:
       - 26257
       - 8080
     environment:
       - PGCLIENTENCODING=utf-8
+    volumes:
+      - v2311-src-1:/cockroach/cockroach-data
     command: 
       - start-single-node
       - --insecure
-      - --advertise-addr=cockroach1
+      - --advertise-addr=cockroach-v2311-1
       - --cluster-name=arcion
-  cockroach2:
-    image: cockroachdb/cockroach
-    container_name: cockroach2
+  v2311-2:
+    image: cockroachdb/cockroach:v23.1.1
+    container_name: cockroach-v2311-2
     depends_on:
-      - cockroach1
+      - v2311-1
     ports:
       - 26257
       - 8080
     environment:
       - PGCLIENTENCODING=utf-8
+    volumes:
+      - v2311-src-2:/cockroach/cockroach-data
     command: 
       - start
       - --insecure
-      - --join=cockroach1
-      - --advertise-addr=cockroach2
+      - --join=cockroach-v2311-1
+      - --advertise-addr=cockroach-v2311-2
       - --cluster-name=arcion
-  cockroach3:
-    image: cockroachdb/cockroach
-    container_name: cockroach3
+  v2311-3:
+    image: cockroachdb/cockroach:v23.1.1
+    container_name: cockroach-v2311-3
     depends_on:
-      - cockroach2
+      - v2311-1
     ports:
       - 26257
       - 8080
     environment:
       - PGCLIENTENCODING=utf-8
+    volumes:
+      - v2311-src-3:/cockroach/cockroach-data
     command: 
       - start
       - --insecure
-      - --join=cockroach1
-      - --advertise-addr=cockroach3
+      - --join=cockroach-v2311-1
+      - --advertise-addr=cockroach-v2311-3
       - --cluster-name=arcion
 networks:
   default:
     name: arcnet
     external: true
+
+volumes:
+  v2311-src-1:
+  v2311-src-2:  
+  v2311-src-3:      
