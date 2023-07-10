@@ -12,7 +12,7 @@ function create_arcion_bin_volume () {
     rm -rf *; \
     wget $ARCION_BIN_URL;\
     unzip *.zip;\
-    if [ -d replicant-cli ]; then mv replicant-cli/*; rm -rf replicant-cli/; fi; \
+    if [ -d replicant-cli ]; then mv replicant-cli/* .; rm -rf replicant-cli/; fi; \
     rm *.zip;\
     chown -R 1000 .;\
     ls\

@@ -15,8 +15,9 @@ create_user_db() {
     set -x
     cat <<EOF | cli_root
         CREATE USER ${db} PASSWORD '${DB_ARC_PW}';
-        ALTER USER ${db} CREATEDB;
-        CREATE DATABASE ${db} WITH OWNER ${db} ENCODING 'UTF8';
+        create database ${db};
+        alter database ${db} owner to ${db};
+        grant all privileges on database ${db} to ${db};
 EOF
 
     if [[ "${ROLE^^}" = "SRC" ]]; then
