@@ -7,9 +7,6 @@ x-xe11g: &default-xe11g
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
     hostname: oraxe11g
-    deploy:
-      mode: replicated
-      replicas: 1
     ports:
       - 1521
       - 5500
@@ -38,6 +35,9 @@ services:
   v1102-dst:
     # sys and system password: oracle
     << : *default-xe11g
+    deploy:
+      mode: replicated
+      replicas: 0
     hostname: oraxe-dst
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d

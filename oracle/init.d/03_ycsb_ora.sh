@@ -181,7 +181,7 @@ create_src() {
     if [ ! -f ~/03_ycsb.txt ]; then
         time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ${LOGDIR}/03_ycsb.txt
         time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10  | tee -a ${LOGDIR}/03_ycsb.txt
-        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100  | tee -a ${LOGDIR}/03_ycsb.txt
+        # time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100  | tee -a ${LOGDIR}/03_ycsb.txt
         time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1  | tee -a ${LOGDIR}/03_ycsb.txt
     else
         echo "${LOGDIR}/03_ycsb.txt exists. skipping" 

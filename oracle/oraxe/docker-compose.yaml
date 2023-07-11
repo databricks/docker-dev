@@ -6,9 +6,6 @@ x-xe21: &default-xe21
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
     hostname: oraxe
-    deploy:
-      mode: replicated
-      replicas: 1
     ports:
       - 1521
       - 5500
@@ -44,6 +41,9 @@ services:
   v2130-dst:
     # sys and system password: oracle
     << : *default-xe21
+    deploy:
+      mode: replicated
+      replicas: 0    
     image: oracle/database:21.3.0-xe
     hostname: oraxe-dst
     volumes:
