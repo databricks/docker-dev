@@ -25,8 +25,8 @@ choose_start_setup() {
     |           |    |           |    |          |    |   Kafka     |
     +-----------+    +-----------+    +----------+    +-------------+  
 
-    The source databases will have 100 million sparse rows.  
-    The setup of about dozen containers will be take about 15 minutes.  
+    The source databases will have 1 and 10 million sparse YCSB data.  
+    The setup of the containers will be take about 15 minutes.  
 
     To access the demo using:
 
@@ -137,7 +137,7 @@ install_oraxe() {
         pushd oraxe
             docker compose up -d
             while [ -z "$( docker compose logs v2130-src 2>&1 | grep -m 1 'DONE: Executing user defined scripts' )" ]; do 
-                echo waiting 10 sec for oraxe-v2130-src; sleep 10; 
+                echo waiting 10 sec for data generation on oraxe-v2130-src; sleep 10; 
             done
         popd
     popd    
@@ -147,7 +147,7 @@ install_mysql() {
     pushd ${BASE_DIR}/mysql
         docker compose up -d
         while [ -z "$( docker compose logs v8033-src 2>&1 | grep -m 1 'mysqld: ready for connections' )" ]; do 
-            echo waiting 10 sec for mysql-v8033-src; sleep 10; 
+            echo waiting 10 sec for data generation on mysql-v8033-src; sleep 10; 
         done
     popd        
 }
@@ -155,8 +155,8 @@ install_mysql() {
 install_pg() {
     pushd ${BASE_DIR}/pg
         docker compose up -d
-        while [ -z "$( docker compose logs v1503-src 2>&1 | grep -m 1 'database system is ready to accept connections' )" ]; do 
-            echo waiting 10 sec for v1503-src; sleep 10; 
+        while [ -z "$( docker compose logs v1503-src 2>&1 | grep -m 1 -e 'Skipping initialization' -e 'PostgreSQL init process complete; ready for start up.' )" ]; do 
+            echo waiting 10 sec for data generation on pg-v1503-src; sleep 10; 
         done
     popd        
 }
