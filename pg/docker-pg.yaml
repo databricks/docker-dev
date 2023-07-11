@@ -6,9 +6,6 @@ version: '3.8'
 services:
   pg:
     hostname: pg
-    deploy:
-      mode: replicated
-      replicas: 1
     ports:
       - 5432
     environment:

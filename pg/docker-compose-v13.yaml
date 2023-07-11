@@ -18,6 +18,9 @@ services:
     extends: 
       file: ./docker-pg.yaml
       service: pg    
+    deploy:
+      mode: replicated
+      replicas: 0       
     image: postgres:13.11
     hostname: pg-dst
     volumes:

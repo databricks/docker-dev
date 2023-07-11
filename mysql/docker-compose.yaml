@@ -28,6 +28,9 @@ services:
     extends: 
       file: ./docker-mysql.yaml
       service: mysql  
+    deploy:
+      mode: replicated
+      replicas: 0  
     image: mysql:8.0.33
     hostname: mysql-dst
     volumes:

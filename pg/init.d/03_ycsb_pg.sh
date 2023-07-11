@@ -123,9 +123,9 @@ create_src() {
 
     time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
     time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
-    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
+    # time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
     time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1
-    time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
+    # time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10
 
     db_enable_logging
     ycsb_rm_data

@@ -63,10 +63,9 @@ Go to [http://localhost:8080](http://localhost:8080) and sign in with user `admi
 each will run for 5 minutes and times out by default
 
 ```bash
-arcdemo.sh full mysql oskbroker
-arcdemo.sh full postgresql minio
-arcdemo.sh full postgresql mysql
-arcdemo.sh full mysql postgresql
+arcdemo.sh full mysql kafka
+arcdemo.sh full mysql minio
+arcdemo.sh full mysql pg
 ```
 
 ### Change Scale Factor Performance and Scale Tests
@@ -80,10 +79,9 @@ arcdemo.sh full mysql postgresql
     scale factor 10 will generate about 1GB of data on YCSB and 1GB TPC-C
 
     ```bash
-    arcdemo.sh -s 10 full mysql oskbroker
-    arcdemo.sh -s 10 full postgresql minio
-    arcdemo.sh -s 10 full postgresql mysql
-    arcdemo.sh -s 10 full mysql postgresql
+    arcdemo.sh -s 10 full mysql kafka
+    arcdemo.sh -s 10 full mysql minio
+    arcdemo.sh -s 10 full mysql pg
     ```
 
 - For 10GB volume test, change the scale factor to 100
@@ -96,19 +94,17 @@ arcdemo.sh full mysql postgresql
     set snapshot inter table parallelism to 2 on the extractor and 2 on the applier
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 full mysql oskbroker
-    arcdemo.sh -s 100 -b 2:2 full mysql postgresql
-    arcdemo.sh -s 100 -b 2:2 full postgresql mysql
-    arcdemo.sh -s 100 -b 2:2 full postgresql oskbroker
+    arcdemo.sh -s 100 -b 2:2 full mysql kafka
+    arcdemo.sh -s 100 -b 2:2 full mysql pg
+    arcdemo.sh -s 100 -b 2:2 full mysql minio
     ```
 
 - For stresing out CDC, change the workload update rate and increase threads on Arcion real-time threads
 
     ```bash
-    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql oskbroker
-    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql postgresql
-    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full postgresql mysql
-    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full postgresql oskbroker
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql kafka
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql pg
+    arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql minio
     ```
 
     `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 
@@ -188,5 +184,5 @@ Oracle EE should be used for anything scale factor beyond 10.
     Snapshot inter table parallelism of 2
 
     ```bash
-    arcdemo.sh -s 10 -b 2:2 full oraxe postgresql
+    arcdemo.sh -s 10 -b 2:2 full oraxe pg
     ```
