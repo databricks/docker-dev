@@ -59,7 +59,14 @@ ycsb_load_sparse_table() {
     
     export PGPASSWORD=${DB_ARC_PW}
     set -x
+
+    # don't generate logging for batch load
+    echo "alter table THEUSERTABLE${SIZE_FACTOR_NAME} set unlogged;" | psql --username "${db}" --dbname "${db}"
+
     cat ${datafile} |  psql --username "${db}" --dbname "${db}" -c "copy THEUSERTABLE${SIZE_FACTOR_NAME} (ycsb_key) from STDIN"
+
+    echo "alter table THEUSERTABLE${SIZE_FACTOR_NAME} set logged;" | psql --username "${db}" --dbname "${db}"
+
     set +x
 }
 
@@ -75,7 +82,14 @@ ycsb_load_dense_table() {
 
     export PGPASSWORD=${DB_ARC_PW}
     set -x
+    # on densttable, unlogged is slower
+    # don't generate logging for batch load
+    # echo "alter table DENSETABLE${SIZE_FACTOR_NAME} set unlogged;" | psql --username "${db}" --dbname "${db}"
+
     cat ${datafile} | psql --username "${db}" --dbname "${db}" -c "copy DENSETABLE${SIZE_FACTOR_NAME} (ycsb_key,field0,field1,field2,field3,field4,field5,field6,field7,field8,field9) from STDIN DELIMITER ','"
+
+    # echo "alter table DENSETABLE${SIZE_FACTOR_NAME} set logged;" | psql --username "${db}" --dbname "${db}"
+
     set +x
 }
 
