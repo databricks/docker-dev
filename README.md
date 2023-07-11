@@ -35,7 +35,7 @@ Cut and paste the following in a terminal.
 
 [![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
 
-## MySQL to PostgresSQL Migration Demo
+## MySQL to PostgresSQL Replication CLI Demo
 
 In Console Screen, type
 
@@ -44,6 +44,26 @@ arcdemo.sh full mysql postgresql
 ```
 
 [![asciicast](https://asciinema.org/a/587771.svg)](https://asciinema.org/a/587771)
+
+## MySQL to Kafka Replication CLI Demo
+
+In Console Screen, type
+
+```bash
+arcdemo.sh full mysql kafka
+```
+
+[![asciicast](https://asciinema.org/a/596184.svg)](https://asciinema.org/a/596184)
+
+## MySQL to S3 (MinIO) Replication CLI Demo
+
+In Console Screen, type
+
+```bash
+arcdemo.sh full mysql minio
+```
+
+[![asciicast](https://asciinema.org/a/596183.svg)](https://asciinema.org/a/596183)
 
 # Using Demo Kit
 
