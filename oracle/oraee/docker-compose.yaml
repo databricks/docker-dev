@@ -7,9 +7,6 @@ services:
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
     hostname: oraee-src
-    deploy:
-      mode: replicated
-      replicas: 1
     ports:
       - 1521
       - 5500
