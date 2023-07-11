@@ -22,6 +22,9 @@ services:
     extends: 
       file: ./docker-mysql.yaml
       service: mysql  
+    deploy:
+      mode: replicated
+      replicas: 0        
     image: mysql:5.7.42
     hostname: mysql-dst
     volumes:
@@ -33,6 +36,11 @@ services:
       - --local-infile=true                    # allow load data local
       - --secure-file-priv=/tmp                # allow load data
 
+networks:
+  default:
+    name: arcnet
+    external: true
+    
 volumes:    
   v5742-src:  
   v5742-dst:  
