@@ -1,4 +1,4 @@
-This is the Arcion Demo Kit. It is designed to demo and test Arcion replication from various data sources to a target. The diagram below describes the components of the demo kit.  Please refer to [https://docs.arcion.io](https://docs.arcion.io) for more info.
+This is the Arcion Demo Kit. It is designed to demo and test Arcion replication from various data sources to targets. The diagram below describes the components of the demo kit.  Please refer to [https://docs.arcion.io](https://docs.arcion.io) for more info.
 
 - Load Generator
 - Data source
@@ -20,7 +20,7 @@ graph LR
 
 Assumptions:
 
-- Running on Windows WSL, Liunx, Mac (Intel and Apple Silicon)
+- Running on Windows WSL2, Liunx, Mac (Intel and Apple Silicon)
 - Have Arcion License in the current directory (replicant.lic) 
 - Have Docker and git installed
 - Have access to a terminal and a browser
@@ -35,35 +35,33 @@ Cut and paste the following in a terminal.
 
 [![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
 
-## MySQL to PostgresSQL Replication CLI Demo
+# Demo Recordings
 
-In Console Screen, type
+Arcion support snapshot, real-time, snapshot, and delta-snapshot replication modes.
+Recorded Arcion CLI demos of source, destination, and replication type combination is available.
+The recordings use `asciiinema` so that YAML config files used can be cut / pasted.
+This is functional demo using TPCC and YCSB.
+The data size is 1GB each, 1 thread on given to Arcion, and 8 GB of RAM shared.  
 
-```bash
-arcdemo.sh full mysql postgresql
-```
+- Left side of the table (the left column) is the source.
+- Right side of the table (the top row) is the destination.
+- The cell has workloads and URL to the demo.
+- A blank cell means a demo has not been recorded as of yet.
+   
+## Snapshot Replication CLI Demos
 
-[![asciicast](https://asciinema.org/a/587771.svg)](https://asciinema.org/a/587771)
+snapshot | kafka | minio | null | pg | snowflake
+-- | -- | -- | -- | -- | --
+informix |   | [TPCC, YCSB](https://asciinema.org/a/596417) | [TPCC, YCSB](https://asciinema.org/a/596416) |   | [TPCC, YCSB](https://asciinema.org/a/596415)
+mysql |   |   |   |   |  
 
-## MySQL to Kafka Replication CLI Demo
 
-In Console Screen, type
+## Full Replication CLI Demos
 
-```bash
-arcdemo.sh full mysql kafka
-```
-
-[![asciicast](https://asciinema.org/a/596184.svg)](https://asciinema.org/a/596184)
-
-## MySQL to S3 (MinIO) Replication CLI Demo
-
-In Console Screen, type
-
-```bash
-arcdemo.sh full mysql minio
-```
-
-[![asciicast](https://asciinema.org/a/596183.svg)](https://asciinema.org/a/596183)
+full | kafka | minio | null | pg | snowflake
+-- | -- | -- | -- | -- | --
+informix |   |   |   | [YCSB](https://asciinema.org/a/596418) | [YCSB](https://asciinema.org/a/596402)
+mysql | [TPCC, YCSB](https://asciinema.org/a/596184) | [TPCC, YCSB](https://asciinema.org/a/596183) |   | [TPCC, YCSB](https://asciinema.org/a/587771) |  
 
 # Using Demo Kit
 
@@ -119,7 +117,7 @@ arcdemo.sh full mysql pg
     arcdemo.sh -s 100 -b 2:2 full mysql minio
     ```
 
-- For stresing out CDC, change the workload update rate and increase threads on Arcion real-time threads
+- For stress test of CDC, change the workload update rate and increase threads on Arcion real-time threads
 
     ```bash
     arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql kafka
