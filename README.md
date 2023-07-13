@@ -1,4 +1,4 @@
-This is Arcion Demo Kit. This is design to demo and test Arcion replication from various data source to target. The diagram below describes the components of the demo kit.  Please refer to [https://docs.arcion.io](https://docs.arcion.io) for more info.
+This is the Arcion Demo Kit. It is designed to demo and test Arcion replication from various data sources to a target. The diagram below describes the components of the demo kit.  Please refer to [https://docs.arcion.io](https://docs.arcion.io) for more info.
 
 - Load Generator
 - Data source
@@ -127,7 +127,7 @@ arcdemo.sh full mysql pg
     arcdemo.sh -s 100 -b 2:2 -c 2:2 -r 0 full mysql minio
     ```
 
-    `-r 2:2` use 2 threads respectively for Arcion real-time extractor and applier 
+    `-r 2:2` use 2 threads for Arcion real-time extractor and applier respectively
     `-t 0`   run YCSB on 1 thread and TPC-C on 1 thread as fast as possible 
     
 ## To shutdown all data source and destination providers
