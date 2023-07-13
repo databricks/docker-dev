@@ -39,7 +39,7 @@ Cut and paste the following in a terminal.
 
 Arcion supports snapshot, real-time, snapshot, and delta-snapshot replication modes.
 Recorded Arcion CLI demos of source, destination, and replication type combination is available.
-The recordings use `asciiinema` so that the YAML config files can be cut/pasted.
+The recordings use `asciinema` so that the YAML config files can be cut/pasted.
 This is a functional demo using TPCC and YCSB.
 The data size is 1GB each, 1 thread given to Arcion, and 8 GB of RAM shared.  
 
