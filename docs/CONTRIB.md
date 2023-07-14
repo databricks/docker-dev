@@ -1,15 +1,45 @@
-## ascii cinema video
+# crate asciinema video
 
-install
+## Setup asciinema
 
-```bash
-sudo apt-get install asciinema
-```
+1. install asciinema:
 
-record
+    ```bash
+    sudo apt-get install asciinema
+    ```
 
-```bash
-clear
-asciinema rec
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
-```
+2. start recording:
+
+    ```bash
+    asciinema rec
+    ```
+
+3. run commands that will be recorded:
+
+    For exmaple:
+
+    ```
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
+    ```
+
+4. stop and upload:
+
+- stop `asciinema rec`
+
+    ```bash
+    exit
+    ```
+- press `<enter>` to upload to [https://asciinema.org/](https://asciinema.org/)
+
+## At `asciinema.org`
+
+1. link accounts if not already done
+   
+2. change title to "Source To Destination Replication Workloads"
+    For exmaple
+    ```bash
+    MySQL to PostgresSQL Full TPCC,YCSB
+    ```
+3. change idle timing to `.5` sec
+  
+
