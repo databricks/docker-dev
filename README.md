@@ -50,18 +50,21 @@ The data size is 1GB each, 1 thread on given to Arcion, and 8 GB of RAM shared.
    
 ## Snapshot Replication CLI Demos
 
-snapshot | kafka | minio | null | pg | snowflake
--- | -- | -- | -- | -- | --
-informix |   | [TPCC, YCSB](https://asciinema.org/a/596417) | [TPCC, YCSB](https://asciinema.org/a/596416) |   | [TPCC, YCSB](https://asciinema.org/a/596415)
-mysql |   |   |   |   |  
+snapshot | kafka | minio | mysql | null | oracle | pg | snowflake
+-- | -- | -- | -- | -- | -- | -- | --
+informix |   | [TPCC, YCSB](https://asciinema.org/a/596417) |   | [TPCC, YCSB](https://asciinema.org/a/596416) |   |   | [TPCC, YCSB](https://asciinema.org/a/596415)
+mysql |   |   |   |   |   |   |  
+oracle | [TPCC, YCSB](https://asciinema.org/a/596635) | [TPCC, YCSB](https://asciinema.org/a/596638) | [TPCC, YCSB](https://asciinema.org/a/596642) | [TPCC, YCSB](https://asciinema.org/a/596643) |   | [TPCC, YCSB](https://asciinema.org/a/596641) | [TPCC, YCSB](https://asciinema.org/a/596634)
 
 
 ## Full Replication CLI Demos
 
-full | kafka | minio | null | pg | snowflake
--- | -- | -- | -- | -- | --
-informix |   |   |   | [YCSB](https://asciinema.org/a/596418) | [YCSB](https://asciinema.org/a/596402)
-mysql | [TPCC, YCSB](https://asciinema.org/a/596184) | [TPCC, YCSB](https://asciinema.org/a/596183) |   | [TPCC, YCSB](https://asciinema.org/a/587771) |  
+full | kafka | minio | mysql | null | oracle | pg | snowflake
+-- | -- | -- | -- | -- | -- | -- | --
+informix |   |   |   |   | [YCSB](https://asciinema.org/a/46fe1mFKWyIvRhSaqEnIrGacN) | [YCSB](https://asciinema.org/a/596418) | [YCSB](https://asciinema.org/a/596402)
+mysql | [TPCC, YCSB](https://asciinema.org/a/596184) | [TPCC, YCSB](https://asciinema.org/a/596183) |   |   |   | [TPCC, YCSB](https://asciinema.org/a/587771) |  
+oracle | [TPCC, YCSB](https://asciinema.org/a/596653) | [TPCC, YCSB](https://asciinema.org/a/596652) | [TPCC, YCSB](https://asciinema.org/a/596647) | [TPCC, YCSB](https://asciinema.org/a/596644) |   | [TPCC, YCSB](https://asciinema.org/a/596651) | [YCSB](https://asciinema.org/a/596633)
+
 
 # Using Demo Kit
 
