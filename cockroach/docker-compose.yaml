@@ -5,6 +5,7 @@ services:
   v2311-1:
     image: cockroachdb/cockroach:v23.1.1
     container_name: cockroach-v2311-1
+    hostname: cockroach
     ports:
       - 26257
       - 8080
@@ -17,9 +18,14 @@ services:
       - --insecure
       - --advertise-addr=cockroach-v2311-1
       - --cluster-name=arcion
+    networks:
+      default:
+        aliases: 
+          - cockroach-1
   v2311-2:
     image: cockroachdb/cockroach:v23.1.1
     container_name: cockroach-v2311-2
+    hostname: cockroach
     depends_on:
       - v2311-1
     ports:
@@ -35,9 +41,14 @@ services:
       - --join=cockroach-v2311-1
       - --advertise-addr=cockroach-v2311-2
       - --cluster-name=arcion
+    networks:
+      default:
+        aliases: 
+          - cockroach-2
   v2311-3:
     image: cockroachdb/cockroach:v23.1.1
     container_name: cockroach-v2311-3
+    hostname: cockroach
     depends_on:
       - v2311-1
     ports:
@@ -53,6 +64,10 @@ services:
       - --join=cockroach-v2311-1
       - --advertise-addr=cockroach-v2311-3
       - --cluster-name=arcion
+    networks:
+      default:
+        aliases: 
+          - cockroach-3
 networks:
   default:
     name: arcnet

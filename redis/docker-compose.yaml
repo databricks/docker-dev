@@ -11,8 +11,13 @@ services:
       replicas: 1
     environment:
       - REDIS_PASSWORD=Passw0rd
+    volumes:
+      - v7011-src:/data      
 
 networks:
   default:
     name: arcnet
     external: true
+
+volumes:
+  v7011-src:

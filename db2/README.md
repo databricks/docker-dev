@@ -18,6 +18,13 @@ docker compose exec db2 bash
 
 # References
 
+Download this and place in the libs dir
+
+IBM Data Server Client (Linux AMD64 and Intel EM64T)
+Version 11.5.4
+v11.5.4_linuxx64_client.tar.gz (629MB)
+
+
 https://hub.docker.com/r/ibmcom/db2
 
 [install as non root](
