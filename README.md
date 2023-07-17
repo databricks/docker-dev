@@ -64,11 +64,12 @@ pg | [TPCC, YCSB](https://asciinema.org/a/596959) | [TPCC, YCSB](https://asciine
 
 full | kafka | minio | mysql | null | oracle | pg | redis stream | snowflake
 -- | -- | -- | -- | -- | -- | -- | -- | --
-db2 luw |   |   |   |   |   |   |   |  
+db2 luw |   |   | [TPCC YCSB](https://asciinema.org/a/597115) |   | [TPCC YCSB](https://asciinema.org/a/597114) | [TPCC YCSB](https://asciinema.org/a/597116) |   |  
 informix | [YCSB](https://asciinema.org/a/596970) | [YCSB](https://asciinema.org/a/596971) | [YCSB](https://asciinema.org/a/596959) | [YCSB](https://asciinema.org/a/596973) | [YCSB](https://asciinema.org/a/46fe1mFKWyIvRhSaqEnIrGacN),[YCSB](https://asciinema.org/a/596974) | [YCSB](https://asciinema.org/a/596418),[YCSB](https://asciinema.org/a/596975) | [YCSB](https://asciinema.org/a/596977) | [YCSB](https://asciinema.org/a/596402)
-mysql | [TPCC YCSB](https://asciinema.org/a/596184) | [TPCC YCSB](https://asciinema.org/a/596183) | [TPCC, YCSB](https://asciinema.org/a/596980) | [TPCC, YCSB](https://asciinema.org/a/596979) | [TPCC, YCSB](https://asciinema.org/a/596981) | [TPCC YCSB](https://asciinema.org/a/587771) | [TPCC, YCSB](https://asciinema.org/a/596982) | [TPCC YCSB]()
-oracle | [TPCC YCSB](https://asciinema.org/a/596653),[TPCC, YCSB](https://asciinema.org/a/596984) | [TPCC YCSB](https://asciinema.org/a/596652) | [TPCC YCSB](https://asciinema.org/a/596647) | [TPCC YCSB](https://asciinema.org/a/596644) |   | [TPCC YCSB](https://asciinema.org/a/596651) |   | [YCSB](https://asciinema.org/a/596633)
-pg |   |   |   |   |   |   |   |  							
+mysql | [TPCC YCSB](https://asciinema.org/a/596184) | [TPCC YCSB](https://asciinema.org/a/596183) | [TPCC YCSB](https://asciinema.org/a/596980) | [TPCC YCSB](https://asciinema.org/a/596979) | [TPCC YCSB](https://asciinema.org/a/596981) | [TPCC YCSB](https://asciinema.org/a/587771) | [TPCC YCSB](https://asciinema.org/a/596982) | [TPCC YCSB]()
+oracle | [TPCC YCSB](https://asciinema.org/a/596653),[TPCC YCSB](https://asciinema.org/a/596984) | [TPCC YCSB](https://asciinema.org/a/596652) | [TPCC YCSB](https://asciinema.org/a/596647) | [TPCC YCSB](https://asciinema.org/a/596644) |   | [TPCC YCSB](https://asciinema.org/a/596651) |   | [YCSB](https://asciinema.org/a/596633)
+pg |   |   |   |   |   |   |   |  
+
 
 
 # Using Demo Kit
