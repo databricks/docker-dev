@@ -17,6 +17,15 @@
 - Click flags
   - `cloudsql.logical_decoding on`
   - `cloudsql.enable_pglogical on`
+- Create instance
+
+wait couple of minutes.  jot down the following
+
+public IP 35.223.192.210
+
+SRCDB_HOST=35.223.192.210
+
+psql -U postgres -h $SRCDB_HOST
 
 # TODO
 
