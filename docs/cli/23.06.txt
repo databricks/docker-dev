@@ -1,0 +1,37 @@
+1. CE-1389: Oracle: Oracle native reader not parsing the log properly when target isn't Oracle also
+2. CE-1403: Oracle: Oracle XMLType not working in native log reader
+3. CE-1380: Oracle: Oracle XML type not mapped properly for PostgreSQL
+4. CE-1381: Oracle: TIMESTAMP with time zone not mapped properly to postgreSQL timestamp with time zone
+5. CE-1390: Oracle: Oracle native reader shouldn't add a + for positive intervals, it's implied
+6. CE-1399: Oracle: Oracle null rowid columns cause snapshot to fail with an NPE
+7. CE-1402: DB2: Db2/IIDR/Kafka Sticky Assignor
+8. CE-472: Oracle: Support IOT for Oracle native log reader
+9. CE-941: Snowflake: Error Handling - Snowflake Target
+10. CE-1092: All: Propagate exception in Extractor and Applier call methods
+11. CE-1195: PostgreSQL: Support PG to PG inline DDL replication with all native data types
+12. CE-1217: MySQL: New feature to do idempotent transactions prior to real-time timestamp
+13. CE-1298: SQLServer: Enabling new extractor type for SQLServer
+14. CE-1318: PostgreSQL: PG to Kafka support partitioning table DDLs
+15. CE-1328: Kafka: Support  Azure Event Hubs for Apache Kafka
+16. CE-1335: CockroachDB: Fix CockroachDB connection issues
+17. CE-1336: DB2: Have DB2 IIDR kafka message create timestamp as a separate column in target
+18. CE-1344: All: Support all cursor types in the new serialization code
+19. CE-1373: Oracle: Return ALL pairs value if AfterImageFormat is ALL for a source
+20. CE-1382: Oracle: Oracle native reader throws an exception for a row where all values are null
+21. CE-1388: Oracle: Fix OracleUserExtractor exception handling
+22. CE-1421: PostgreSQL: Postgres stream realtime table creation missing data
+23. CE-1423: Teradata: Issue when having special character Â in Teradata snapshot
+24. CE-1425: Oracle: Fix NPE when data object id is null
+25. CE-1434: Teradata: Add teradata connection config client-charset for customer user charsets
+26. CE-1205: DB2: Db2 iseries ddl support
+27. CE-1437: Databricks: ParquetWriter: Disable Parquet Writer console logging
+28. CE-1424: Oracle: Fixed an issue mapping the Oracle float datatype to targets other than Oracle
+29. CE-606: Oracle: Sort and filter out unwanted columns from ColumnPairs for IOT INSERT
+30. CE-959: Oracle: Implement IOT updates
+31. CE-961: Oracle: Implement IOT deletes
+32. CE-1012: Oracle: Implement IOT multi inserts
+33. CE-1013: Oracle: Fix positioning issue with multi insert
+34. CE-1014: Oracle: Fix positioning issue for opcode version 17
+35. CE-1015: Oracle: Fix column positioning for IOT updates
+36: CE-1036: Oracle: Fix IOT multi inserts
+37. CE-1445: All: Core obfuscation is broken on latest develop
