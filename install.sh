@@ -194,7 +194,7 @@ fi
 if [[ -n "${ARCION_LICENSE}" ]]; then  
     echo "ARCION_LICENSE found."  
 elif [[ -f replicant.lic ]]; then
-    echo "ARCION_LICENSE environmental varibale not found."
+    echo "ARCION_LICENSE environmental variable not found."
     echo "replicant.lic found"
     export ARCION_LICENSE="$(cat replicant.lic | base64)"
     echo "Add to your .bashrc or .zprofile:"
