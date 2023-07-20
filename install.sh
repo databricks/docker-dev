@@ -191,7 +191,9 @@ else
 fi
 
 if [[ "$(basename $(pwd))" = "${BASE_DIR}" ]]; then
-    abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR"
+    abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR by running 'cd ..'"
+else
+    echo "Current dir is $(basename $(pwd))"
 fi  
 
 if [[ -n "${ARCION_LICENSE}" ]]; then  
