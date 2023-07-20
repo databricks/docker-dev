@@ -185,7 +185,7 @@ DIR_NAME="${BASH_SOURCE[0]}"
 if [ -z "${DIR_NAME}" ]; then
     echo "Running curl intall.sh"
     BASE_DIR=docker-dev
-    if [[ "${pwd}" = "${BASE_DIR}" ]]; then
+    if [[ "$(basename $(pwd))" = "${BASE_DIR}" ]]; then
         abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR"
     fi  
 else 
@@ -295,13 +295,13 @@ for s in ${ARCION_DOCKER_DBS[@]}; do
 done
 
 # pull 
-docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml pull
+docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml pull || abort "please see the error msg"
 
 # ask to continue
 choose_start_cli
 
 # configs are relative to the script
-docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d
+docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d || abort "please see the error msg"
 
 # start Arcion demo kit CLI
 ttyd_started=$( docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )
