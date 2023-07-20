@@ -185,6 +185,9 @@ DIR_NAME="${BASH_SOURCE[0]}"
 if [ -z "${DIR_NAME}" ]; then
     echo "Running curl intall.sh"
     BASE_DIR=docker-dev
+    if [[ "${pwd}" = "${BASE_DIR}" ]]; then
+        abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR"
+    fi  
 else 
     BASE_DIR=$( dirname "${DIR_NAME}" )
     echo "Manually running intall.sh from ${BASE_DIR}"
@@ -209,12 +212,17 @@ else
     abort "git is NOT in PATH"
 fi
 
+# docker in path
 if [[ $(type -P "docker") ]]; then 
     echo "docker found." 
 else     
     abort "docker is NOT in PATH"
 fi
 
+# docker is up and running
+docker ps --all >/dev/null || abort "docker is not running.  Please start docker"
+
+# startup screen
 choose_start_setup
 
 docker network inspect arcnet >/dev/null 2>/dev/null
