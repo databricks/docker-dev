@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# ARCION_WORKLODS_TAG: docker tag of robertslee/arcdemo
+# ARCION_WORKLOADS_TAG: docker tag of robertslee/arcdemo
 # ARCION_UI_TAG: docker tag of arcionlabs/replicant-on-premises
 # ARCION_DOCKER_DBS: space separated list of dbs to setup (mysql )
 
@@ -257,11 +257,11 @@ done
 if [[ -d "docker-dev" ]]; then
     echo "docker-dev found. running git pull"
     pushd docker-dev
-    if [ -z "${ARCION_WORKLODS_TAG}" ]; then
+    if [ -z "${ARCION_WORKLOADS_TAG}" ]; then
         git pull
     else
-        git pull origin ${ARCION_WORKLODS_TAG}
-        git checkout ${ARCION_WORKLODS_TAG}
+        git pull origin ${ARCION_WORKLOADS_TAG}
+        git checkout ${ARCION_WORKLOADS_TAG}
     fi
     popd
 else
