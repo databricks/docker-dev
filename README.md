@@ -21,7 +21,7 @@ graph LR
 Assumptions:
 
 - Running on Windows WSL2, Liunx, Mac (Intel and Apple Silicon)
-- Have Arcion License in the current directory (replicant.lic) 
+- Have Arcion License $ARCION_LICENSE defined or `replicant.lic` in the current directory 
 - Have Docker and git installed
 - Have access to a terminal and a browser
 
@@ -29,8 +29,15 @@ Assumptions:
 
 Cut and paste the following in a terminal.
 
+- run the latest
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
+```
+
+- to run a specific tag
+```bash
+export ARCION_WORKLOADS_TAG=23.07
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 [![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
@@ -220,12 +227,12 @@ Oracle EE should be used for anything scale factor beyond 10.
   
 ```bash
 export ARCION_WORKLOADS_TAG=23.07
-./install.sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 - to install DBs not listed in the menu
 
 ```bash
 export ARCION_DOCKER_DBS=(db2 informix)
-./install.sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
