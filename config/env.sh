@@ -83,19 +83,19 @@ AWS_DST_SECRET=${AWS_DST_SECRET:-changeme}
 # google cloud storage (GCS)
 GCS_DST_ID=${GCS_DST_ID:-changeme}
 GCS_DST_SECRET=${GCS_DST_SECRET:-changeme}
-GCS_DST_ENDPOINT=https://storage.googleapis.com
-GCS_DST_BUCKET=arcdst
+GCS_DST_ENDPOINT=${GCS_DST_ENDPOINT:-https://storage.googleapis.com}
+GCS_DST_BUCKET=${GCS_DST_BUCKET:-arcdst}
 
 # wasabi (bucket name must be lower case)
 # https://wasabi-support.zendesk.com/hc/en-us/articles/360015106031-What-are-the-service-URLs-for-Wasabi-s-different-regions-
 WASABI_DST_ID=${WASABI_DST_ID:-changeme}
 WASABI_DST_SECRET=${WASABI_DST_SECRET:-changeme}
-WASABI_DST_ENDPOINT=https://s3.wasabisys.com
-WASABI_DST_BUCKET=arcdst
-WASABI_DST_REGION=us-east-1
+WASABI_DST_ENDPOINT=${WASABI_DST_ENDPOINT:-https://s3.wasabisys.com}
+WASABI_DST_BUCKET=${WASABI_DST_BUCKET:-arcdst}
+WASABI_DST_REGION=${WASABI_DST_REGION:-us-east-1}
 
 # storj (bucket name must be lower case)
 STORJ_DST_ID=${STORJ_DST_ID:-changeme}
 STORJ_DST_SECRET=${STORJ_DST_SECRET:-changeme}
-STORJ_DST_ENDPOINT=https://gateway.storjshare.io
-STORJ_DST_BUCKET=arcdst
+STORJ_DST_ENDPOINT=${STORJ_DST_ENDPOINT:-https://gateway.storjshare.io}
+STORJ_DST_BUCKET=${STORJ_DST_BUCKET:-arcdst}
