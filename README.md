@@ -220,12 +220,12 @@ Oracle EE should be used for anything scale factor beyond 10.
   
 ```bash
 export ARCION_WORKLOADS_TAG=23.07
-./install.sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 - to install DBs not listed in the menu
 
 ```bash
 export ARCION_DOCKER_DBS=(db2 informix)
-./install.sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
