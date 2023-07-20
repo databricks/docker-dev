@@ -260,6 +260,7 @@ if [[ -d "docker-dev" ]]; then
     if [ -z "${ARCION_WORKLOADS_TAG}" ]; then
         git pull
     else
+        git config pull.rebase false
         git pull origin ${ARCION_WORKLOADS_TAG}
         git checkout ${ARCION_WORKLOADS_TAG}
     fi
