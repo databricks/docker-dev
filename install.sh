@@ -245,7 +245,15 @@ for v in ${oravols[*]}; do
 done
 
 if [[ -d "docker-dev" ]]; then
-    echo "docker-dev found."
+    echo "docker-dev found. running git pull"
+    pushd docker-dev
+    if [ -z "${ARCION_WORKLODS_TAG}" ]; then
+        git pull
+    else
+        git pull origin ${ARCION_WORKLODS_TAG}
+        git checkout ${ARCION_WORKLODS_TAG}
+    fi
+    popd
 else
     echo "git clone https://github.com/arcionlabs/docker-dev"
     git clone https://github.com/arcionlabs/docker-dev >/tmp/install.$$ 2>&1
