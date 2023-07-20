@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# ARCION_WORKLODS_TAG: docker tag of robertslee/arcdemo
+# ARCION_UI_TAG: docker tag of arcionlabs/replicant-on-premises
+# ARCION_DOCKER_DBS: space separated list of dbs to setup (mysql )
+
 # osx=arm
 # linux=x86_64
 set_machine() {
@@ -100,8 +104,8 @@ choose_start_cli() {
 
 choose_data_providers() {
     local ora_whiptail_prompt="OFF"
-    local ora_selected
-
+    local ora_selected   # oracle is not selected by default
+        
     if [[ $(which whiptail) ]]; then 
         whiptail --title "Choose Source and Destination Providers" \
         --checklist \
@@ -253,9 +257,11 @@ fi
 
 
 # show menu
-SELECTED=$(choose_data_providers 3>&1 1>&2 2>&3)
+if [ -z "${ARCION_DOCKER_DBS}" ]; then
+    ARCION_DOCKER_DBS=$(choose_data_providers 3>&1 1>&2 2>&3)
+fi
 
-for s in ${SELECTED[@]}; do
+for s in ${ARCION_DOCKER_DBS[@]}; do
     echo $s
     s=$(echo ${s} | tr '[:upper:]' '[:lower:]' | sed 's/"//g' ) # remove the quote surrounding the name 
     case ${s} in
@@ -264,6 +270,11 @@ for s in ${SELECTED[@]}; do
         postgres|pg) install_pg;;
         minio) install_minio;;
         kafka) install_kafka;;
+        *)
+            pushd ${s}
+            docker compose up -d 
+            popd
+            ;;
     esac
 done
 
