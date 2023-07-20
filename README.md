@@ -213,3 +213,8 @@ Oracle EE should be used for anything scale factor beyond 10.
     ```bash
     arcdemo.sh -s 10 -b 2:2 full oraxe pg
     ```
+
+# Testing with different tags of demokit
+
+export ARCION_WORKLOADS_TAG=23.07
+./install.sh

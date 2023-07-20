@@ -16,7 +16,7 @@ services:
       - ./init.d:/docker-entrypoint-initdb.d
 
   ui:
-    image:  arcionlabs/replicant-on-premises
+    image:  arcionlabs/replicant-on-premises:${ARCION_UI_TAG:-latest}
     container_name: ui
     ports:
       - 8080:8080
@@ -45,7 +45,7 @@ services:
       - workloads
 
   workloads:
-    image:  robertslee/arcdemo
+    image:  robertslee/arcdemo:${ARCION_WORKLOADS_TAG:-latest}
     privileged: true
     container_name: workloads
     ports:
