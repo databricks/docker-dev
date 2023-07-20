@@ -42,4 +42,18 @@
     ```
 3. change idle timing to `.5` sec
   
+## asciinema to gif
 
+https://github.com/asciinema/agg
+
+sudo apt-get install cargo
+cargo install --git https://github.com/asciinema/agg
+
+
+# create terminalizer gif
+
+```
+sudo apt install npm
+sudo npm install -g terminalizer
+terminalizer record demo
+```
