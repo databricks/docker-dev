@@ -16,6 +16,7 @@ create_user_db() {
     cat <<EOF | cli_root
         CREATE USER ${db} PASSWORD '${DB_ARC_PW}';
         create database ${db};
+        alter user ${db} replication;
         alter database ${db} owner to ${db};
         grant all privileges on database ${db} to ${db};
 EOF
