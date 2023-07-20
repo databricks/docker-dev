@@ -185,14 +185,14 @@ DIR_NAME="${BASH_SOURCE[0]}"
 if [ -z "${DIR_NAME}" ]; then
     echo "Running curl intall.sh"
     BASE_DIR=docker-dev
-    if [[ "$(basename $(pwd))" = "${BASE_DIR}" ]]; then
-        abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR"
-    fi  
 else 
     BASE_DIR=$( dirname "${DIR_NAME}" )
     echo "Manually running intall.sh from ${BASE_DIR}"
 fi
 
+if [[ "$(basename $(pwd))" = "${BASE_DIR}" ]]; then
+    abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR"
+fi  
 
 if [[ -n "${ARCION_LICENSE}" ]]; then  
     echo "ARCION_LICENSE found."  
