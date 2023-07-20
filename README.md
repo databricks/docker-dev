@@ -216,5 +216,16 @@ Oracle EE should be used for anything scale factor beyond 10.
 
 # Testing with different tags of demokit
 
+- to install specific tag
+  
+```bash
 export ARCION_WORKLOADS_TAG=23.07
 ./install.sh
+```
+
+- to install DBs not listed in the menu
+
+```bash
+export ARCION_DOCKER_DBS=(db2 informix)
+./install.sh
+```
