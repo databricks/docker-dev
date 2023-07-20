@@ -31,13 +31,13 @@ Cut and paste the following in a terminal.
 
 - run the latest
 ```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
 ```
 
 - to run a specific tag
 ```bash
 export ARCION_WORKLOADS_TAG=23.07
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 [![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
@@ -227,12 +227,12 @@ Oracle EE should be used for anything scale factor beyond 10.
   
 ```bash
 export ARCION_WORKLOADS_TAG=23.07
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 - to install DBs not listed in the menu
 
 ```bash
 export ARCION_DOCKER_DBS=(db2 informix)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```

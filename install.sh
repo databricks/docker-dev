@@ -190,6 +190,11 @@ else
     echo "Manually running intall.sh from ${BASE_DIR}"
 fi
 
+if [[ "$(basename $(pwd))" = "${BASE_DIR}" ]]; then
+    abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR by running 'cd ..'"
+else
+    echo "Current dir is $(basename $(pwd))"
+fi  
 
 if [[ -n "${ARCION_LICENSE}" ]]; then  
     echo "ARCION_LICENSE found."  
@@ -209,12 +214,17 @@ else
     abort "git is NOT in PATH"
 fi
 
+# docker in path
 if [[ $(type -P "docker") ]]; then 
     echo "docker found." 
 else     
     abort "docker is NOT in PATH"
 fi
 
+# docker is up and running
+docker ps --all >/dev/null || abort "docker is not running.  Please start docker"
+
+# startup screen
 choose_start_setup
 
 docker network inspect arcnet >/dev/null 2>/dev/null
@@ -287,13 +297,13 @@ for s in ${ARCION_DOCKER_DBS[@]}; do
 done
 
 # pull 
-docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml pull
+docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml pull || abort "please see the error msg"
 
 # ask to continue
 choose_start_cli
 
 # configs are relative to the script
-docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d
+docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d || abort "please see the error msg"
 
 # start Arcion demo kit CLI
 ttyd_started=$( docker compose -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )
