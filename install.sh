@@ -228,6 +228,12 @@ fi
 # docker is up and running
 docker ps --all >/dev/null || abort "docker is not running.  Please start docker"
 
+# docker version >= 19.3.0
+readarray -d ' ' ARCION_DOCKER_VERSION < <(docker version --format '{{.Client.Version}}' | awk -F'.' '{printf "%s %s %s",$1,$2,$3}')
+if (( ${ARCION_DOCKER_VERSION[0]} <= 19 )) && (( ${ARCION_DOCKER_VERSION[1]} < 3 )); then
+    abort "docker 19.3.0 or greater needed. $(echo  ${ARCION_DOCKER_VERSION[*]} | tr '[:space:]' '.') found."
+fi
+
 # docker compose or docker-compose
 docker compose --help >/dev/null 2>/dev/null
 if [[ "$?" == "0" ]]; then

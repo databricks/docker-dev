@@ -26,7 +26,7 @@ Assumptions:
 - Have Arcion License 
   - `ARCION_LICENSE` env variable  
   - `replicant.lic` file in the current directory 
-- Have Docker 19.03.0 or above
+- Have Docker 19.3.0 or above
 - Have `docker compose` or `docker-compose` 
 - Have git installed
 - Have access to a terminal
