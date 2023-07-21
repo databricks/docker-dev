@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+# docker compose or docker-compose
+docker compose --help >/dev/null 2>/dev/null
+if [[ "$?" == "0" ]]; then
+    ARCION_DOCKER_COMPOSE="docker compose"
+else
+    docker-compose --help >/dev/null 2>/dev/null
+    if [[ "$?" == "0" ]]; then
+        ARCION_DOCKER_COMPOSE="docker-compose"
+    else
+        abort "docker compose and docker-compose not found."
+    fi
+fi
+echo "Found ${ARCION_DOCKER_COMPOSE}."
+
 #export NEWT_COLORS='
 #  window=,blue
 #  border=white,blue
@@ -21,6 +35,6 @@ SELECTED=$( whiptail --title "Select database to start" \
 for db in ${SELECTED[@]}; do
     echo $db
     pushd $(echo ${db} | sed 's/"//g' ) # remove the quote surrounding the name
-    docker compose up -d
+    $ARCION_DOCKER_COMPOSE up -d
     popd
 done
