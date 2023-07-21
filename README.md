@@ -20,10 +20,17 @@ graph LR
 
 Assumptions:
 
-- Running on Windows WSL2, Liunx, Mac (Intel and Apple Silicon)
-- Have Arcion License $ARCION_LICENSE defined or `replicant.lic` in the current directory 
-- Have Docker and git installed
-- Have access to a terminal and a browser
+- Running on Windows WSL2, Liunx or Mac 
+  - Intel CPU can run all databases
+  - Apple Silicon cannot run Oracle 
+- Have Arcion License 
+  - `ARCION_LICENSE` env variable  
+  - `replicant.lic` file in the current directory 
+- Have Docker 19.03.0 or above
+- Have `docker compose` or `docker-compose` 
+- Have git installed
+- Have access to a terminal
+- Have access to a browser
 
 # Install Demo Kit  
 
