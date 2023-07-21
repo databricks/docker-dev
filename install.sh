@@ -298,7 +298,6 @@ else
     fi
 fi
 
-
 # show menu
 if [ -z "${ARCION_DOCKER_DBS}" ]; then
     ARCION_DOCKER_DBS=$(choose_data_providers 3>&1 1>&2 2>&3)
