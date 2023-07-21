@@ -201,7 +201,7 @@ if [[ -n "${ARCION_LICENSE}" ]]; then
 elif [[ -f replicant.lic ]]; then
     echo "ARCION_LICENSE environmental variable not found."
     echo "replicant.lic found"
-    export ARCION_LICENSE="$(cat replicant.lic | base64)"
+    export ARCION_LICENSE="$(cat replicant.lic | base64 -w 0)"
     echo "Add to your .bashrc or .zprofile:"
     echo "export ARCION_LICENSE='$ARCION_LICENSE'"
 else
