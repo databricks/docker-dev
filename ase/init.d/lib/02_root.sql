@@ -17,3 +17,9 @@ go
 
 grant all to ${DB_ARC_USER}
 go
+grant sa_role to ${DB_ARC_USER}
+go
+grant replication_role to ${DB_ARC_USER}
+go
+grant sybase_ts_role to ${DB_ARC_USER}
+go
