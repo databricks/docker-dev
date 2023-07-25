@@ -7,7 +7,7 @@ services:
     image: nguoianphu/docker-sybase
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: sybase-src
+    hostname: ase-src
     deploy:
       mode: replicated
       replicas: 1    
@@ -28,16 +28,16 @@ services:
     networks:
       default:
         aliases: 
-          - sybase
-          - sybase-src     
+          - ase
+          - ase-src     
   v1602-dst:
     image: nguoianphu/docker-sybase
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: sybase-dst
+    hostname: ase-dst
     deploy:
       mode: replicated
-      replicas: 1    
+      replicas: 0   
     ports:
       - 5000
       - 5001
@@ -56,7 +56,7 @@ services:
     networks:
       default:
         aliases: 
-          - sybase-dst     
+          - ase-dst     
 
 networks:
   default:

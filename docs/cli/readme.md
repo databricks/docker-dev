@@ -1,1 +1,0 @@
-awk -F'[.:]' '{print $3 ":" $4 " (" $2 " )"}' | sort | awk -F'[:]' 'BEGIN {last=""} {if (last!=$1) {print "###" $1;last=$1} print "1." $2}'
