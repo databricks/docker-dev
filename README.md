@@ -1,3 +1,9 @@
+Please use [Arcion demo kit docs](https://arcionlabs.github.io/demokit-docs.gtihub-io/).   
+
+Below docs is deprecated and will be removed soon.
+
+# Overview
+
 This is the Arcion Demo Kit. It is designed to demo and test Arcion replication from various data sources to targets. The diagram below describes the components of the demo kit.  Please refer to [https://docs.arcion.io](https://docs.arcion.io) for more info.
 
 - Load Generator
