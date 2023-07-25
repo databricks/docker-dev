@@ -14,12 +14,11 @@ go
 
 sp_adduser ${DB_ARC_USER}
 go
-
 grant all to ${DB_ARC_USER}
 go
-grant sa_role to ${DB_ARC_USER}
+sp_role 'grant', sa_role, ${DB_ARC_USER}
 go
-grant replication_role to ${DB_ARC_USER}
+sp_role 'grant', replication_role, ${DB_ARC_USER}
 go
-grant sybase_ts_role to ${DB_ARC_USER}
+sp_role 'grant', sybase_ts_role, ${DB_ARC_USER}
 go

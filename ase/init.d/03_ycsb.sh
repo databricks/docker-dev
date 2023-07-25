@@ -94,8 +94,8 @@ else
         #load_dense_data 10
         # then the sparse.  otherwise, there is hang 
         load_sparse_data 1
-        load_sparse_data 100
         load_sparse_data 10
+        # load_sparse_data 100
         # load_sparse_data 1000
     fi
     touch ${INITDB_LOG_DIR}/03_ycsb.txt
