@@ -1,0 +1,83 @@
+#!/usr/bin/expect
+
+set force_conservative 0  ;# set to 1 to force conservative mode even if
+                          ;# script wasn't run conservatively originally
+if {$force_conservative} {
+        set send_slow {1 .1}
+        proc send {ignore arg} {
+                sleep .1
+                exp_send -s -- $arg
+        }
+}
+
+spawn bash
+expect "\$ $"
+#spawn asciinema rec
+send -- "asciinema rec --overwrite $env(RECFILE) \r"
+expect "asciinema: press <ctrl-d>"
+expect "\$ $"
+
+#spawn docker exec -it arcion-demo-test-workloads-1 bash
+send -- "docker exec -it arcion-demo-test-workloads-1 bash\r"
+expect -exact "arcion"
+expect "\$ $"
+
+# make 
+
+send -- "tmux send-keys -t arcion:0.3  C-c \r"
+expect "\$ $"
+send -- "tmux send-keys -t arcion:0.3 'clear' Enter \r" 
+expect "\$ $"
+
+send -- "tmux send-keys -t arcion:0.2  C-c \r"
+expect "\$ $"
+send -- "tmux send-keys -t arcion:0.2 'clear' Enter \r" 
+expect "\$ $"
+
+send -- "tmux send-keys -t arcion:0.1  C-c \r"
+expect "\$ $"
+send -- "tmux send-keys -t arcion:0.1 'clear' Enter \r" 
+expect "\$ $"
+
+send -- "tmux send-keys -t arcion:0.0  C-c \r"
+expect "\$ $"
+send -- "tmux send-keys -t arcion:0.0 'clear' Enter \r" 
+expect "\$ $"
+
+send -- "tmux select-pane -t arcion:0.0 \r" 
+expect "\$ $"
+send -- "tmux attach-session -t arcion:0.0 \r"
+
+# will switch and expect wont get good read backq
+set timeout 1
+send -- "clear \r" 
+send -- "echo start of Arcion CLI demo \r" 
+expect "start of Arcion CLI demo"
+
+send -- "arcdemo.sh $env(REPL_TYPE) $env(SOURCE) $env(DESTINATION)\r"
+# thisis expect to take a long time
+set timeout 3600
+expect -exact "Waiting 5 sec for CDC to finish"
+set timeout 1
+expect -exact "cfg is at"
+expect -exact "log is at"
+
+# control B d to detach from tmux
+set timeout 1
+send -- "\x02d"
+expect -exact "\[detached (from session arcion)\]"
+expect "\$ $"
+
+# exit from docker
+send -- "exit\r"
+expect "\$ $"
+# exit from asciinema
+send -- "exit\r"
+expect "asciinema: press <enter> to upload to asciinema.org, <ctrl-c> to save locally"
+# save locally with CTL-C
+send -- "\x03"
+expect "\$ $"
+
+
+
+

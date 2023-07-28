@@ -1,0 +1,22 @@
+#!/usr/bin/expect
+
+spawn bash
+expect "\$ $"
+send -- "ls\r"
+expect "\$ $"
+send -- "ls -lia\r"
+expect "\$ $"
+
+send -- "docker exec -it arcion-demo-test-workloads-1 bash\r"
+expect "\$ $"
+send -- "ls -lia\r"
+expect "\$ $"
+send -- "tmux send-keys -t arcion:0.3  C-c\r"
+expect "\$ $"
+send -- "tmux select-pane -t arcion:0.0 \r"
+expect "\$ $"
+send -- "tmux attach-session -t arcion:0.0\r"
+expect "\$ $"
+send -- "clear\r"
+send -- "ls\r"
+expect "\$ $"
