@@ -54,7 +54,7 @@ send -- "clear \r"
 send -- "echo start of Arcion CLI demo \r" 
 expect "start of Arcion CLI demo"
 
-send -- "arcdemo.sh $env(REPL_TYPE) $env(SOURCE) $env(DESTINATION)\r"
+send -- "arcdemo.sh $env(REPL_TYPE) $env(SOURCE) $env(TARGET)\r"
 # thisis expect to take a long time
 set timeout 3600
 expect -exact "Waiting 5 sec for CDC to finish"
