@@ -36,20 +36,28 @@ run_docker_compose() {
 docker_compose_others() {
     local cmd=${1:-start}
     local d=${d:-${2}}
+    local WAIT_TO_COMPLETE=${3}
 
     if [ ! -d ../$d ] || [ ! -f ../$d/docker-compose.yaml ];then return 1; fi
 
     pushd ../$d >/dev/null || return 1
     run_docker_compose $1 $2
+    if [ -n "$WAIT_TO_COMPLETE" ]; then 
+        $WAIT_TO_COMPLETE
+    fi
     popd >/dev/null   
 }
 
 docker_compose_ora() {
     local cmd=${1}
     local d=${d:-${2}}
+    local WAIT_TO_COMPLETE=${3}
 
     pushd ../oracle/$d >/dev/null || return 1
     run_docker_compose $1 $2
+    if [ -n "$WAIT_TO_COMPLETE" ]; then 
+        $WAIT_TO_COMPLETE
+    fi
     popd >/dev/null
 }
 
@@ -57,11 +65,24 @@ docker_compose_ora() {
 docker_compose_yb() {
     local cmd=${1}
     local d=${d:-${2}}
+    local WAIT_TO_COMPLETE=${3}
 
     pushd ../$d >/dev/null || return 1
     case ${cmd} in up|unpause|restart|start) docker compose down -v;; esac   
     run_docker_compose $1 $2
+    if [ -n "$WAIT_TO_COMPLETE" ]; then 
+        $WAIT_TO_COMPLETE
+    fi
     popd >/dev/null
+}
+
+wait_arcion_demo() {
+    ttyd_started=$( docker compose logs workloads | grep ttyd )
+    while [ -z "${ttyd_started}" ]; do
+        sleep 1
+        echo "waiting on docker compose logs workloads | grep ttyd"
+        ttyd_started=$( docker compose logs workloads | grep ttyd )
+    done
 }
 
 # run docker compose cmd database
@@ -75,6 +96,7 @@ docker_compose_db() {
 
     pushd $STARTDB_DIR >/dev/null || return 1
     case ${d} in 
+        arcion-demo|arcion-demo-test) docker_compose_others "$1" "$2" "wait_arcion_demo";;
         kafka|yugabyte) docker_compose_yb "$1" "$2";;
         oraxe|oraee) docker_compose_ora "$1" "$2";;
         *) docker_compose_others "$1" "$2";;
