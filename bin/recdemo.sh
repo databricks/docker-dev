@@ -55,14 +55,16 @@ stop_db() {
 
 export REC_DIR=~/github/arcion/demokit.gtihub-io/docs/resources/asciinema
 export REPL_TYPES=(snapshot)
-export SOURCES=(sqlserver) # db2 informix mysql oraee pg s2 sqlserver sqledge)
-export TARGETS=(oraee)
+export SOURCES=(db2 informix mysql oraee pg) # db2 informix mysql oraee pg s2 sqlserver sqledge)
+export TARGETS=(informix kafka mariadb mysql oracle pg redis sqledge yugabytesql)
 # other iterations
 #   (db2 informix kafka mariadb)
 #   (kafka mysql oraee pg redis sqledge yugabytesql) 
 #   (cockroach informix kafka mariadb minio mysql null oraee pg redis s2 sqledge sqlserver yugabytesql)
 
-export ARCDEMO_OPTS="-w 1200"
+#
+# export ARCDEMO_OPTS="-w 1200"
+export ARCDEMO_OPTS=""
 
 # Targets that do not work
 # ase db2

@@ -97,7 +97,7 @@ docker_compose_db() {
     pushd $STARTDB_DIR >/dev/null || return 1
     case ${d} in 
         arcion-demo|arcion-demo-test) docker_compose_others "$1" "$2" "wait_arcion_demo";;
-        kafka|yugabyte) docker_compose_yb "$1" "$2";;
+        kafka|redis|yugabyte) docker_compose_yb "$1" "$2";;
         oraxe|oraee) docker_compose_ora "$1" "$2";;
         *) docker_compose_others "$1" "$2";;
     esac
