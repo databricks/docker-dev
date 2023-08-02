@@ -3,11 +3,9 @@
 create_user_db() {
     set -x
     singlestore -f -u root --password=${ROOT_PASSWORD} <<EOF
-        CREATE USER '${db}'@'%' IDENTIFIED BY '${DB_ARC_PW}';
-        CREATE USER '${db}'@'127.0.0.1' IDENTIFIED BY '${DB_ARC_PW}';
+        CREATE USER '${db}' IDENTIFIED BY '${DB_ARC_PW}';
         CREATE DATABASE ${db};
-        GRANT ALL ON ${db}.* to '${db}'@'%';
-        GRANT ALL ON ${db}.* to '${db}'@'127.0.0.1';
+        GRANT ALL ON ${db}.* to '${db}';
 EOF
     set +x
 }

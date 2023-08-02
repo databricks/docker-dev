@@ -39,13 +39,25 @@ services:
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
       - v815-src:/var/lib/memsql
+    networks:
+      default:
+        aliases: 
+          - s2
+          - s2-src          
   v815-dst:
     << : *default-s2
+    deploy:
+      mode: replicated
+      replicas: 0        
     image: singlestore/cluster-in-a-box:alma-8.1.5-8d722de5ee-4.0.11-1.16.0
     hostname: s2-dst
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
       - v815-dst:/var/lib/memsql
+    networks:
+      default:
+        aliases: 
+          - s2-dst
 networks:
   default:
     name: arcnet

@@ -253,3 +253,11 @@ export ARCION_WORKLOADS_TAG=23.07
 export ARCION_DOCKER_DBS=(db2 informix)
 /bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
+
+# Generate Source / Target Matric
+
+```bash
+cd bin
+./startall.sh
+./recdemo.sh
+```
