@@ -27,6 +27,8 @@ services:
       - --local-infile=true               # allow load data local 
       - --secure-file-priv=/tmp           # allow load data
       - --innodb_log_file_size=1073741824 # 1024*1024*1024
+      - --log-bin=mysql-log.bin
+      - --binlog_format=ROW
     networks:
       default:
         aliases: 
