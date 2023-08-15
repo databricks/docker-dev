@@ -1,9 +1,27 @@
 #!/usr/bin/env bash
 
+# s = source
+# t = target
+# r = real
+# s = snapshot
+# f = full 
+# d = delta
+dock_snaps=(cockroach s2 sqledge yugabytesql) # snapshot sources
+dock_reals=(ase db2 informix mariadb mysql oraee oraxe pg sqlserver) # real-time sources
+dock_fulls=(ase db2 informix mariadb mysql oraee oraxe pg sqlserver) # full sources
+dock_dsts=(cockroach informix kafka mariadb minio mysql null oraee oraxe pg redis s2 sqledge sqlserver yugabytesql) # ase db2
+
+snow_cdcs=(snowflake)
+snow_srcs=(snowflake)
+snow_dsts=(snowflake)
+
+gcp_cdcs=(gcsa gcsm gcsp)
+gcp_srcs=(gbq gcsa gcsm gcsp)
+gcp_dsts=(gbq gcs gcsa gcsm gcsp)
+
 export RECDEMO_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
 . ${RECDEMO_DIR}/startdb.sh
-
 
 rec_pipeline() {
     export REPL_TYPE=$1
@@ -36,7 +54,7 @@ start_db() {
     local db=$2
 
     echo "$db starting" 
-    start_db_active_db[$db]=$(( start_db_active_db[$db] + 1 ))
+    (( start_db_active_db[$db]+=1))
     docker_compose_db up "$db"
 }
 
@@ -44,19 +62,17 @@ stop_db() {
     local -n stop_db_active_db=$1
     local db=$2
 
-    stop_db_active_db[$db]=$(( stop_db_active_db[$db] - 1 ))
+    ((stop_db_active_db[$db]-=1))
     if (( ${stop_db_active_db[$db]} <= 0 )); then 
-        echo "$db pausing" 
-        docker_compose_db pause "$db"
+        echo "$db stopping" 
+        docker_compose_db stop "$db"
     else
         echo "$db leaving up" 
     fi
 }
 
 export REC_DIR=~/github/arcion/demokit.gtihub-io/docs/resources/asciinema
-export REPL_TYPES=(snapshot)
-export SOURCES=(db2 informix mysql oraee pg) # db2 informix mysql oraee pg s2 sqlserver sqledge)
-export TARGETS=(informix kafka mariadb mysql oracle pg redis sqledge yugabytesql)
+export REPL_TYPES=(snapshot real-time full)
 # other iterations
 #   (db2 informix kafka mariadb)
 #   (kafka mysql oraee pg redis sqledge yugabytesql) 
@@ -76,7 +92,19 @@ declare -A ACTIVE_DB=()
 docker_compose_db up arcion-demo-test
 
 for REPL_TYPE in "${REPL_TYPES[@]}"; do
-
+    TARGETS=(${TARGETSS:-${dock_dsts[*]}}) 
+    case ${REPL_TYPE} in 
+        snapshot) 
+            SOURCES=(${SOURCES:-${dock_srcs[*]}}) 
+            ;;
+        real-time|full) 
+            SOURCES=(${SOURCES:-${dock_cdc[*]}}) 
+            ;;
+        *) echo "${REPL_TYPE} not handled.  skipping"
+            continue 
+            ;;
+    esac
+         
     for src in "${SOURCES[@]}"; do
 
         start_db ACTIVE_DB "$src" 
@@ -87,9 +115,14 @@ for REPL_TYPE in "${REPL_TYPES[@]}"; do
             echo "${REPL_TYPE},${src},${tgt}"
             docker compose ls | grep running
 
-            # DEBUG: 
-            sleep 1
-            rec_pipeline "$REPL_TYPE" "$src" "$tgt"
+            for REPL_TYPE in "${REPL_TYPES[@]}"; do
+
+                # DEBUG: 
+                sleep 1
+                echo rec_pipeline "$REPL_TYPE" "$src" "$tgt"
+                # rec_pipeline "$REPL_TYPE" "$src" "$tgt"
+
+            done
 
             #wait # wait for previous start_db to complete
             stop_db ACTIVE_DB "$tgt" 
