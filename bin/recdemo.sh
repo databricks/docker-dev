@@ -6,10 +6,11 @@
 # s = snapshot
 # f = full 
 # d = delta
-dock_snaps=(cockroach s2 sqledge yugabytesql) # snapshot sources
-dock_reals=(ase db2 informix mariadb mysql oraee oraxe pg sqlserver) # real-time sources
-dock_fulls=(ase db2 informix mariadb mysql oraee oraxe pg sqlserver) # full sources
-dock_dsts=(cockroach informix kafka mariadb minio mysql null oraee oraxe pg redis s2 sqledge sqlserver yugabytesql) # ase db2
+dock_reals=(db2 informix mariadb mysql oraee oraxe pg sqlserver)
+dock_fulls="${dock_reals[*]}"
+dock_snaps=(cockroach s2 sqledge yugabytesql ${dock_reals[*]})
+# ase db2 not supported as a target
+dock_dsts=(cockroach informix kafka mariadb minio mysql null oraee oraxe pg redis s2 sqledge sqlserver yugabytesql) 
 
 snow_cdcs=(snowflake)
 snow_srcs=(snowflake)
@@ -19,117 +20,81 @@ gcp_cdcs=(gcsa gcsm gcsp)
 gcp_srcs=(gbq gcsa gcsm gcsp)
 gcp_dsts=(gbq gcs gcsa gcsm gcsp)
 
+repl_types=(snapshot real-time full)
+
 export RECDEMO_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 
 . ${RECDEMO_DIR}/startdb.sh
 
 rec_pipeline() {
-    export REPL_TYPE=$1
-    export SOURCE=$2
-    export TARGET=$3
-
-    RECFILENAME=${REPL_TYPE}_${SOURCE}_${TARGET}.ascii.cast
-    export RECFILE=${REC_DIR}/${RECFILENAME}
-
-    echo ${REPL_TYPE} ${SOURCE} ${TARGET} $RECFILE
-
-    STARTTIME=$(date +%s)
-    ${RECDEMO_DIR}/recdemo.expect
-    ENDTIME=$(date +%s)
-    # save duration
-    DURATION=$((ENDTIME-STARTTIME))
-    # wait for CDC to finish
-    sleep 10 
-    clear
-     # remove the trailing \n with < <()
-     # clear is there to remove garbage from tmux and expect interactions
-    docker exec -it arcion-demo-test-workloads-1 bash -c "clear"
-    readarray -d' ' -t LOG_ID < <(docker exec -it arcion-demo-test-workloads-1 bash -c ". /tmp/ini_menu.sh; echo -n \$(basename \$CFG_DIR) \$LOG_ID")
-    # save the record
-    echo ${REPL_TYPE},${SOURCE},${TARGET},$DURATION,$RECFILENAME,${LOG_ID[0]},${LOG_ID[1]} | tee -a $REC_DIR/clivideo.csv
+    local CMD="$1"
+    echo docker exec -it arcion-demo-test-workloads-1 bash -c "/scripts/bin/recdemo.sh $CMD"
+    docker exec -it arcion-demo-test-workloads-1 bash -c "/scripts/bin/recdemo.sh $CMD"
 }
 
-start_db() {
-    local -n start_db_active_db=$1
-    local db=$2
-
-    echo "$db starting" 
-    (( start_db_active_db[$db]+=1))
-    docker_compose_db up "$db"
-}
-
-stop_db() {
-    local -n stop_db_active_db=$1
-    local db=$2
-
-    ((stop_db_active_db[$db]-=1))
-    if (( ${stop_db_active_db[$db]} <= 0 )); then 
-        echo "$db stopping" 
-        docker_compose_db stop "$db"
-    else
-        echo "$db leaving up" 
-    fi
-}
-
-export REC_DIR=~/github/arcion/demokit.gtihub-io/docs/resources/asciinema
-export REPL_TYPES=(snapshot real-time full)
-# other iterations
-#   (db2 informix kafka mariadb)
-#   (kafka mysql oraee pg redis sqledge yugabytesql) 
-#   (cockroach informix kafka mariadb minio mysql null oraee pg redis s2 sqledge sqlserver yugabytesql)
-
-#
 # export ARCDEMO_OPTS="-w 1200"
 export ARCDEMO_OPTS=""
 
-# Targets that do not work
-# ase db2
-
-mkdir -p $REC_DIR
-
-declare -A ACTIVE_DB=()
-
 docker_compose_db up arcion-demo-test
 
-for REPL_TYPE in "${REPL_TYPES[@]}"; do
-    TARGETS=(${TARGETSS:-${dock_dsts[*]}}) 
-    case ${REPL_TYPE} in 
-        snapshot) 
-            SOURCES=(${SOURCES:-${dock_srcs[*]}}) 
-            ;;
-        real-time|full) 
-            SOURCES=(${SOURCES:-${dock_cdc[*]}}) 
-            ;;
-        *) echo "${REPL_TYPE} not handled.  skipping"
-            continue 
-            ;;
-    esac
-         
-    for src in "${SOURCES[@]}"; do
+declare -a "SRC_CSV=( $(echo ${dock_snaps[*]} ${dock_reals[*]} ${dock_fulls[*]} | xargs -n1 | sort -u ))"
+declare -a "DST_CSV=( $(echo ${dock_dsts[*]} | xargs -n1 | sort -u ))"
+declare -A "SNAP_DICT=( $(echo ${dock_snaps[@]} | sed 's/[^ ]*/[&]=&/g') )"
+declare -A "REAL_DICT=( $(echo ${dock_reals[@]} | sed 's/[^ ]*/[&]=&/g') )"
+declare -A "FULL_DICT=( $(echo ${dock_fulls[@]} | sed 's/[^ ]*/[&]=&/g') )"
 
-        start_db ACTIVE_DB "$src" 
+declare -p SRC_CSV
+declare -p DST_CSV
+declare -p SNAP_DICT
+declare -p REAL_DICT
+declare -p FULL_DICT
 
-        for tgt in "${TARGETS[@]}"; do
+for src in "${SRC_CSV[@]}"; do
+    echo start_db "$src" 
+    start_db "$src" 
 
-            start_db ACTIVE_DB "$tgt" 
-            echo "${REPL_TYPE},${src},${tgt}"
-            docker compose ls | grep running
+    for tgt in "${DST_CSV[@]}"; do
+        echo "  start_db $tgt" 
+        start_db "$tgt" 
 
-            for REPL_TYPE in "${REPL_TYPES[@]}"; do
-
-                # DEBUG: 
-                sleep 1
-                echo rec_pipeline "$REPL_TYPE" "$src" "$tgt"
-                # rec_pipeline "$REPL_TYPE" "$src" "$tgt"
-
-            done
-
-            #wait # wait for previous start_db to complete
-            stop_db ACTIVE_DB "$tgt" 
+        for repl_type in "${repl_types[@]}"; do
+            case ${repl_type} in 
+                snapshot)
+                    if [ -z "${SNAP_DICT[$src]}" ]; then
+                        echo "    $src $tgt $repl_type: not supported"
+                        continue
+                    fi 
+                    CMD="arcdemo.sh -w 300 $repl_type $src $tgt"
+                    ;;
+                real-time) 
+                    if [ -z "${REAL_DICT[$src]}" ]; then
+                        echo "    $src $tgt $repl_type: not supported"
+                        continue
+                    fi
+                    CMD="arcdemo.sh -w 300:300 -r 0 $repl_type $src $tgt"
+                    ;;
+                full) 
+                    if [ -z "${REAL_DICT[$src]}" ]; then
+                        echo "    $src $tgt $repl_type: not supported"
+                        continue
+                    fi
+                    CMD="arcdemo.sh -w 300:300 -r 0 $repl_type $src $tgt"
+                    ;;
+                *) echo "    ${repl_type} not handled.  skipping"
+                    continue 
+                    ;;
+            esac
+            
+            # DEBUG: 
+            #sleep 1
+            echo "    rec_pipeline $CMD"
+            rec_pipeline "$CMD"
         done
-
-        stop_db ACTIVE_DB "$src" 
+        echo "  stop_db $tgt" 
+        stop_db "$tgt" 
     done
+    echo "stop_db $src" 
+    stop_db "$src" 
 done
 
 declare -p ACTIVE_DB

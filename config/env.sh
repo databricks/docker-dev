@@ -62,14 +62,6 @@ SNOW_DST_SECRET=${SNOW_DST_SECRET:-changeme}
 SNOW_DST_ENDPOINT=${SNOW_DST_ENDPOINT:-changeme}
 SNOW_DST_WAREHOUSE=${SNOW_DST_WAREHOUSE:-changeme}
 
-# Google Big Query the key is gzip | base64 -w 0
-GBQ_SRC_LOCATION=${GBQ_SRC_LOCATION:-changeme}
-GBQ_SRC_SECRET=${GBQ_SRC_SECRET:-changeme}
-GBQ_SRC_ENDPOINT=${GBQ_SRC_ENDPOINT:-changeme}
-
-GBQ_DST_LOCATION=${GBQ_DST_LOCATION:-changeme}	
-GBQ_DST_SECRET=${GBQ_DST_SECRET:-changeme}
-GBQ_DST_ENDPOINT=${GBQ_DST_ENDPOINT:-changeme}
 # AWS
 AWS_SRC_ID=${AWS_SRC_ID:-changeme}
 AWS_SRC_SECRET=${AWS_SRC_SECRET:-changeme}
@@ -78,13 +70,43 @@ AWS_DST_ID=${AWS_DST_ID:-changeme}
 AWS_DST_SECRET=${AWS_DST_SECRET:-changeme}  
 
 # ###################################################
-# s3 end points
+# GCS end points
 
 # google cloud storage (GCS)
 GCS_DST_ID=${GCS_DST_ID:-changeme}
 GCS_DST_SECRET=${GCS_DST_SECRET:-changeme}
 GCS_DST_ENDPOINT=${GCS_DST_ENDPOINT:-https://storage.googleapis.com}
 GCS_DST_BUCKET=${GCS_DST_BUCKET:-arcdst}
+
+# Google Big Query the key is gzip | base64 -w 0
+GBQ_SRC_LOCATION=${GBQ_SRC_LOCATION:-changeme}
+GBQ_SRC_SECRET=${GBQ_SRC_SECRET:-changeme}
+GBQ_SRC_ENDPOINT=${GBQ_SRC_ENDPOINT:-changeme}
+
+GBQ_DST_LOCATION=${GBQ_DST_LOCATION:-changeme}	
+GBQ_DST_SECRET=${GBQ_DST_SECRET:-changeme}
+GBQ_DST_ENDPOINT=${GBQ_DST_ENDPOINT:-changeme}
+
+# goocle cloud sql mysql (gcsm)
+GCSM_HOST=${GCSM_HOST:-changeme}
+GCSM_ID=${GCSM_ID:-changeme}
+GCSM_PW=${GCSM_PW:-changeme}
+
+# goocle cloud sql pg (gcsp)
+GCSP_HOST=${GCSP_HOST:-changeme}
+GCSP_ID=${GCSP_ID:-changeme}
+GCSP_PW=${GCSP_PW:-changeme}
+
+# goocle cloud sql sqlserver (gcss)
+GCSS_HOST=${GCSS_HOST:-changeme}
+GCSS_ID=${GCSS_ID:-changeme}
+GCSS_PW=${GCSS_PW:-changeme}
+
+# goocle cloud sql sqlserver (gcss)
+GCSA_HOST=${GCSA_HOST:-changeme}
+GCSA_ID=${GCSA_ID:-changeme}
+GCSA_PW=${GCSA_PW:-changeme}
+
 
 # wasabi (bucket name must be lower case)
 # https://wasabi-support.zendesk.com/hc/en-us/articles/360015106031-What-are-the-service-URLs-for-Wasabi-s-different-regions-
