@@ -90,11 +90,11 @@ else
     if [[ "${ROLE^^}" = "SRC" ]]; then
         # dense loads at 64 rows per second.  only load 10K instead of 1M
         # TODO: see if there is a way to spped up dense
-        load_dense_data 1
-        #load_dense_data 10
+        # load_dense_data 1
+        # load_dense_data 10
         # then the sparse.  otherwise, there is hang 
         load_sparse_data 1
-        load_sparse_data 10
+        # load_sparse_data 10
         # load_sparse_data 100
         # load_sparse_data 1000
     fi

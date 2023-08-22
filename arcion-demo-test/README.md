@@ -22,14 +22,9 @@ bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.c
 
 bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/develop/replicant-cli-latest.zip
 
-bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.06.30.0.zip
+bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.06.30.11.zip
 
-bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.06.30.1.zip
-
-bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.06.30.3.zip
-
-bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.07.31.0.zip
-
+bin/create_arcion_bin_volume.sh https://arcion-releases.s3.us-west-1.amazonaws.com/general/replicant/replicant-cli-23.07.31.3.zip
 
 docker -it exec --rm -v arcion-bin:/data alpine ls /data
 ```

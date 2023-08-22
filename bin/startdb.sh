@@ -99,6 +99,8 @@ docker_compose_db() {
     local cmd=${1}
     local d=${2}
 
+    echo $cmd $d
+
     if [ -z "${cmd}" ] || [ -z "${d}" ]; then 
         echo "specify \$1=cmd (up|down|start|stop|restart) and \$2=database" >&2 && return 1
     fi

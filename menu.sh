@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
 
-# docker compose or docker-compose
-docker compose --help >/dev/null 2>/dev/null
-if [[ "$?" == "0" ]]; then
-    ARCION_DOCKER_COMPOSE="docker compose"
+export MENU_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+
+if [ -x "${MENU_DIR}/bin/startdb.sh" ]; then
+    . ${MENU_DIR}/bin/startdb.sh
+    ARCION_DOCKER_COMPOSE=docker_compose_db
 else
-    docker-compose --help >/dev/null 2>/dev/null
+    docker compose --help >/dev/null 2>/dev/null
     if [[ "$?" == "0" ]]; then
-        ARCION_DOCKER_COMPOSE="docker-compose"
+        ARCION_DOCKER_COMPOSE="docker compose"
     else
-        abort "docker compose and docker-compose not found."
+        docker-compose --help >/dev/null 2>/dev/null
+        if [[ "$?" == "0" ]]; then
+            ARCION_DOCKER_COMPOSE="docker-compose"
+        else
+            abort "docker compose and docker-compose not found."
+        fi
     fi
+    echo "Found ${ARCION_DOCKER_COMPOSE}."
 fi
-echo "Found ${ARCION_DOCKER_COMPOSE}."
 
 #export NEWT_COLORS='
 #  window=,blue
@@ -33,8 +39,8 @@ SELECTED=$( whiptail --title "Select database to start" \
  3>&1 1>&2 2>&3 )
 
 for db in ${SELECTED[@]}; do
+    db=$(echo ${db} | sed 's/"//g' ) # remove the quote surrounding the name
     echo $db
-    pushd $(echo ${db} | sed 's/"//g' ) # remove the quote surrounding the name
-    $ARCION_DOCKER_COMPOSE up -d
-    popd
+    #${ARCION_DOCKER_COMPOSE} up $db
+    docker_compose_db up $db
 done
