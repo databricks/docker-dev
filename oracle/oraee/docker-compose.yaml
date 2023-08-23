@@ -27,7 +27,7 @@ services:
       - ../../config/env.sh           
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
-      - v1930-src:/opt/oracle/oradata
+      - oraee_v1930-src:/opt/oracle/oradata
     networks:
       default:
         aliases: 
@@ -39,4 +39,5 @@ networks:
     external: true
     
 volumes:
-  v1930-src:
+  oraee_v1930-src:
+      external: true
