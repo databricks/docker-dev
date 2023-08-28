@@ -263,7 +263,7 @@ else
     fi
 fi
 
-oravols=(oraee1930-src arcion-bin)
+oravols=(oraee_v1930-src oraxe_v2130-src ora-shared-rw arcion-bin)
 for v in ${oravols[*]}; do
     docker volume inspect $v >/dev/null 2>/dev/null
     if [[ "$?" = "0" ]]; then

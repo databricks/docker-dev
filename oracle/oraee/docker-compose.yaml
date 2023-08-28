@@ -3,7 +3,8 @@
 version: '3.8'
 services:
   v1930-src:
-    image: oracle/database:19.3.0-ee
+    build: v1930
+    # image: oracle/database:19.3.0-ee
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
     hostname: oraee-src
@@ -28,6 +29,7 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
       - oraee_v1930-src:/opt/oracle/oradata
+      - ora-shared-rw:/opt/oracle/share
     networks:
       default:
         aliases: 
@@ -39,5 +41,8 @@ networks:
     external: true
     
 volumes:
+  ora-shared-rw:
+      external: true
+      
   oraee_v1930-src:
       external: true
