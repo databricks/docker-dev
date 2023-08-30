@@ -35,9 +35,7 @@ services:
       - ./arcion-share/config:/config
       - ./arcion-share/libs:/libs
       # these are oracle
-      - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
-      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
-      - oraee1930:/opt/mnt/oraee1930/oradata:ro
+      - oraee_v1930-src:/opt/mnt/oraee1930/oradata:ro
     depends_on:
       - metadata  
       - workloads
@@ -56,6 +54,7 @@ services:
     env_file:
       - ../config/env.sh
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
       # cache db2 sqllib install
       - db2_sqllib:/home/arcion/sqllib
       # cache oracle client install
@@ -71,10 +70,10 @@ services:
       # test specific to use different replicant cli
       - arcion-bin:/opt/arcion
       # these are remapped to internal directories via volremap.sh in side docker
-      # these are oracle
-      - oraxe11g:/opt/mnt/oraxe11g/oradata:ro
-      - oraxe2130:/opt/mnt/oraxe2130/oradata:ro
-      - oraee1930:/opt/mnt/oraee1930/oradata:ro
+      # used by oracle native redo log reader
+      - oraee_v1930-src:/opt/mnt/oraee1930/oradata:ro      
+      - oraxe_v2130-src:/opt/mnt/oraxev2130/oradata:ro    
+      - ora-shared-rw:/opt/mnt/orashared:rw
 
     depends_on:
       - metadata  
@@ -96,9 +95,11 @@ volumes:
   arcion-bin:
     external: true     
 
-  oraxe11g:
+  oraee_v1930-src:
     external: true
-  oraxe2130:
-    external: true
-  oraee1930:
-    external: true
+
+  oraxe_v2130-src:
+    external: true    
+
+  ora-shared-rw:
+    external: true    

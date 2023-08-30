@@ -3,9 +3,22 @@
 ## Build Oracle Contaner image
 
 ```bash
-cd oraee
+cd oracle
 git clone https://github.com/oracle/docker-images oracle-docker-images
 ```
+
+- 19.0
+
+## arm64
+https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html
+
+Oracle Database 19c (19.19) for LINUX ARM (aarch64)
+
+[LINUX.ARM64_1919000_db_home.zip](https://download.oracle.com/otn/linux/oracle19c/1919000/LINUX.ARM64_1919000_db_home.zip)
+[LINUX.ARM64_1919000_grid_home.zip](https://download.oracle.com/otn/linux/oracle19c/1919000/LINUX.ARM64_1919000_grid_home.zip)
+[LINUX.ARM64_1919000_client.zip](https://download.oracle.com/otn/linux/oracle19c/1919000/LINUX.ARM64_1919000_client.zip)
+[LINUX.ARM64_1919000_client_home.zip](https://download.oracle.com/otn/linux/oracle19c/1919000/LINUX.ARM64_1919000_client_home.zip)
+
 
 -  build oracle image for local consumption
 

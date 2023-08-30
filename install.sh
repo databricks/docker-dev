@@ -263,7 +263,7 @@ else
     fi
 fi
 
-oravols=(oraxe11g oraxe2130 oraee1930 arcion-bin)
+oravols=(oraee_v1930-src oraxe_v2130-src ora-shared-rw arcion-bin)
 for v in ${oravols[*]}; do
     docker volume inspect $v >/dev/null 2>/dev/null
     if [[ "$?" = "0" ]]; then
@@ -336,5 +336,5 @@ while [ -z "${ttyd_started}" ]; do
     echo "waiting on $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd"
     ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
 done
-$ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "banner arcdemo;sleep 5; arcdemo.sh full mysql postgresql" enter; tmux attach'
+$ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "figlet -t arcdemo;sleep 5; arcdemo.sh full mysql postgresql" enter; tmux attach'
 

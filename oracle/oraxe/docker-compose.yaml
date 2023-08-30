@@ -21,17 +21,18 @@ x-xe21: &default-xe21
       - ../../config/env.sh           
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-
+      - ora-shared-rw:/opt/oracle/share
 
 services:
   v2130-src:
     # sys and system password: oracle
     << : *default-xe21
-    image: oracle/database:21.3.0-xe
+    #image: oracle/database:21.3.0-xe
+    build: v2130
     hostname: oraxe-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-      - v2130-src:/opt/oracle/oradata
+      - oraxe_v2130-src:/opt/oracle/oradata
     networks:
       default:
         aliases: 
@@ -43,8 +44,9 @@ services:
     << : *default-xe21
     deploy:
       mode: replicated
-      replicas: 0    
-    image: oracle/database:21.3.0-xe
+      replicas: 0   
+    build: v2130
+    #image: oracle/database:21.3.0-xe
     hostname: oraxe-dst
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
@@ -59,5 +61,10 @@ networks:
     name: arcnet
     external: true
 volumes:
-  v2130-src:
+  ora-shared-rw:
+      external: true
+      
+  oraxe_v2130-src:
+      external: true
+      
   v2130-dst:
