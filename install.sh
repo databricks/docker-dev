@@ -104,9 +104,14 @@ choose_start_cli() {
 }
 
 choose_data_providers() {
-    local ora_whiptail_prompt="OFF"
-    local ora_selected   # oracle is not selected by default
-        
+     local ora_whiptail_prompt
+
+    if [[ "${MACHINE}" = "x86_64" ]]; then 
+        ora_whiptail_prompt="ON"
+    else
+        ora_whiptail_prompt="OFF"
+    fi
+
     if [[ $(which whiptail) ]]; then 
         whiptail --title "Choose Source and Destination Providers" \
         --checklist \
@@ -118,6 +123,10 @@ choose_data_providers() {
         Redis "Redis Streams" ON \
         Oracle "Oracle XE 21c source and destination" ${ora_whiptail_prompt}
     else
+        if [[ "${MACHINE}" = "x86_64" ]]; then 
+            ora_selected=${ora_selected:-Oracle}
+        fi
+
         echo "MySQL ${ora_selected} Postgres Kafka Minio" >&3
     fi
 }
