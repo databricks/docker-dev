@@ -13,7 +13,7 @@ services:
       - ./init.d:/docker-entrypoint-initdb.d
       - v8033-src:/var/lib/mysql
     ports:
-      - 3306:3306q      
+      - 3306:3306      
     networks:
       default:
         aliases: 
