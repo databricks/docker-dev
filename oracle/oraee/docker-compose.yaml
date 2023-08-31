@@ -35,6 +35,8 @@ services:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
       - ora-shared-rw:/opt/oracle/share
       - oraee_v1930-src:/opt/oracle/oradata
+    ports:
+      - 1521:1521
     networks:
       default:
         aliases: 
