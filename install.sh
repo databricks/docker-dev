@@ -115,6 +115,7 @@ choose_data_providers() {
         Postgres "Postgres V15 source and destination" ON \
         Kafka "Opensource Kafka destination" ON \
         Minio "S3 destination" ON \
+        Redis "Redis Streams" ON \
         Oracle "Oracle XE 21c source and destination" ${ora_whiptail_prompt}
     else
         echo "MySQL ${ora_selected} Postgres Kafka Minio" >&3
@@ -136,6 +137,9 @@ install_oraxe() {
         if [[ -z "${found}" ]]; then 
             pushd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
                 ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
+                if [ "$?" != "0"]; then
+                    abort  "Please try running the build again'"
+                fi
             popd
         fi
 
@@ -178,6 +182,11 @@ install_minio() {
     popd        
 }
 
+install_redis() {
+    pushd ${BASE_DIR}/redis
+        $ARCION_DOCKER_COMPOSE up -d
+    popd        
+}
 
 set_machine
 
@@ -312,6 +321,7 @@ for s in ${ARCION_DOCKER_DBS[@]}; do
         postgres|pg) install_pg;;
         minio) install_minio;;
         kafka) install_kafka;;
+        redis) install_redis;;
         *)
             pushd ${s}
             $ARCION_DOCKER_COMPOSE up -d 

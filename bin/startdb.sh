@@ -4,6 +4,64 @@
 declare -A ACTIVE_DB=()
 
 export STARTDB_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+export DOCKERDEV_DIR="$(dirname $STARTDB_DIR)"
+
+set_machine() {
+    export MACHINE=$(uname -p)    
+}
+
+install_oraxe() {
+    if [[ "${MACHINE}" != "x86_64" ]]; then 
+        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
+        return 1
+    fi    
+
+    local found=$(docker images -q "oracle/database:21.3.0-xe")
+    if [[ -z "${found}" ]]; then 
+
+        pushd oracle || exit 
+        if [ ! -d oracle-docker-images ]; then
+            git clone https://github.com/oracle/docker-images oracle-docker-images
+        fi
+
+        cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+        ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
+        popd    
+    fi
+}
+
+install_orafree() {
+    if [[ "${MACHINE}" != "x86_64" ]]; then 
+        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
+        return 1
+    fi    
+
+    local found=$(docker images -q "oracle/database:23.2.0-free")
+    if [[ -z "${found}" ]]; then 
+
+        pushd oracle || exit 
+        if [ ! -d oracle-docker-images ]; then
+            git clone https://github.com/oracle/docker-images oracle-docker-images
+        fi
+
+        cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+        ./buildContainerImage.sh -f -v 23.2.0  
+        popd    
+    fi
+}
+
+
+install_ora() {
+    local oraversion=$1
+
+    if [ "${oraversion}" = "oracle/oraxe" ]; then
+        install_oraxe
+    elif [ "${oraversion}" = "oracle/orafree" ]; then
+        install_orafree
+    else
+        echo "$oraversion"
+    fi
+}
 
 # return single line of docker ps
 # mysql paused 1 /abc/def/xyz
@@ -49,7 +107,7 @@ docker_compose_others() {
 
     if [ ! -d ../$d ] || [ ! -f ../$d/docker-compose.yaml ];then return 1; fi
 
-    pushd ../$d >/dev/null || return 1
+    pushd $d >/dev/null || return 1
     run_docker_compose "$cmd" "$d"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
         $WAIT_TO_COMPLETE
@@ -62,7 +120,9 @@ docker_compose_ora() {
     local d=${d:-${2}}
     local WAIT_TO_COMPLETE=${3}
 
-    pushd ../oracle/$d >/dev/null || return 1
+    install_ora "$d"
+
+    pushd $d >/dev/null || return 1
     run_docker_compose "$cmd" "$d"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
         $WAIT_TO_COMPLETE
@@ -76,7 +136,7 @@ docker_compose_yb() {
     local d=${d:-${2}}
     local WAIT_TO_COMPLETE=${3}
 
-    pushd ../$d >/dev/null || return 1
+    pushd $d >/dev/null || return 1
     case ${cmd} in up|unpause|restart|start) docker compose down -v;; esac   
     run_docker_compose "$cmd" "$d"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
@@ -105,11 +165,11 @@ docker_compose_db() {
         echo "specify \$1=cmd (up|down|start|stop|restart) and \$2=database" >&2 && return 1
     fi
 
-    pushd $STARTDB_DIR >/dev/null || return 1
+    pushd $DOCKERDEV_DIR >/dev/null || return 1
     case ${d} in 
         arcion-demo|arcion-demo-test) docker_compose_others "$1" "$2" "wait_arcion_demo";;
         kafka|redis|yugabyte) docker_compose_yb "$1" "$2";;
-        oraxe|oraee) docker_compose_ora "$1" "$2";;
+        oracle/orafree|oracle/oraxe|oracle/oraee) docker_compose_ora "$1" "$2";;
         *) docker_compose_others "$1" "$2";;
     esac
     popd >/dev/null

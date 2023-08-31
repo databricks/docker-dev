@@ -20,6 +20,8 @@ else
     echo "Found ${ARCION_DOCKER_COMPOSE}."
 fi
 
+set_machine
+
 #export NEWT_COLORS='
 #  window=,blue
 #  border=white,blue
