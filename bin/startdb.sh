@@ -11,8 +11,7 @@ set_machine() {
 }
 
 install_oraee() {
-
-    local found=$(docker images -q "oracle/database:21.3.0-xe")
+    local found=$(docker images -q "oracle/database:19.3.0-ee")
     if [[ -z "${found}" ]]; then 
 
         pushd $DOCKERDEV_DIR/oracle || exit 
@@ -21,17 +20,38 @@ install_oraee() {
         fi
 
         cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-        ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
+
+        if [[ "${MACHINE}" = "x86_64" ]]; then 
+            image=LINUX.X64_193000_db_home.zip
+        else  
+            image=LINUX.ARM64_1919000_db_home.zip
+        fi
+        if [ ! -f "19.3.0/$image" ] && [ -f ~/Downloads/$image ]; then
+            echo mv ~/Downloads/$image 19.3.0/.
+            mv ~/Downloads/$image 19.3.0/.
+        fi
+
+        if [ ! -f "19.3.0/$image" ]]; then
+            abort "$(pwd)/19.3.0/$image not found"
+        fi
+            ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
+        fi
         popd    
     fi
 }
 
 install_oraxe() {
-
+    if [[ "${MACHINE}" != "x86_64" ]]; then 
+        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
+        return 1
+    fi    
 }
 
 install_orafree() {
-
+    if [[ "${MACHINE}" != "x86_64" ]]; then 
+        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
+        return 1
+    fi    
 }
 
 
