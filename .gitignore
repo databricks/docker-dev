@@ -4,6 +4,7 @@ ojdbc.jar
 oracle-docker-images/
 arcion-share/
 *.swp
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -133,3 +134,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.DS_Store
+.DS_Store
+arcion-demo-test/.DS_Store
