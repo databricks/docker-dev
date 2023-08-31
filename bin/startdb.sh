@@ -10,44 +10,28 @@ set_machine() {
     export MACHINE=$(uname -p)    
 }
 
-install_oraxe() {
-    if [[ "${MACHINE}" != "x86_64" ]]; then 
-        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
-        return 1
-    fi    
+install_oraee() {
 
     local found=$(docker images -q "oracle/database:21.3.0-xe")
     if [[ -z "${found}" ]]; then 
 
-        pushd oracle || exit 
+        pushd $DOCKERDEV_DIR/oracle || exit 
         if [ ! -d oracle-docker-images ]; then
             git clone https://github.com/oracle/docker-images oracle-docker-images
         fi
 
         cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-        ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
+        ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
         popd    
     fi
 }
 
+install_oraxe() {
+
+}
+
 install_orafree() {
-    if [[ "${MACHINE}" != "x86_64" ]]; then 
-        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
-        return 1
-    fi    
 
-    local found=$(docker images -q "oracle/database:23.2.0-free")
-    if [[ -z "${found}" ]]; then 
-
-        pushd oracle || exit 
-        if [ ! -d oracle-docker-images ]; then
-            git clone https://github.com/oracle/docker-images oracle-docker-images
-        fi
-
-        cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-        ./buildContainerImage.sh -f -v 23.2.0  
-        popd    
-    fi
 }
 
 
@@ -58,6 +42,8 @@ install_ora() {
         install_oraxe
     elif [ "${oraversion}" = "oracle/orafree" ]; then
         install_orafree
+    elif [ "${oraversion}" = "oracle/oraee" ]; then
+        install_oraee
     else
         echo "$oraversion"
     fi

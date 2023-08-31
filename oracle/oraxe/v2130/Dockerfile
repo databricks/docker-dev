@@ -1,4 +1,5 @@
-from oracle/database:21.3.0-xe
+from container-registry.oracle.com/database/express:21.3.0-xe
+#from oracle/database:21.3.0-xe
 
 label maintainer sangkyulee@gmail.com
 
