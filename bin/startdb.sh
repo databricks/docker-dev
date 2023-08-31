@@ -26,16 +26,16 @@ install_oraee() {
         else  
             image=LINUX.ARM64_1919000_db_home.zip
         fi
+
         if [ ! -f "19.3.0/$image" ] && [ -f ~/Downloads/$image ]; then
             echo mv ~/Downloads/$image 19.3.0/.
             mv ~/Downloads/$image 19.3.0/.
         fi
 
-        if [ ! -f "19.3.0/$image" ]]; then
+        if [ ! -f "19.3.0/$image" ]; then
             abort "$(pwd)/19.3.0/$image not found"
         fi
-            ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
-        fi
+        ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
         popd    
     fi
 }
