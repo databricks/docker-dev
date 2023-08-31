@@ -1,0 +1,63 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+x-free23: &default-free23
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraxe
+    ports:
+      - 1521
+      - 5500
+    environment:
+      - ORACLE_PWD=Passw0rd
+      - ORACLE_SID=XE
+      # for the init script 
+      - ARCHREDO=/opt/oracle/oradata/XE/arch
+      - REDO=/opt/oracle/oradata/XE
+      - FOOTER_LINES=4      
+      - LOGDIR=/opt/oracle/oradata/XE
+    env_file:
+      - ../../config/env.sh           
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+
+
+services:
+  v2320free-src:
+    # sys and system password: oracle
+    << : *default-free23
+    image: oracle/database:23.2.0-free
+    hostname: orafree-src
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - v2320free-src:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - orafree
+          - orafree-src      
+
+  v2320free-dst:
+    # sys and system password: oracle
+    << : *default-free23
+    deploy:
+      mode: replicated
+      replicas: 0    
+    image: oracle/database:23.2.0-free
+    hostname: orafree-dst
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - v2320free-dst:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - orafree-dst
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  v2320free-src:
+  v2320free-dst:
