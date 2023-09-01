@@ -1,4 +1,7 @@
-from container-registry.oracle.com/database/express:21.3.0-xe
+from oracle/database:21.3.0-xe 
+
+# takes a long time to download 6GB.  a lot faster to build locally
+# from container-registry.oracle.com/database/express:21.3.0-xe
 
 label maintainer sangkyulee@gmail.com
 
