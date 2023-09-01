@@ -1,5 +1,6 @@
 ---
 # 3.8 required for the volume relative path name to config file 
+# https://hub.docker.com/r/saplabs/hanaexpress
 version: '3.8'
 services:
   hana:
@@ -17,17 +18,20 @@ services:
       - 1128-1129:1128-1129 
       - 59013-59014:59013-59014    
     ulimits:
-      nofile: '1048576:1048576'
+      nofile: 
+        soft: "1048576"
+        hard: "1048576"
     sysctls:
-      - sysctl.kernel.shmmax: '1073741824'
-      - sysctl.net.ipv4.ip_local_port_range: '40000 60999'
-      - sysctl.kernel.shmmni: '524288'
-      - sysctl.kernel.shmall: '8388608'
+      - kernel.shmmax=1073741824
+      #- net.ipv4.ip_local_port_range='40000 60999'
+      #- kernel.shmmni=524288
+      - kernel.shmall=8388608
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
       - v20220519:/hana/mounts
     command: 
-      - "--passwords-url file:///docker-entrypoint-initdb.d/config.json" 
+      - "--passwords-url"
+      - "file:///docker-entrypoint-initdb.d/config.json" 
       - "--agree-to-sap-license"
 networks:
   default:
