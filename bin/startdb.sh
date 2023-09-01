@@ -6,6 +6,14 @@ declare -A ACTIVE_DB=()
 export STARTDB_DIR="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 export DOCKERDEV_DIR="$(dirname $STARTDB_DIR)"
 
+echo "STARTDB_DIR=$STARTDB_DIR"
+echo "DOCKERDEV_DIR=$DOCKERDEV_DIR"
+
+abort() {
+  printf "%s\n" "$@" >&2
+  exit 1
+}
+
 set_machine() {
     export MACHINE=$(uname -p)    
 }
@@ -19,32 +27,41 @@ downloadFromGdrive() {
 
 install_oraee() {
     local found=$(docker images -q "oracle/database:19.3.0-ee")
-    if [[ -z "${found}" ]]; then 
+    if [[ -n "${found}" ]]; then
+        return 0
+    fi 
 
-        pushd $DOCKERDEV_DIR/oracle || exit 
-        if [ ! -d oracle-docker-images ]; then
-            git clone https://github.com/oracle/docker-images oracle-docker-images
-        fi
+    pushd $DOCKERDEV_DIR/oracle || exit 
 
-        cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-
-        if [[ "${MACHINE}" = "x86_64" ]]; then 
-            image=LINUX.X64_193000_db_home.zip
-        else  
-            image=LINUX.ARM64_1919000_db_home.zip
-        fi
-
-        if [ ! -f "19.3.0/$image" ] && [ -f ~/Downloads/$image ]; then
-            echo mv ~/Downloads/$image 19.3.0/.
-            mv ~/Downloads/$image 19.3.0/.
-        fi
-
-        if [ ! -f "19.3.0/$image" ]; then
-            abort "$(pwd)/19.3.0/$image not found"
-        fi
-        ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
-        popd    
+    if [ ! -d oracle-docker-images ]; then
+        git clone https://github.com/oracle/docker-images oracle-docker-images \
+            || abort "Error: git clone https://github.com/oracle/docker-images oracle-docker-images"
     fi
+    cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+
+    if [[ "${MACHINE}" = "x86_64" ]]; then 
+        image=LINUX.X64_193000_db_home.zip
+        arcion_image=$ARCION_ORA193AMD
+    else  
+        image=LINUX.ARM64_1919000_db_home.zip
+        arcion_image=$ARCION_ORA193ARM
+    fi
+
+    # prepare image
+    if [ ! -f "19.3.0/$image" ] && [ -f ~/Downloads/$image ]; then
+        echo cp ~/Downloads/$image 19.3.0/.
+        cp ~/Downloads/$image 19.3.0/.
+    elif [ -n "${arcion_image}" ]; then
+        downloadFromGdrive "${arcion_image}" 19.3.0/${image}
+    fi
+
+    # bail if not manually downloaded and does not have internal usage
+    if [ ! -f "19.3.0/$image" ]; then
+        abort "Error: $(pwd)/19.3.0/$image not found"
+    fi
+
+    ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
+    popd    
 }
 
 install_oraxe() {
@@ -52,6 +69,23 @@ install_oraxe() {
         echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
         return 1
     fi    
+
+    local found=$(docker images -q "oracle/database:21.3.0-xe")
+    if [[ -n "${found}" ]]; then
+        return 0
+    fi 
+
+    pushd $DOCKERDEV_DIR/oracle || exit 
+
+    if [ ! -d oracle-docker-images ]; then
+        git clone https://github.com/oracle/docker-images oracle-docker-images \
+            || abort "Error: git clone https://github.com/oracle/docker-images oracle-docker-images"
+    fi
+    cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+
+    ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
+    popd    
+
 }
 
 install_orafree() {
@@ -59,6 +93,23 @@ install_orafree() {
         echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
         return 1
     fi    
+
+    local found=$(docker images -q "oracle/database:23.2.0-free")
+    if [[ -n "${found}" ]]; then
+        return 0
+    fi 
+
+    pushd $DOCKERDEV_DIR/oracle || exit 
+
+    if [ ! -d oracle-docker-images ]; then
+        git clone https://github.com/oracle/docker-images oracle-docker-images \
+            || abort "Error: git clone https://github.com/oracle/docker-images oracle-docker-images"
+    fi
+    cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
+
+    ./buildContainerImage.sh -v 23.2.0 -f -o '--build-arg SLIMMING=false'
+    popd    
+
 }
 
 
@@ -99,7 +150,11 @@ run_docker_compose() {
     case ${cmd} in 
         up) if [[ "${DOCKER_LS[1]}" = "paused" ]]; then docker compose unpause; 
             elif [[ "${DOCKER_LS[1]}" = "exited" ]]; then docker compose start;
-            else docker compose up -d; fi
+            else 
+                export DOCKER_BUILDKIT=0
+                docker compose build
+                docker compose up -d 
+            fi
             ;;
         *) docker compose "$cmd"
             ;;
@@ -118,7 +173,10 @@ docker_compose_others() {
     [ -z "$cmd" ] && echo "docker_compose_others: \$1: not defined" && return 1 
     [ -z "$d" ] && echo "docker_compose_others: \$2: not defined" && return 1 
 
-    if [ ! -d ../$d ] || [ ! -f ../$d/docker-compose.yaml ];then return 1; fi
+    if [ ! -d $d ] || [ ! -f $d/docker-compose.yaml ];then 
+        echo "$d not a dir || ! -f $d/docker-compose.yaml" >&2
+        return 1 
+    fi
 
     pushd $d >/dev/null || return 1
     run_docker_compose "$cmd" "$d"

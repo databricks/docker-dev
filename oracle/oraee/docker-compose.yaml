@@ -45,7 +45,7 @@ services:
 
   v1930-dst:
     << : *default-ee1930
-    build: v1930
+    image: oraee-v1930-src
     deploy:
       mode: replicated
       replicas: 0       
