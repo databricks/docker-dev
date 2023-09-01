@@ -1,0 +1,37 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  hana:
+    image: saplabs/hanaexpress:2.00.061.00.20220519.1
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: hana
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - 39013:39013 
+      - 39017:39017 
+      - 39041-39045:39041-39045 
+      - 1128-1129:1128-1129 
+      - 59013-59014:59013-59014    
+    ulimits:
+      nofile: '1048576:1048576'
+    sysctls:
+      - sysctl.kernel.shmmax: '1073741824'
+      - sysctl.net.ipv4.ip_local_port_range: '40000 60999'
+      - sysctl.kernel.shmmni: '524288'
+      - sysctl.kernel.shmall: '8388608'
+    volumes:
+      - ./init.d:/docker-entrypoint-initdb.d
+      - v20220519:/hana/mounts
+    command: 
+      - "--passwords-url file:///docker-entrypoint-initdb.d/config.json" 
+      - "--agree-to-sap-license"
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  v20220519:
