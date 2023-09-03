@@ -7,11 +7,11 @@
 
 abort() {
     printf "%s\n" "$@" >&2
-    if (( SOURCED == 1 )); then   
-        return 1
-    else
+    #if (( SOURCED == 1 )); then   
+    #    return 1
+    #else
         exit 1
-    fi
+    #fi
 }
 # DOCKERDEV_NAME
 setDockerDevName() {
@@ -132,12 +132,11 @@ choose_start_cli() {
 
 # ARCION_DOCKER_DBS="mysql,ON mysql,OFF"
 chooseDataProviders() {
-    [ -n "${ARCION_DOCKER_DBS}" ] && return 
 
-    composefile_output=/tmp/composefile.$$.txt
-    composels_output=/tmp/composels.$$.txt
-    whiptail_input=/tmp/whiptail_input.$$.txt
-    whiptail_output=/tmp/whiptailselection.$$.txt
+    composefile_output=/tmp/composefile.$$.txt      # Name
+    composels_output=/tmp/composels.$$.txt          # Name,Status(es),RunningCount,NotRunningCount,ConfigFile    
+    whiptail_input=/tmp/whiptail_input.$$.txt       # Name,Status(es),ON|OFF
+    whiptail_output=/tmp/whiptailselection.$$.txt   # Name,ON
 
     # all docker compose dirs. for oracle/oraxe show oraxe
     find * -maxdepth 2 \
@@ -145,13 +144,18 @@ chooseDataProviders() {
         -name "docker-compose.yaml" -printf "%h\n" | awk -F'/' '{print $NF}' | sort -u > ${composefile_output}
 
     # all running and stopped docker compose 
-    run_docker_compose_ls | sort -u > ${composels_output}   
+    # Name,Status(es),RunningCount,NotRunningCount,ConfigFile
+    run_docker_compose_ls | sort -t, -u >   ${composels_output}   
 
+    # join key field -1 1 -2 2 
     # left join (-a 1)
     # fields 1.1 file 1.field 1 (-o)
     # name status(1/2)_dir 
     join -t, -a 1 -o 1.1 2.2 2.3 2.4 2.5  ${composefile_output} ${composels_output} | \
-        awk -F',' '{if ($2=="running" && $3==$4) {onoff="ON"} else {onoff="OFF"}; printf "%s,%s(%s/%s) %s,%s\n",$1,$2,$3,$4,$5,onoff}' \
+        awk -F',' '{
+            # $4==0 make sure nothing is in exited / paused / stopped status
+            if (index($2,"running") && $4==0) {onoff="ON"} 
+            else {onoff="OFF"}; printf "%s,%s(%s/%s),%s\n",$1,$2,$3,$4,onoff}' \
         > ${whiptail_input}   
     readarray -d ',' -t whiptailmenu < <(cat ${whiptail_input} | tr '\n' ',')
 
@@ -161,9 +165,19 @@ chooseDataProviders() {
     4> ${whiptail_output}
 
     # mysql,ON|OFF oraxe,ON|OFF 
+
     export ARCION_DOCKER_DBS=$(
         join -t, -a 1 -e OFF -o 1.1 1.2 1.3 2.1 ${whiptail_input} ${whiptail_output} | \
-            awk -F',' '$(NF-1) != $NF {if ($NF!="OFF") $NF="ON"; printf "%s,%s\n",$1,$NF}'
+            awk -F',' '
+            # previous and new state
+            # on on = on (no change)
+            # off off = off (no change)
+            $1 == $NF && $(NF-1)=="ON" {next} 
+            # previous and new state not same and and new state
+            # the new state not off, then it is on 
+            # off on = on
+            # on off = off
+            $(NF-1) != $NF {if ($NF!="OFF") $NF="ON"; printf "%s,%s\n",$1,$NF}'
         )
 }
 
@@ -276,8 +290,7 @@ install_ora() {
     fi
 }
 
-# return single line of docker ps
-# mysql paused 1 /abc/def/xyz
+# Name,Status(es),RunningCount,NotRunningCount,ConfigFile
 run_docker_compose_ls() {
     local d=${1}
     local filter
@@ -285,27 +298,37 @@ run_docker_compose_ls() {
     [ -n "${d}" ] && filter="--filter name=$d"
     [ -z "$ARCION_DOCKER_COMPOSE" ] && checkDockerCompose
 
-    # translate 
-    # from: arcdemo             created(1/2)          /home/rslee/github/arcion/docker-dev/arcdemo/docker-compose.yaml
-    # to:   arcdemo created 1 2 /home...
-    # awk split put results starting in 1
-    $ARCION_DOCKER_COMPOSE ls -a $filter \
-        | tail -n +2 \
-        | awk -F'\(|\)|[[:space:]]+' '{cnt=split("1",ok_tot,"/"); if (cnt==1) {ok_tot[2]=ok_tot[1]}; printf "%s,%s,%s,%s,%s\n",$1,$2,ok_tot[1],ok_tot[2],$5}' 
+    docker compose ls --all --format=json $filter | \
+        jq -r '(map(keys) | add | unique) as $cols | map(. as $row | $cols | map($row[.])) as $rows | $cols, $rows[] | @tsv' | \
+        tail -n +2 | \
+        tr -s '(),) ' '\t' | \
+        awk -F'\t' '{
+            for (i=3; i<NF; i+=2) {
+                # concatenate
+                if (allstatus=="") allstatus=($i "=" $(i+1)); else allstatus=(allstatus "|" $i "=" $(i+1))
+                splitcnt=split($(i+1),ok_tot,"/");
+                cnt=ok_tot[1]+0;
+                #print $i "|" $(i+1) "|" splitcnt "|" cnt;
+                if (splitcnt==1) {if ($i=="running") running+=cnt; else notrunning+=cnt;} 
+                else {if ($i=="running") {running+=cnt; notrunning+=ok_tot[2]-cnt} else notrunning+=ok_tot[2]-cnt;} 
+            }
+            printf "%s,%s,%d,%d,%s\n",$2,allstatus,running,notrunning,$1;
+            running=0;notrunning=0;allstatus=""}'
+
 }
+
 
 # have up handle paused vs stopped
 run_docker_compose() {
     local cmd=${1:-start}
     local d=${2}
     
-    # 0=name
-    # 1=status
-    readarray -d' ' -t DOCKER_LS < <(run_docker_compose_ls "$d")
+    # Name,Status(es),RunningCount,NotRunningCount,ConfigFile
+    readarray -d',' -t DOCKER_LS < <(run_docker_compose_ls "$d")
     case ${cmd} in 
-        up) if [[ "${DOCKER_LS[1]}" = "paused" ]]; then 
+        up) if [[ "${DOCKER_LS[1]}" =~ "paused" ]]; then 
                 $ARCION_DOCKER_COMPOSE unpause || abort "${pwd} $ARCION_DOCKER_COMPOSE unpause failed" 
-            elif [[ "${DOCKER_LS[1]}" = "exited" ]]; then 
+            elif [[ "${DOCKER_LS[1]}" =~ "exited" ]]; then 
                 $ARCION_DOCKER_COMPOSE start || abort "${pwd} $ARCION_DOCKER_COMPOSE start failed"
             else 
                 export DOCKER_BUILDKIT=0
