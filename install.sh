@@ -6,32 +6,40 @@
 # ARCION_DOCKER_COMPOSE: docker compose | docker-compose
 
 abort() {
-  printf "%s\n" "$@" >&2
-  exit 1
+    printf "%s\n" "$@" >&2
+    if (( SOURCED == 1 )); then   
+        return 1
+    else
+        exit 1
+    fi
 }
+# DOCKERDEV_NAME
+setDockerDevName() {
+    [ -z "${DOCKERDEV_NAME}" ] && export DOCKERDEV_NAME="docker-dev"
+}
+
 # MACHINE
 setMachineType() {
     # osx=arm
     # linux=x86_64
-    export MACHINE=$(uname -p)    
+    [ -z "${MACHINE}" ] && export MACHINE="$(uname -p)"    
 }
-# BASE_DIR
+# DOCKERDEV_BASEDIR
 setBasedir() {
     # curl or running from docker-dev dir
     DIR_NAME="${BASH_SOURCE[0]}"
     if [ -z "${DIR_NAME}" ]; then
-        echo "Running curl intall.sh"
-        export BASE_DIR=docker-dev
-
-        # not inside docker-dev dir
-        if [[ "$(basename $(pwd))" = "${BASE_DIR}" ]]; then
-            abort  "You are inside $BASE_DIR. Please be outside the $BASE_DIR by running 'cd ..'"
-        else
-            echo "Current dir is $(basename $(pwd))"
-        fi  
+        echo "Running curl intall.sh" >&2
+        # inside docker-dev dir
+        if [[ "$(basename $(pwd))" = "${DOCKERDEV_NAME}" ]]; then
+            abort  "You are inside $DOCKERDEV_BASEDIR. Please be outside the $DOCKERDEV_BASEDIR by running 'cd ..' or run ./install.sh"
+        fi
+        echo "mkdir ${DOCKERDEV_NAME}" >&2
+        mkdir ${DOCKERDEV_NAME}
+        export DOCKERDEV_BASEDIR="$(pwd)/${DOCKERDEV_NAME}"
     else 
-        export BASE_DIR=$( dirname "${DIR_NAME}" )
-        echo "Manually running intall.sh from ${BASE_DIR}"
+        export DOCKERDEV_BASEDIR="$(pwd)"
+        echo "Manually running intall.sh from ${DOCKERDEV_BASEDIR}" >&2
     fi
 }
 
@@ -89,7 +97,7 @@ choose_start_cli() {
     2) CLI, using tmux terminal. 
 
     Enter tmux terminal
-        docker exec -it arcion-demo-workloads-1 tmux attach
+        docker exec -it arcdemo-workloads-1 tmux attach
 
     To start replication:
         arcdemo.sh full mysql pg
@@ -121,54 +129,42 @@ choose_start_cli() {
         esac
     fi
 }
-# ARCION_DOCKER_DBS
+
+# ARCION_DOCKER_DBS="mysql,ON mysql,OFF"
 chooseDataProviders() {
-    if [ -n "${ARCION_DOCKER_DBS}" ]; then
-        return
-    fi
+    [ -n "${ARCION_DOCKER_DBS}" ] && return 
 
-    declare -A "data_provider_dict=($(find * -maxdepth 2 \
-        -not \( -path docker-dev -prune \) \
-        -name "docker-compose.yaml" -printf "%h\n" | awk '{printf "[%s]=%s ",$1,$1}')
-    )" 
+    composefile_output=/tmp/composefile.$$.txt
+    composels_output=/tmp/composels.$$.txt
+    whiptail_input=/tmp/whiptail_input.$$.txt
+    whiptail_output=/tmp/whiptailselection.$$.txt
 
-    dialog_output=/tmp/whiptail.out
-    whiptail --title "Select database to start" \
-    --output-fd 4 \
-    --checklist \
-    "List of databases" 0 0 0 \
-    $( for d in  printf '%s\n' "${!data_provider_dict[@]}" | sort; do echo $d $d OFF; done ) \
-    4> ${dialog_output}
+    # all docker compose dirs. for oracle/oraxe show oraxe
+    find * -maxdepth 2 \
+        -not \( -path "${DOCKERDEV_NAME}" -prune \) \
+        -name "docker-compose.yaml" -printf "%h\n" | awk -F'/' '{print $NF}' | sort -u > ${composefile_output}
 
-    export ARCION_DOCKER_DBS=$(cat $dialog_output)
+    # all running and stopped docker compose 
+    run_docker_compose_ls | sort -u > ${composels_output}   
 
-}
-chooseDataProviders_old() {
-    # show menu
-    if [ -n "${ARCION_DOCKER_DBS}" ]; then
-        return
-    fi
-    
-    local ora_whiptail_prompt
+    # left join (-a 1)
+    # fields 1.1 file 1.field 1 (-o)
+    # name status(1/2)_dir 
+    join -t, -a 1 -o 1.1 2.2 2.3 2.4 2.5  ${composefile_output} ${composels_output} | \
+        awk -F',' '{if ($2=="running" && $3==$4) {onoff="ON"} else {onoff="OFF"}; printf "%s,%s(%s/%s) %s,%s\n",$1,$2,$3,$4,$5,onoff}' \
+        > ${whiptail_input}   
+    readarray -d ',' -t whiptailmenu < <(cat ${whiptail_input} | tr '\n' ',')
 
-    if [[ "${MACHINE}" = "x86_64" ]]; then 
-        ora_whiptail_prompt="ON"
-    else
-        ora_whiptail_prompt="OFF"
-    fi
+    whiptail --title "Select databases to start/stop" --output-fd 4 --separate-output \
+    --checklist "Current state of databases" 0 0 0 \
+    "${whiptailmenu[@]}" \
+    4> ${whiptail_output}
 
-    dialog_output=/tmp/whiptail.out
-    if [[ $(which whiptail) ]]; then 
-        runWhiptail "${dialog_output}"        
-        export ARCION_DOCKER_DBS=$(cat $dialog_output)
-    else
-        if [[ "${MACHINE}" = "x86_64" ]]; then 
-            ora_selected=${ora_selected:-Oracle}
-        fi
-        export ARCION_DOCKER_DBS=$(
-            echo "MySQL ${ora_selected} Postgres Kafka Minio"
+    # mysql,ON|OFF oraxe,ON|OFF 
+    export ARCION_DOCKER_DBS=$(
+        join -t, -a 1 -e OFF -o 1.1 1.2 1.3 2.1 ${whiptail_input} ${whiptail_output} | \
+            awk -F',' '$(NF-1) != $NF {if ($NF!="OFF") $NF="ON"; printf "%s,%s\n",$1,$NF}'
         )
-    fi
 }
 
 downloadFromGdrive() {
@@ -184,7 +180,7 @@ install_oraee() {
         return 0
     fi 
 
-    pushd $BASE_DIR/oracle || exit 
+    pushd $DOCKERDEV_BASEDIR/oracle || exit 
 
     if [ ! -d oracle-docker-images ]; then
         git clone https://github.com/oracle/docker-images oracle-docker-images \
@@ -228,7 +224,7 @@ install_oraxe() {
         return 0
     fi 
 
-    pushd $BASE_DIR/oracle || exit 
+    pushd $DOCKERDEV_BASEDIR/oracle || exit 
 
     if [ ! -d oracle-docker-images ]; then
         git clone https://github.com/oracle/docker-images oracle-docker-images \
@@ -252,7 +248,7 @@ install_orafree() {
         return 0
     fi 
 
-    pushd $BASE_DIR/oracle || exit 
+    pushd $DOCKERDEV_BASEDIR/oracle || exit 
 
     if [ ! -d oracle-docker-images ]; then
         git clone https://github.com/oracle/docker-images oracle-docker-images \
@@ -285,11 +281,17 @@ install_ora() {
 run_docker_compose_ls() {
     local d=${1}
     local filter
-    if [ -n "${d}" ]; then filter="--filter name=$d"; fi
+
+    [ -n "${d}" ] && filter="--filter name=$d"
+    [ -z "$ARCION_DOCKER_COMPOSE" ] && checkDockerCompose
+
+    # translate 
+    # from: arcdemo             created(1/2)          /home/rslee/github/arcion/docker-dev/arcdemo/docker-compose.yaml
+    # to:   arcdemo created 1 2 /home...
+    # awk split put results starting in 1
     $ARCION_DOCKER_COMPOSE ls -a $filter \
         | tail -n +2 \
-        | awk -F'[[:space:]]+' '{print $1 "," $2 "," $3}' \
-        | awk -F'[(),]' '{printf "%s%s,%s,%s,%s",NEWLINE,$1,$2,$3,$5;NEWLINE="\n"}'
+        | awk -F'\(|\)|[[:space:]]+' '{cnt=split("1",ok_tot,"/"); if (cnt==1) {ok_tot[2]=ok_tot[1]}; printf "%s,%s,%s,%s,%s\n",$1,$2,ok_tot[1],ok_tot[2],$5}' 
 }
 
 # have up handle paused vs stopped
@@ -299,17 +301,19 @@ run_docker_compose() {
     
     # 0=name
     # 1=status
-    readarray -d',' -t DOCKER_LS < <(run_docker_compose_ls "$d")
+    readarray -d' ' -t DOCKER_LS < <(run_docker_compose_ls "$d")
     case ${cmd} in 
-        up) if [[ "${DOCKER_LS[1]}" = "paused" ]]; then $ARCION_DOCKER_COMPOSE unpause; 
-            elif [[ "${DOCKER_LS[1]}" = "exited" ]]; then $ARCION_DOCKER_COMPOSE start;
+        up) if [[ "${DOCKER_LS[1]}" = "paused" ]]; then 
+                $ARCION_DOCKER_COMPOSE unpause || abort "${pwd} $ARCION_DOCKER_COMPOSE unpause failed" 
+            elif [[ "${DOCKER_LS[1]}" = "exited" ]]; then 
+                $ARCION_DOCKER_COMPOSE start || abort "${pwd} $ARCION_DOCKER_COMPOSE start failed"
             else 
                 export DOCKER_BUILDKIT=0
-                $ARCION_DOCKER_COMPOSE build
-                $ARCION_DOCKER_COMPOSE up -d 
+                # $ARCION_DOCKER_COMPOSE build
+                $ARCION_DOCKER_COMPOSE up -d || abort "${pwd} $ARCION_DOCKER_COMPOSE up -d failed" 
             fi
             ;;
-        *) $ARCION_DOCKER_COMPOSE "$cmd"
+        *) $ARCION_DOCKER_COMPOSE "$cmd" || abort "${pwd} $ARCION_DOCKER_COMPOSE ${cmd} -d failed"
             ;;
     esac
 }
@@ -383,7 +387,7 @@ docker_compose_db() {
     local cmd=${1}
     local d=${2}
 
-    echo $cmd $d
+    echo $cmd $d >&2
 
     checkDockerCompose
 
@@ -391,11 +395,11 @@ docker_compose_db() {
         echo "specify \$1=cmd (up|down|start|stop|restart) and \$2=database" >&2 && return 1
     fi
 
-    pushd $BASE_DIR >/dev/null || return 1
+    pushd $DOCKERDEV_BASEDIR >/dev/null || return 1
     case ${d} in 
-        arcion-demo|arcion-demo-test) docker_compose_others "$1" "$2" "wait_arcion_demo";;
+        arcdemo|arctest) docker_compose_others "$1" "$2" "wait_arcion_demo";;
         kafka|redis|yugabyte) docker_compose_yb "$1" "$2";;
-        oracle/orafree|oracle/oraxe|oracle/oraee) docker_compose_ora "$1" "$2";;
+        orafree|oraxe|oraee) docker_compose_ora "$1" "$2";;
         *) docker_compose_others "$1" "$2";;
     esac
     popd >/dev/null
@@ -430,7 +434,7 @@ stop_db() {
 }
 
 
-checkArcionLicese() {
+checkArcionLicense() {
     # arcion license exists
     if [[ -n "${ARCION_LICENSE}" ]]; then  
         echo "ARCION_LICENSE found."  
@@ -450,6 +454,26 @@ checkGit() {
         echo "git found." 
     else     
         abort "git is NOT in PATH"
+    fi
+}
+
+# CLIMENU
+checkWhiptailDialog() {
+    # git exists
+    if [[ -n $(which whiptail) ]]; then 
+        echo "whiptail founded." 
+        export CLIMENU=whiptail
+    elif [[ -n $(which dialog) ]]; then 
+        echo "dialog founded." 
+        export CLIMENU=dialog
+    else     
+abort "whiptail or dialog not found.
+on OSX 
+    brew install newt
+    brew install whiptail
+on Linux or Windows WSL
+    sudo apt-get install whiptail
+    sudo apt-get install dialog"
     fi
 }
 # ARCION_DOCKER_COMPOSE
@@ -519,9 +543,9 @@ createVolumes() {
     done
 }
 pullDockerDev() {
-    if [[ -d "docker-dev" ]]; then
-        echo "docker-dev found. running git pull"
-        pushd docker-dev
+    if [[ -d "${DOCKERDEV_NAME}" ]]; then
+        echo "dir ${DOCKERDEV_NAME} found. running git pull to refresh"
+        pushd "${DOCKERDEV_NAME}"
         if [ -z "${ARCION_WORKLOADS_TAG}" ]; then
             git pull
         else
@@ -531,50 +555,58 @@ pullDockerDev() {
         fi
         popd
     else
-        echo "git clone https://github.com/arcionlabs/docker-dev"
-        git clone https://github.com/arcionlabs/docker-dev >/tmp/install.$$ 2>&1
+        echo "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME}"
+        git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} >/tmp/install.$$ 2>&1
         if [[ "$?" != 0 ]]; then 
             cat /tmp/install.$$
-            abort "git clone https://github.com/arcionlabs/docker-dev failed."
+            abort "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} failed."
         fi
     fi
 }
 pullArcdemo() {
     # pull 
-    $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml pull || abort "please see the error msg"
+    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml pull || abort "please see the error msg"
 }
 
 startDatabases() {
     echo ${ARCION_DOCKER_DBS[@]}
     for db in ${ARCION_DOCKER_DBS[@]}; do
-        db=$(echo ${db} | sed 's/"//g' ) # remove the quote surrounding the name
-        docker_compose_db up $db
+        readarray -d',' -t db_on_off < <(printf '%s' "${db}")
+        declare -p db_on_off
+        case "${db_on_off[1]}" in
+        "ON") docker_compose_db "up" "${db_on_off[0]}";;
+        "OFF") docker_compose_db "stop" "${db_on_off[0]}";;
+        *) abort "Error: expecting ON|OFF ${db} from ARCION_DOCKER_DBS=${ARCION_DOCKER_DBS[*]}";;
+        esac   
     done
 }
 startArcdemo() {
     # configs are relative to the script
-    $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml up -d || abort "please see the error msg"
+    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml up -d || abort "please see the error msg"
 
     # start Arcion demo kit CLI
-    ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd )
+    ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd )
     while [ -z "${ttyd_started}" ]; do
         sleep 1
-        echo "waiting on $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads | grep ttyd"
-        ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
+        echo "waiting on $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd"
+        ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
     done
-    $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "clear" enter'
+    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "clear" enter'
     sleep 1
-    $ARCION_DOCKER_COMPOSE -f ${BASE_DIR}/arcion-demo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql postgresql"; tmux attach'
+    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql postgresql"; tmux attach'
 }
 
-(return 0 2>/dev/null) && sourced=1 || sourced=0
-if (( sourced == 0 )); then
+setMachineType
+setDockerDevName
+setBasedir
+(return 0 2>/dev/null) && export SOURCED=1 || export SOURCED=0
+
+if (( SOURCED == 0 )); then
     # choose prereq check
     choose_start_setup
 
-    setMachineType
-    setBasedir
     checkArcionLicense
+    checkWhiptailDialog
     checkGit
     checkDocker
     checkDockerCompose

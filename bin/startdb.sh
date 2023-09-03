@@ -14,6 +14,7 @@ abort() {
   exit 1
 }
 
+# MACHINE
 set_machine() {
     export MACHINE=$(uname -p)    
 }
