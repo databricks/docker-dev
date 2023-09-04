@@ -68,8 +68,8 @@ choose_start_setup() {
     Would you like to start the setup?
     '
 
-    if [[ $(which whiptail) ]]; then 
-        whiptail --title "Arcion Demo Kit" \
+    if [[ -n "${CLIMENU}" ]]; then 
+        $CLIMENU --title "Arcion Demo Kit" \
             --yesno "${about_textbox}" 0 0 0
         if (( $? != 0 )); then 
             abort "Exiting the setup."
@@ -111,8 +111,8 @@ choose_start_cli() {
     Whould you like to be placed into the CLI?
     '
     
-    if [[ $(which whiptail) ]]; then 
-        whiptail --title "Arcion Demo Kit" \
+    if [[ -n "${CLIMENU}" ]]; then 
+        ${CLIMENU} --title "Arcion Demo Kit" \
             --yesno "${about_textbox}" 0 0 0
         if (( $? != 0 )); then 
             abort "Exiting the setup."
@@ -141,7 +141,7 @@ chooseDataProviders() {
     # all docker compose dirs. for oracle/oraxe show oraxe
     find * -maxdepth 2 \
         -not \( -path "${DOCKERDEV_NAME}" -prune \) \
-        -name "docker-compose.yaml" -printf "%h\n" | awk -F'/' '{print $NF}' | sort -u > ${composefile_output}
+        -name "*compose.yaml" -printf "%h\n" | awk -F'/' '{print $NF}' | sort -u > ${composefile_output}
 
     # all running and stopped docker compose 
     # Name,Status(es),RunningCount,NotRunningCount,ConfigFile
@@ -159,8 +159,11 @@ chooseDataProviders() {
         > ${whiptail_input}   
     readarray -d ',' -t whiptailmenu < <(cat ${whiptail_input} | tr '\n' ',')
 
-    whiptail --title "Select databases to start/stop" --output-fd 4 --separate-output \
-    --checklist "Current state of databases" 0 0 0 \
+    $CLIMENU --title "Select / Deselet To Start/Stop Service" --output-fd 4 --separate-output \
+    --checklist "Later, re-run docker-dev/install.sh or manually: 
+    cd mysql; docker compose up -d
+    cd mysql; docker compose stop" \
+    0 0 0 \
     "${whiptailmenu[@]}" \
     4> ${whiptail_output}
 
@@ -482,8 +485,10 @@ checkGit() {
 }
 
 # CLIMENU
-checkWhiptailDialog() {
+setWhiptailDialog() {
     # git exists
+    [ -n "${CLIMENU}" ] && return 0
+
     if [[ -n $(which whiptail) ]]; then 
         echo "whiptail founded." 
         export CLIMENU=whiptail
@@ -623,6 +628,7 @@ startArcdemo() {
 setMachineType
 setDockerDevName
 setBasedir
+setWhiptailDialog
 (return 0 2>/dev/null) && export SOURCED=1 || export SOURCED=0
 
 if (( SOURCED == 0 )); then
@@ -630,7 +636,6 @@ if (( SOURCED == 0 )); then
     choose_start_setup
 
     checkArcionLicense
-    checkWhiptailDialog
     checkGit
     checkDocker
     checkDockerCompose
