@@ -25,11 +25,13 @@ setMachineType() {
     [ -z "${MACHINE}" ] && export MACHINE="$(uname -p)"    
 }
 # DOCKERDEV_BASEDIR
+# DOCKERDEV_INSTALL
 setBasedir() {
     # curl or running from docker-dev dir
     DIR_NAME="${BASH_SOURCE[0]}"
     if [ -z "${DIR_NAME}" ]; then
         echo "Running curl intall.sh" >&2
+        export DOCKERDEV_INSTALL=1
         # inside docker-dev dir
         if [[ "$(basename $(pwd))" = "${DOCKERDEV_NAME}" ]]; then
             abort  "You are inside $DOCKERDEV_BASEDIR. Please be outside the $DOCKERDEV_BASEDIR by running 'cd ..' or run ./install.sh"
@@ -38,6 +40,7 @@ setBasedir() {
         mkdir ${DOCKERDEV_NAME}
         export DOCKERDEV_BASEDIR="$(pwd)/${DOCKERDEV_NAME}"
     else 
+        export DOCKERDEV_INSTALL=""
         export DOCKERDEV_BASEDIR="$(pwd)"
         echo "Manually running intall.sh from ${DOCKERDEV_BASEDIR}" >&2
     fi
@@ -68,9 +71,11 @@ choose_start_setup() {
     Would you like to start the setup?
     '
 
+    if [[ -z "${DOCKERDEV_INSTALL}" ]]; then return; fi
+
     if [[ -n "${CLIMENU}" ]]; then 
         $CLIMENU --title "Arcion Demo Kit" \
-            --yesno "${about_textbox}" 0 0 0
+            --yesno "${about_textbox}" 0 0
         if (( $? != 0 )); then 
             abort "Exiting the setup."
         fi
@@ -113,7 +118,7 @@ choose_start_cli() {
     
     if [[ -n "${CLIMENU}" ]]; then 
         ${CLIMENU} --title "Arcion Demo Kit" \
-            --yesno "${about_textbox}" 0 0 0
+            --yesno "${about_textbox}" 0 0
         if (( $? != 0 )); then 
             abort "Exiting the setup."
         fi
@@ -133,18 +138,18 @@ choose_start_cli() {
 # ARCION_DOCKER_DBS="mysql,ON mysql,OFF"
 chooseDataProviders() {
 
-    composefile_output=/tmp/composefile.$$.txt      # Name
-    composels_output=/tmp/composels.$$.txt          # Name,Status(es),RunningCount,NotRunningCount,ConfigFile    
-    whiptail_input=/tmp/whiptail_input.$$.txt       # Name,Status(es),ON|OFF
-    whiptail_output=/tmp/whiptailselection.$$.txt   # Name,ON
+    composefile_output=/tmp/composefile.$$.txt      # Name-ver
+    composels_output=/tmp/composels.$$.txt          # Name-ver,Status(es),RunningCount,NotRunningCount,ConfigFile    
+    whiptail_input=/tmp/whiptail_input.$$.txt       # Name-ver,Status(es),ON|OFF
+    whiptail_output=/tmp/whiptailselection.$$.txt   # Name-ver,ON|OFF
 
     # all docker compose dirs. for oracle/oraxe show oraxe
     find * -maxdepth 2 \
         -not \( -path "${DOCKERDEV_NAME}" -prune \) \
-        -name "*compose.yaml" -printf "%h\n" | awk -F'/' '{print $NF}' | sort -u > ${composefile_output}
+        -name "*compose*.yaml" | getNameVerFromYaml | sort -u > ${composefile_output}
 
     # all running and stopped docker compose 
-    # Name,Status(es),RunningCount,NotRunningCount,ConfigFile
+    # Name-ver,Status(es),RunningCount,NotRunningCount,ConfigFile
     run_docker_compose_ls | sort -t, -u >   ${composels_output}   
 
     # join key field -1 1 -2 2 
@@ -155,7 +160,9 @@ chooseDataProviders() {
         awk -F',' '{
             # $4==0 make sure nothing is in exited / paused / stopped status
             if (index($2,"running") && $4==0) {onoff="ON"} 
-            else {onoff="OFF"}; printf "%s,%s(%s/%s),%s\n",$1,$2,$3,$4,onoff}' \
+            else {onoff="OFF"}; 
+            if ($3=="" && $4=="") printf "%s,not started,%s\n",$1,onoff;
+            else printf "%s,running(%s)/not running(%s),%s\n",$1,$3,$4,onoff;}' \
         > ${whiptail_input}   
     readarray -d ',' -t whiptailmenu < <(cat ${whiptail_input} | tr '\n' ',')
 
@@ -283,15 +290,18 @@ install_orafree() {
 install_ora() {
     local oraversion=$1
 
-    if [ "${oraversion}" = "oracle/oraxe" ]; then
-        install_oraxe
-    elif [ "${oraversion}" = "oracle/orafree" ]; then
-        install_orafree
-    elif [ "${oraversion}" = "oracle/oraee" ]; then
-        install_oraee
-    else
-        echo "$oraversion"
-    fi
+    case "${oraversion}" in
+    oraxe) install_oraxe;;
+    oraee) install_oraee;;
+    orafree) install_orafree;;
+    *) echo "$oraversion not handled" >&2
+    esac 
+}
+
+getNameVerFromYaml() {
+    local F=${1:-1}
+    awk -F'\t' -v F=${F} '{split($F,c,"/"); n[$1]=c[length(c)-1]; split(c[length(c)],y,"[-|.]"); x=y[length(y)-1]; if (x=="compose") v[$F]=""; else v[$1]=("-" x);} 
+        END {for (k in n) {printf "%s%s\n",n[k],v[k]}}'
 }
 
 # Name,Status(es),RunningCount,NotRunningCount,ConfigFile
@@ -300,25 +310,25 @@ run_docker_compose_ls() {
     local filter
 
     [ -n "${d}" ] && filter="--filter name=$d"
-    [ -z "$ARCION_DOCKER_COMPOSE" ] && checkDockerCompose
+    
+    containerid=($(docker ps --all -q ${filter}))
 
-    docker compose ls --all --format=json $filter | \
-        jq -r '(map(keys) | add | unique) as $cols | map(. as $row | $cols | map($row[.])) as $rows | $cols, $rows[] | @tsv' | \
-        tail -n +2 | \
-        tr -s '(),) ' '\t' | \
-        awk -F'\t' '{
-            for (i=3; i<NF; i+=2) {
-                # concatenate
-                if (allstatus=="") allstatus=($i "=" $(i+1)); else allstatus=(allstatus "|" $i "=" $(i+1))
-                splitcnt=split($(i+1),ok_tot,"/");
-                cnt=ok_tot[1]+0;
-                #print $i "|" $(i+1) "|" splitcnt "|" cnt;
-                if (splitcnt==1) {if ($i=="running") running+=cnt; else notrunning+=cnt;} 
-                else {if ($i=="running") {running+=cnt; notrunning+=ok_tot[2]-cnt} else notrunning+=ok_tot[2]-cnt;} 
-            }
-            printf "%s,%s,%d,%d,%s\n",$2,allstatus,running,notrunning,$1;
-            running=0;notrunning=0;allstatus=""}'
+    if [ -z "${containerid}" ]; then return; fi
 
+    docker inspect ${containerid[@]} | \
+    jq -r '.[] | [.Config.Labels."com.docker.compose.project.config_files", .State.Status] | @tsv' | \
+    awk -F'\t' '{split($1,c,"/"); n[$1]=c[length(c)-1]; split(c[length(c)],y,"[-|.]"); x=y[length(y)-1]; if (x=="compose") v[$1]=""; else v[$1]=("-" x);}
+    {r[$1]+=0; nr[$1]+=0; s[$1]=(s[$1] $2); if ($2=="running") r[$1]++; else nr[$1]++; } 
+    END {for (k in s) {printf "%s%s,%s,%s,%s,%s\n",n[k],v[k],s[k],r[k],nr[k],k}}'
+    # per line vars
+    # c= config split by / array
+    # y= yaml split by [-|.]
+    # global arrays
+    # n= name
+    # v= version
+    # s= statues
+    # r= running count
+    # nr= not running count
 }
 
 
@@ -326,21 +336,22 @@ run_docker_compose_ls() {
 run_docker_compose() {
     local cmd=${1:-start}
     local d=${2}
+    local compose_file=${3:-"docker-compose.yaml"}
     
-    # Name,Status(es),RunningCount,NotRunningCount,ConfigFile
-    readarray -d',' -t DOCKER_LS < <(run_docker_compose_ls "$d")
+    # Name[-ver],Status(es),RunningCount,NotRunningCount,ConfigFile
+    readarray -d',' -t DOCKER_LS < <(run_docker_compose_ls "$d" | grep "${compose_file}")
     case ${cmd} in 
         up) if [[ "${DOCKER_LS[1]}" =~ "paused" ]]; then 
-                $ARCION_DOCKER_COMPOSE unpause || abort "${pwd} $ARCION_DOCKER_COMPOSE unpause failed" 
+                $ARCION_DOCKER_COMPOSE -f ${compose_file} unpause || abort "${pwd} $ARCION_DOCKER_COMPOSE unpause failed" 
             elif [[ "${DOCKER_LS[1]}" =~ "exited" ]]; then 
-                $ARCION_DOCKER_COMPOSE start || abort "${pwd} $ARCION_DOCKER_COMPOSE start failed"
+                $ARCION_DOCKER_COMPOSE -f ${compose_file} start || abort "${pwd} $ARCION_DOCKER_COMPOSE start failed"
             else 
                 export DOCKER_BUILDKIT=0
                 # $ARCION_DOCKER_COMPOSE build
-                $ARCION_DOCKER_COMPOSE up -d || abort "${pwd} $ARCION_DOCKER_COMPOSE up -d failed" 
+                $ARCION_DOCKER_COMPOSE -f ${compose_file} up -d || abort "${pwd} $ARCION_DOCKER_COMPOSE up -d failed" 
             fi
             ;;
-        *) $ARCION_DOCKER_COMPOSE "$cmd" || abort "${pwd} $ARCION_DOCKER_COMPOSE ${cmd} -d failed"
+        *) $ARCION_DOCKER_COMPOSE -f ${compose_file} "$cmd" || abort "${pwd} $ARCION_DOCKER_COMPOSE ${cmd} -d failed"
             ;;
     esac
 }
@@ -350,20 +361,21 @@ run_docker_compose() {
 # $1=start|pause|unpause
 # $2=dirname ie mysql|mariadb|..
 docker_compose_others() {
-    local cmd=${1:-start}
+    local cmd=${1:-up}
     local d=${d:-${2}}
-    local WAIT_TO_COMPLETE=${3}
+    local compose_file=${3}
+    local WAIT_TO_COMPLETE=${4}
 
     [ -z "$cmd" ] && echo "docker_compose_others: \$1: not defined" && return 1 
     [ -z "$d" ] && echo "docker_compose_others: \$2: not defined" && return 1 
 
-    if [ ! -d $d ] || [ ! -f $d/docker-compose.yaml ];then 
-        echo "$d not a dir || ! -f $d/docker-compose.yaml" >&2
+    if [ ! -d $d ] || [ ! -f ${d}/${compose_file} ];then 
+        echo "$(pwd)/$d not a dir || ! -f $d/${compose_file}" >&2
         return 1 
     fi
 
     pushd $d >/dev/null || return 1
-    run_docker_compose "$cmd" "$d"
+    run_docker_compose "$cmd" "$d" "${compose_file}"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
         $WAIT_TO_COMPLETE
     fi
@@ -373,12 +385,13 @@ docker_compose_others() {
 docker_compose_ora() {
     local cmd=${1}
     local d=${d:-${2}}
-    local WAIT_TO_COMPLETE=${3}
+    local compose_file=${3}
+    local WAIT_TO_COMPLETE=${4}
 
     install_ora "$d"
 
-    pushd $d >/dev/null || return 1
-    run_docker_compose "$cmd" "$d"
+    pushd oracle/$d >/dev/null || return 1
+    run_docker_compose "$cmd" "$d" "${compose_file}"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
         $WAIT_TO_COMPLETE
     fi
@@ -389,11 +402,12 @@ docker_compose_ora() {
 docker_compose_yb() {
     local cmd=${1}
     local d=${d:-${2}}
-    local WAIT_TO_COMPLETE=${3}
+    local compose_file=${3}
+    local WAIT_TO_COMPLETE=${4}
 
     pushd $d >/dev/null || return 1
-    case ${cmd} in up|unpause|restart|start) $ARCION_DOCKER_COMPOSE down -v;; esac   
-    run_docker_compose "$cmd" "$d"
+    case ${cmd} in up|unpause|restart|start) $ARCION_DOCKER_COMPOSE -f "${compose_file}" down -v;; esac   
+    run_docker_compose "$cmd" "$d" "${compose_file}"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
         $WAIT_TO_COMPLETE
     fi
@@ -413,8 +427,10 @@ wait_arcion_demo() {
 docker_compose_db() {
     local cmd=${1}
     local d=${2}
+    local compose_file=${3}
+    local WAIT_TO_COMPLETE=${4}
 
-    echo $cmd $d >&2
+    echo $cmd $d $ver>&2
 
     checkDockerCompose
 
@@ -422,12 +438,15 @@ docker_compose_db() {
         echo "specify \$1=cmd (up|down|start|stop|restart) and \$2=database" >&2 && return 1
     fi
 
+    compose_file=docker-compose.yaml
+    if [[ -n "$ver" ]]; then compose_file="${compose_file}-${ver}.yaml"; fi
+
     pushd $DOCKERDEV_BASEDIR >/dev/null || return 1
     case ${d} in 
-        arcdemo|arctest) docker_compose_others "$1" "$2" "wait_arcion_demo";;
-        kafka|redis|yugabyte) docker_compose_yb "$1" "$2";;
-        orafree|oraxe|oraee) docker_compose_ora "$1" "$2";;
-        *) docker_compose_others "$1" "$2";;
+        arcdemo|arctest) docker_compose_others "$1" "$2" "$compose_file" "wait_arcion_demo";;
+        kafka|redis|yugabyte) docker_compose_yb "$1" "$2" "$compose_file";;
+        orafree|oraxe|oraee) docker_compose_ora "$1" "$2" "$compose_file";;
+        *) docker_compose_others "$1" "$2" "$compose_file";;
     esac
     popd >/dev/null
 }
@@ -480,10 +499,23 @@ checkGit() {
     if [[ $(type -P "git") ]]; then 
         echo "git found." 
     else     
-        abort "git is NOT in PATH"
+        abort "git is NOT in PATH. Please install via
+        sudo apt-get install git
+        brew install git
+        "
     fi
 }
 
+checkJq() {
+    if [[ $(type -P "jq") ]]; then 
+        echo "jq found." 
+    else     
+        abort "jq is NOT in PATH. Please install via
+        sudo apt-get install jq
+        brew install jq
+        "
+    fi
+}
 # CLIMENU
 setWhiptailDialog() {
     # git exists
@@ -600,11 +632,11 @@ pullArcdemo() {
 startDatabases() {
     echo ${ARCION_DOCKER_DBS[@]}
     for db in ${ARCION_DOCKER_DBS[@]}; do
-        readarray -d',' -t db_on_off < <(printf '%s' "${db}")
-        declare -p db_on_off
-        case "${db_on_off[1]}" in
-        "ON") docker_compose_db "up" "${db_on_off[0]}";;
-        "OFF") docker_compose_db "stop" "${db_on_off[0]}";;
+        readarray -d',' -t name_ver_onoff < <(echo "${db}" | awk -F'[-|,]' 'NF==2 {printf "%s,,%s",$1,$2} NF==3 {printf "%s,%s,%s",$1,$2,$3}')
+        declare -p name_ver_onoff
+        case "${name_ver_onoff[2]}" in
+        "ON") docker_compose_db "up" "${name_ver_onoff[0]}" "${name_ver_onoff[1]}";;
+        "OFF") docker_compose_db "stop" "${name_ver_onoff[0]}" "${name_ver_onoff[1]}";;
         *) abort "Error: expecting ON|OFF ${db} from ARCION_DOCKER_DBS=${ARCION_DOCKER_DBS[*]}";;
         esac   
     done
@@ -636,6 +668,7 @@ if (( SOURCED == 0 )); then
     choose_start_setup
 
     checkArcionLicense
+    checkJq
     checkGit
     checkDocker
     checkDockerCompose
