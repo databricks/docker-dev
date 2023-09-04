@@ -161,7 +161,7 @@ chooseDataProviders() {
             # $4==0 make sure nothing is in exited / paused / stopped status
             if (index($2,"running") && $4==0) {onoff="ON"} 
             else {onoff="OFF"}; 
-            if ($3=="" && $4=="") printf "%s,not started,%s\n",$1,onoff;
+            if ($3=="" && $4=="") printf "%s,,%s\n",$1,onoff;
             else printf "%s,running(%s)/not running(%s),%s\n",$1,$3,$4,onoff;}' \
         > ${whiptail_input}   
     readarray -d ',' -t whiptailmenu < <(cat ${whiptail_input} | tr '\n' ',')
@@ -524,17 +524,12 @@ setWhiptailDialog() {
     if [[ -n $(which whiptail) ]]; then 
         echo "whiptail founded." 
         export CLIMENU=whiptail
-    elif [[ -n $(which dialog) ]]; then 
-        echo "dialog founded." 
-        export CLIMENU=dialog
     else     
 abort "whiptail or dialog not found.
 on OSX 
     brew install newt
-    brew install whiptail
 on Linux or Windows WSL
     sudo apt-get install whiptail
-    sudo apt-get install dialog"
     fi
 }
 # ARCION_DOCKER_COMPOSE
