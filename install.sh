@@ -164,20 +164,21 @@ chooseDataProviders() {
     "${whiptailmenu[@]}" \
     4> ${whiptail_output}
 
-    # mysql,ON|OFF oraxe,ON|OFF 
+    if [[ "$?" != "0" ]]; then return; fi
 
+    # mysql,ON|OFF oraxe,ON|OFF 
     export ARCION_DOCKER_DBS=$(
-        join -t, -a 1 -e OFF -o 1.1 1.2 1.3 2.1 ${whiptail_input} ${whiptail_output} | \
-            awk -F',' '
-            # previous and new state
-            # on on = on (no change)
-            # off off = off (no change)
-            $1 == $NF && $(NF-1)=="ON" {next} 
-            # previous and new state not same and and new state
-            # the new state not off, then it is on 
-            # off on = on
-            # on off = off
-            $(NF-1) != $NF {if ($NF!="OFF") $NF="ON"; printf "%s,%s\n",$1,$NF}'
+            join -t, -a 1 -e OFF -o 1.1 1.2 1.3 2.1 ${whiptail_input} ${whiptail_output} | \
+                awk -F',' '
+                # previous and new state
+                # on on = on (no change)
+                # off off = off (no change)
+                $1 == $NF && $(NF-1)=="ON" {next} 
+                # previous and new state not same and and new state
+                # the new state not off, then it is on 
+                # off on = on
+                # on off = off
+                $(NF-1) != $NF {if ($NF!="OFF") $NF="ON"; printf "%s,%s\n",$1,$NF}'
         )
 }
 

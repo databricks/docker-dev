@@ -2,8 +2,8 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  v1112:
-    image: mariadb:11.1.2
+  v109:
+    image: mariadb:10.9
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
     hostname: mariadb
@@ -20,7 +20,7 @@ services:
       - ../config/env.sh        
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d      
-      - v1112:/var/lib/mysql
+      - v109:/var/lib/mysql
     command: 
       - --default-authentication-plugin=mysql_native_password
       - --local-infile=true               # allow load data local 
@@ -37,4 +37,4 @@ networks:
     name: arcnet
     external: true
 volumes:
-  v1112:
+  v109:
