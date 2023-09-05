@@ -71,11 +71,10 @@ services:
       - ./arcion-share/config:/opt/mnt/config
       - ./arcion-share/libs:/opt/mnt/libs
       # loadgen specific
-      # - ./arcion-share/loadgen:/opt/mnt/loadgen
-      - arcion-share-loadgen:/opt/mnt/loadgen
-       arcion-share-loadgen
+      - ./arcion-share/loadgen:/opt/mnt/loadgen
+      # - arcion-share-loadgen:/opt/mnt/loadgen
       # test specific to use different replicant cli
-      - arcion-bin:/opt/arcion      
+      - ./arcion-share/bin:/opt/arcion      
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraee_v1930-src:/opt/mnt/oraee1930/oradata:ro    
