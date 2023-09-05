@@ -162,7 +162,7 @@ chooseDataProviders() {
             if (index($2,"running") && $4==0) {onoff="ON"} 
             else {onoff="OFF"}; 
             if ($3=="" && $4=="") printf "%s,,%s\n",$1,onoff;
-            else printf "%s,running(%s)/not running(%s),%s\n",$1,$3,$4,onoff;}' \
+            else printf "%s,running(%s)/not(%s),%s\n",$1,$3,$4,onoff;}' \
         > ${whiptail_input}   
     readarray -d ',' -t whiptailmenu < <(cat ${whiptail_input} | tr '\n' ',')
 
@@ -329,6 +329,7 @@ run_docker_compose_ls() {
     # s= statues
     # r= running count
     # nr= not running count
+    # i=containerid
 }
 
 
@@ -529,7 +530,7 @@ abort "whiptail or dialog not found.
 on OSX 
     brew install newt
 on Linux or Windows WSL
-    sudo apt-get install whiptail
+    sudo apt-get install whiptail"
     fi
 }
 # ARCION_DOCKER_COMPOSE
