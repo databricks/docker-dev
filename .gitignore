@@ -2,7 +2,7 @@
 replicant.lic
 ojdbc.jar
 oracle-docker-images/
-arcion-share/
+arctest/arcion-share/
 *.swp
 .DS_Store
 docker-dev/
