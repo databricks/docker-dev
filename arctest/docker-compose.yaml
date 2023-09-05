@@ -30,7 +30,6 @@ services:
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
       - PROMETHEUS_ENABLE=true  
-      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000"  
     volumes:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
@@ -45,15 +44,15 @@ services:
     image:  robertslee/arcdemo:${ARCION_WORKLOADS_TAG:-test}
     privileged: true
     ports:
-      - 7682:7681
       - 5002:5000
+      - 7682:7681
     environment:
       - ARCION_HOME=/arcion
       - ARCION_LICENSE=${ARCION_LICENSE}
       # utf-8 for java, mysql, pgsql
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
-      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5002"  
+      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5002"  
     env_file:
       - ../config/env.sh
     volumes:
@@ -71,7 +70,7 @@ services:
       # test specific to edit scripts
       - ../../arcion-loadgen/scripts/:/scripts
       # test specific to use different replicant cli
-      - arcion-bin:/opt/arcion
+      - ./arcion-share/bin:/opt/arcion
       # these are remapped to internal directories via volremap.sh in side docker
       # used by oracle native redo log reader
       - oraee_v1930-src:/opt/mnt/oraee1930/oradata:ro      
