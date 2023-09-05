@@ -650,7 +650,7 @@ startArcdemo() {
     done
     $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "clear" enter'
     sleep 1
-    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql postgresql"; tmux attach'
+    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql pg"; tmux attach'
 }
 
 setMachineType
