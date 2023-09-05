@@ -41,7 +41,7 @@ setBasedir() {
         export DOCKERDEV_BASEDIR="$(pwd)/${DOCKERDEV_NAME}"
     else 
         export DOCKERDEV_INSTALL=""
-        export DOCKERDEV_BASEDIR="$(pwd)"
+        export DOCKERDEV_BASEDIR="$(realpath $(dirname ${DIR_NAME}))"
         echo "Manually running intall.sh from ${DOCKERDEV_BASEDIR}" >&2
     fi
 }
