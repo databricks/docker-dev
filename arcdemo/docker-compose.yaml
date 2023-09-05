@@ -49,6 +49,7 @@ services:
     container_name: workloads
     ports:
       - 7681:7681
+      - 5000:5000
     environment:
       - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
@@ -58,7 +59,8 @@ services:
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
-      - PROMETHEUS_ENABLE=true      
+      - PROMETHEUS_ENABLE=true    
+      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000"  
     env_file:
       - ../config/env.sh
     volumes:

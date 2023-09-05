@@ -18,8 +18,8 @@ services:
   ui:
     image:  arcionlabs/replicant-on-premises:${ARCION_UI_TAG:-test}
     ports:
-      - 8080
-      - 8050
+      - 8082:8080
+      - 8052:8050
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
@@ -29,7 +29,8 @@ services:
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
-      - PROMETHEUS_ENABLE=true      
+      - PROMETHEUS_ENABLE=true  
+      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000"  
     volumes:
       - ./arcion-share/data:/data
       - ./arcion-share/config:/config
@@ -44,13 +45,15 @@ services:
     image:  robertslee/arcdemo:${ARCION_WORKLOADS_TAG:-test}
     privileged: true
     ports:
-      - 7681
+      - 7682:7681
+      - 5002:5000
     environment:
       - ARCION_HOME=/arcion
       - ARCION_LICENSE=${ARCION_LICENSE}
       # utf-8 for java, mysql, pgsql
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5002"  
     env_file:
       - ../config/env.sh
     volumes:
@@ -80,7 +83,7 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - 3000
+      - 3002:3000
 
 networks:
   default:
