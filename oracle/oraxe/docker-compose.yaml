@@ -45,8 +45,7 @@ services:
     deploy:
       mode: replicated
       replicas: 0   
-    build: v2130
-    #image: oracle/database:21.3.0-xe
+    image: oraxe-v2130-src
     hostname: oraxe-dst
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup

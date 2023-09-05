@@ -48,6 +48,7 @@ services:
     privileged: true
     container_name: workloads
     ports:
+      - 5000:5000
       - 7681:7681
     environment:
       - ARCION_LICENSE=${ARCION_LICENSE}
@@ -58,7 +59,8 @@ services:
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
       - DB_PASSWORD=Passw0rd
-      - PROMETHEUS_ENABLE=true      
+      - PROMETHEUS_ENABLE=true    
+      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000"  
     env_file:
       - ../config/env.sh
     volumes:
@@ -71,11 +73,10 @@ services:
       - ./arcion-share/config:/opt/mnt/config
       - ./arcion-share/libs:/opt/mnt/libs
       # loadgen specific
-      # - ./arcion-share/loadgen:/opt/mnt/loadgen
-      - arcion-share-loadgen:/opt/mnt/loadgen
-       arcion-share-loadgen
+      - ./arcion-share/loadgen:/opt/mnt/loadgen
+      # - arcion-share-loadgen:/opt/mnt/loadgen
       # test specific to use different replicant cli
-      - arcion-bin:/opt/arcion      
+      - ./arcion-share/bin:/opt/arcion      
       # these are remapped to internal directories via volremap.sh in side docker
       # these are oracle
       - oraee_v1930-src:/opt/mnt/oraee1930/oradata:ro    
