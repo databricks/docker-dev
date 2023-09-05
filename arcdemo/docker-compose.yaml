@@ -48,8 +48,8 @@ services:
     privileged: true
     container_name: workloads
     ports:
-      - 7681:7681
       - 5000:5000
+      - 7681:7681
     environment:
       - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
