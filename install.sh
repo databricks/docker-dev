@@ -156,7 +156,7 @@ chooseDataProviders() {
     # left join (-a 1)
     # fields 1.1 file 1.field 1 (-o)
     # name status(1/2)_dir 
-    join -t, -a 1 -o 1.1 2.2 2.3 2.4 2.5  ${composefile_output} ${composels_output} | \
+    join -t, -a 1 -o "1.1 2.2 2.3 2.4 2.5"  ${composefile_output} ${composels_output} | \
         awk -F',' '{
             # $4==0 make sure nothing is in exited / paused / stopped status
             if (index($2,"running") && $4==0) {onoff="ON"} 
@@ -178,7 +178,7 @@ chooseDataProviders() {
 
     # mysql,ON|OFF oraxe,ON|OFF 
     export ARCION_DOCKER_DBS=$(
-            join -t, -a 1 -e OFF -o 1.1 1.2 1.3 2.1 ${whiptail_input} ${whiptail_output} | \
+            join -t, -a 1 -e OFF -o "1.1 1.2 1.3 2.1" ${whiptail_input} ${whiptail_output} | \
                 awk -F',' '
                 # previous and new state
                 # on on = on (no change)
@@ -672,7 +672,7 @@ if (( SOURCED == 0 )); then
     createArcnet
     createVolumes
     pullDockerDev
-    pullArcdemo
+    # pullArcdemo
 
     # choose databases
     chooseDataProviders
