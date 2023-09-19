@@ -4,7 +4,6 @@ version: '3.8'
 services:
   metadata:
     image: postgres:14-alpine
-    container_name: arcion-metadata
     ports:
       - 5432
     environment:
@@ -25,7 +24,7 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
       - ARCION_LICENSE=${ARCION_LICENSE}
-      - DB_HOST=arcion-metadata
+      - DB_HOST=${COMPOSE_PROJECT_NAME}-metadata-1
       - DB_PORT=5432
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
@@ -83,11 +82,24 @@ services:
       - ora-shared-rw:/opt/mnt/orashared:rw
     depends_on:
       - metadata  
+
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:9.4.7
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana:/var/lib/grafana
     ports:
       - 3000:3000
-      
+
+  prometheus:
+      image: prom/prometheus
+      ports:
+          - 9090:9090
+      volumes:
+          - ./init.d/prometheus.yml:/etc/prometheus/prometheus.yml
+          - prometheus:/prometheus
+            
 networks:
   default:
     name: arcnet
@@ -100,6 +112,8 @@ volumes:
   arcion-share-config:
   arcion-share-libs:
   arcion-share-loadgen:
+  prometheus:
+  grafana:
 
   arcion-bin:
     external: true     

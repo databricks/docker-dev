@@ -4,7 +4,6 @@ version: '3.8'
 services:
   metadata:
     image: postgres:14-alpine
-    container_name: arcion-metadata-test
     ports:
       - 5432
     environment:
@@ -24,7 +23,7 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
       - ARCION_LICENSE=${ARCION_LICENSE}
-      - DB_HOST=arcion-metadata-test
+      - DB_HOST=${COMPOSE_PROJECT_NAME}-metadata-1
       - DB_PORT=5432
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
@@ -52,6 +51,7 @@ services:
       # utf-8 for java, mysql, pgsql
       - LANG=C.UTF-8
       - PGCLIENTENCODING=utf-8
+      # to enable debug trace on arcion
       #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5002"  
     env_file:
       - ../config/env.sh
@@ -79,10 +79,23 @@ services:
 
     depends_on:
       - metadata  
+
+  prometheus:
+      image: prom/prometheus
+      ports:
+          - 9092:9090
+      volumes:
+          - ./init.d/prometheus.yml:/etc/prometheus/prometheus.yml
+          - prometheus:/prometheus     
+
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:9.4.7
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana:/var/lib/grafana      
     ports:
-      - 3002:3000
+      - 3002:3000 
 
 networks:
   default:
@@ -93,6 +106,8 @@ volumes:
   db2_sqllib:
   ora_client:
   arcion-metadata:
+  prometheus:
+  grafana:
 
   arcion-bin:
     external: true     
