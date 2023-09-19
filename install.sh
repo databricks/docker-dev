@@ -71,8 +71,6 @@ choose_start_setup() {
     Would you like to start the setup?
     '
 
-    if [[ -z "${DOCKERDEV_INSTALL}" ]]; then return; fi
-
     if [[ -n "${CLIMENU}" ]]; then 
         $CLIMENU --title "Arcion Demo Kit" \
             --yesno "${about_textbox}" 0 0
@@ -522,7 +520,10 @@ setWhiptailDialog() {
     # git exists
     [ -n "${CLIMENU}" ] && return 0
 
-    if [[ -n $(which whiptail) ]]; then 
+    if [[ -n $(which dialog) ]]; then 
+        echo "dialog founded." 
+        export CLIMENU="dialog --no-collapse"
+    elif [[ -n $(which whiptail) ]]; then 
         echo "whiptail founded." 
         export CLIMENU=whiptail
     else     
@@ -661,7 +662,7 @@ setWhiptailDialog
 
 if (( SOURCED == 0 )); then
     # choose prereq check
-    choose_start_setup
+    if [[ -n "${DOCKERDEV_INSTALL}" ]]; then choose_start_setup; fi
 
     checkArcionLicense
     checkJq
