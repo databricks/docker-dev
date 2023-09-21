@@ -66,16 +66,16 @@ services:
       - ./arcion-share/config:/opt/mnt/config
       - ./arcion-share/libs:/opt/mnt/libs
       # loadgen specific
-      - ./arcion-share/loadgen:/opt/mnt/loadgen
+      - arcion-log:/opt/stage/loadgen
       # test specific to edit scripts
       - ../../arcion-loadgen/scripts/:/scripts
       # test specific to use different replicant cli
       - ./arcion-share/bin:/opt/arcion
       # these are remapped to internal directories via volremap.sh in side docker
       # used by oracle native redo log reader
-      - oraee_v1930-src:/opt/mnt/oraee1930/oradata:ro      
-      - oraxe_v2130-src:/opt/mnt/oraxev2130/oradata:ro    
-      - ora-shared-rw:/opt/mnt/orashared:rw
+      - oraee_v1930-src:/opt/stage/oraee1930/oradata:ro      
+      - oraxe_v2130-src:/opt/stage/oraxev2130/oradata:ro    
+      - ora-shared-rw:/opt/oracle/share:rw
 
     depends_on:
       - metadata  
@@ -108,6 +108,9 @@ volumes:
   arcion-metadata:
   prometheus:
   grafana:
+
+  arcion-log:
+    external: true     
 
   arcion-bin:
     external: true     
