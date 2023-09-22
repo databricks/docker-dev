@@ -13,7 +13,7 @@ cli_root() {
 
 ycsb_create_db() {
 cat <<EOF
-CREATE TABLE THEUSERTABLE${SIZE_FACTOR_NAME} (
+CREATE TABLE YCSBSPARSE${SIZE_FACTOR_NAME} (
     YCSB_KEY NUMBER PRIMARY KEY,
     FIELD0 VARCHAR2(255), FIELD1 VARCHAR2(255),
     FIELD2 VARCHAR2(255), FIELD3 VARCHAR2(255),
@@ -26,7 +26,7 @@ EOF
 
 ycsb_create_dense_table() {
 cat <<EOF
-CREATE TABLE DENSETABLE${SIZE_FACTOR_NAME} (
+CREATE TABLE YCSBDENSE${SIZE_FACTOR_NAME} (
     YCSB_KEY NUMBER PRIMARY KEY,
     FIELD0 VARCHAR2(255), FIELD1 VARCHAR2(255),
     FIELD2 VARCHAR2(255), FIELD3 VARCHAR2(255),
@@ -50,7 +50,7 @@ ycsb_load_db() {
     # load data statement
     cat <<EOF >/tmp/ycsb.ctl.$$
     LOAD DATA
-    INTO TABLE THEUSERTABLE${SIZE_FACTOR_NAME}
+    INTO TABLE YCSBSPARSE${SIZE_FACTOR_NAME}
     FIELDS terminated by '|' trailing nullcols
     (
         YCSB_KEY
@@ -58,7 +58,7 @@ ycsb_load_db() {
 EOF
 
     # don't generate logging for batch load
-    echo "alter table THEUSERTABLE${SIZE_FACTOR_NAME} nologging;" | cli_user
+    echo "alter table YCSBSPARSE${SIZE_FACTOR_NAME} nologging;" | cli_user
         
     # load
     sqlldr ${db}/${DB_ARC_PW} \
@@ -70,7 +70,7 @@ EOF
         ERRORS=0
 
     # done.  generate logging
-    echo "alter table THEUSERTABLE${SIZE_FACTOR_NAME} logging;" | cli_user
+    echo "alter table YCSBSPARSE${SIZE_FACTOR_NAME} logging;" | cli_user
 
     # show report of the load
     cat /tmp/ycsb.log.$$
@@ -96,13 +96,13 @@ ycsb_load_dense_table() {
     # load data statement
     cat <<EOF >${ctlfile}
     LOAD DATA
-    INTO TABLE DENSETABLE${SIZE_FACTOR_NAME}
+    INTO TABLE YCSBDENSE${SIZE_FACTOR_NAME}
     FIELDS terminated by ',' trailing nullcols
     ( YCSB_KEY, FIELD0, FIELD1, FIELD2, FIELD3, FIELD4, FIELD5, FIELD6, FIELD7, FIELD8, FIELD9 )
 EOF
 
     # don't generate logging for batch load
-    echo "alter table DENSETABLE${SIZE_FACTOR_NAME} nologging;" | cli_user
+    echo "alter table YCSBDENSE${SIZE_FACTOR_NAME} nologging;" | cli_user
         
     # load
     sqlldr ${db}/${DB_ARC_PW} \
@@ -114,7 +114,7 @@ EOF
         ERRORS=0
 
     # done.  generate logging
-    echo "alter table DENSETABLE${SIZE_FACTOR_NAME} logging;" | cli_user
+    echo "alter table YCSBDENSE${SIZE_FACTOR_NAME} logging;" | cli_user
 
     # show report of the load
     cat ${logfile}

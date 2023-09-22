@@ -20,7 +20,7 @@ EOF
 ycsb_create_usertable() {
 cat <<EOF
 -- initial population has YCSB_KEY + repeating data for better compression 
-CREATE TABLE IF NOT EXISTS THEUSERTABLE${SIZE_FACTOR_NAME} (
+CREATE TABLE IF NOT EXISTS YCSBSPARSE${SIZE_FACTOR_NAME} (
     YCSB_KEY INT,
     FIELD0 TEXT, FIELD1 TEXT,
     FIELD2 TEXT, FIELD3 TEXT,
@@ -61,7 +61,7 @@ ycsb_load_usertable() {
 set -x
 if [ ! -f ~/ycsb_load_usertable_${SIZE_FACTOR_NAME} ]; then
 
-    if (( SIZE_FACTOR > 100 )); then echo "skipping THEUSERTABLE${SIZE_FACTOR_NAME}"; return 0; fi
+    if (( SIZE_FACTOR > 100 )); then echo "skipping YCSBSPARSE${SIZE_FACTOR_NAME}"; return 0; fi
 
     set -x
     # --init-command="use ${DB_DB};"
@@ -74,7 +74,7 @@ if [ ! -f ~/ycsb_load_usertable_${SIZE_FACTOR_NAME} ]; then
         awk '{printf "%d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d,%0100d\n", \
             $1,$1,$1,$1,$1,$1,$1,$1,$1,$1,$1}' > /tmp/usertable.fifo.$$ &
 
-    echo "load data local infile '/tmp/usertable.fifo.$$' into table THEUSERTABLE${SIZE_FACTOR_NAME} \
+    echo "load data local infile '/tmp/usertable.fifo.$$' into table YCSBSPARSE${SIZE_FACTOR_NAME} \
         (YCSB_KEY,FIELD0,FIELD1,FIELD2,FIELD3,FIELD4,FIELD5,FIELD6,FIELD7,FIELD8,FIELD9) \
         fields terminated by ',';" | \
         singlestore -f -u ${db} \
