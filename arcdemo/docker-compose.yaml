@@ -46,7 +46,7 @@ services:
     image:  robertslee/arcdemo:${ARCION_WORKLOADS_TAG:-latest}
     privileged: true
     ports:
-      - 5000:5000
+      - 5001:5001
       - 7681:7681
     environment:
       - ARCION_HOME=/arcion
@@ -55,7 +55,7 @@ services:
       - PGCLIENTENCODING=utf-8
       - PROMETHEUS_ENABLE=true    
       # to enable debug trace on arcion     
-      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5000"  
+      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5001"  
     env_file:
       - ../config/env.sh
     volumes:
