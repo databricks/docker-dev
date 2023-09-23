@@ -205,8 +205,10 @@ downloadFromGdrive() {
 }
 
 install_oraee() {
-    local found=$(docker images -q "oracle/database:19.3.0-ee")
+    local image_name="oracle/database:19.3.0-ee"
+    local found=$(docker images -q "${image_name}")
     if [[ -n "${found}" ]]; then
+        echo "found docker images -q ${image_name}"
         return 0
     fi 
 
@@ -249,8 +251,10 @@ install_oraxe() {
         return 1
     fi    
 
-    local found=$(docker images -q "oracle/database:21.3.0-xe")
+    local image_name="oracle/database:21.3.0-xe"
+    local found=$(docker images -q "${image_name}")
     if [[ -n "${found}" ]]; then
+        echo "found docker images -q ${image_name}"
         return 0
     fi 
 
@@ -273,8 +277,10 @@ install_orafree() {
         return 1
     fi    
 
-    local found=$(docker images -q "oracle/database:23.2.0-free")
+    local image_name="oracle/database:23.2.0-free"
+    local found=$(docker images -q "${image_name}")
     if [[ -n "${found}" ]]; then
+        echo "found docker images -q ${image_name}"
         return 0
     fi 
 
@@ -411,10 +417,11 @@ docker_compose_ora() {
     local compose_file=${3}
     local WAIT_TO_COMPLETE=${4}
 
-    install_ora "$d"
+    docker_project=${d##*/}  # ##=greedy trim, *=match anything, /=until the lasts / returning the basename
+    install_ora "$docker_project"
 
-    pushd oracle/$d >/dev/null || return 1
-    run_docker_compose "$cmd" "$d" "${compose_file}"
+    pushd $d >/dev/null || return 1
+    run_docker_compose "$cmd" "$docker_project" "${compose_file}"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
         $WAIT_TO_COMPLETE
     fi
@@ -429,6 +436,8 @@ docker_compose_yb() {
     local WAIT_TO_COMPLETE=${4}
 
     pushd $d >/dev/null || return 1
+    d=${d##*/}  # ##=greedy trim, *=match anything, /=until the lasts / returning the basename
+
     case ${cmd} in up|unpause|restart|start) $ARCION_DOCKER_COMPOSE -f "${compose_file}" down -v;; esac   
     run_docker_compose "$cmd" "$d" "${compose_file}"
     if [ -n "$WAIT_TO_COMPLETE" ]; then 
@@ -670,7 +679,7 @@ startArcdemo() {
     # start Arcion demo kit CLI
     ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd )
     while [ -z "${ttyd_started}" ]; do
-        sleep 1
+        sleep 1f
         echo "waiting on $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd"
         ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
     done
