@@ -177,9 +177,9 @@ chooseDataProviders() {
     "${whiptailmenu[@]}" \
     4> ${whiptail_unsorted}
 
-    sort ${whiptail_unsorted} > ${whiptail_output}
-
     if [[ "$?" != "0" ]]; then return; fi
+
+    sort ${whiptail_unsorted} > ${whiptail_output}
 
     # mysql,ON|OFF oraxe,ON|OFF 
     export ARCION_DOCKER_DBS=$(
