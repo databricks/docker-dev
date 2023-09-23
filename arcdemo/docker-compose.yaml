@@ -36,7 +36,7 @@ services:
 
       # used by oracle native redo log reader
       - oraee_v1930-src:/opt/stage/oraee1930/oradata:ro      
-      - oraxe_v2130-src:/opt/stage/oraxev2130/oradata:ro    
+      - oraxe_v2130-src:/opt/stage/oraxev2130/oradata:ro
       - ora-shared-rw:/opt/oracle/share:rw
     depends_on:
       - metadata  
