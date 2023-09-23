@@ -64,7 +64,7 @@ services:
       # cache oracle client install
       - ora_client:/opt/oracle
       # same as the UI
-      - ./arcion-share/libs:/opt/mnt/libs
+      - ../arcion-share/libs:/opt/mnt/libs
 
       # loadgen specific
       - arcion-log:/opt/stage/loadgen

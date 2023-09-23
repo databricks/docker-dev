@@ -32,7 +32,7 @@ services:
     volumes:
       - arcion-ui-data:/data
       - arcion-ui-config:/config
-      - ./arcion-share-libs:/libs
+      - ./arcion-share/libs:/libs
 
       # used by oracle native redo log reader
       - oraee_v1930-src:/opt/stage/oraee1930/oradata:ro      
