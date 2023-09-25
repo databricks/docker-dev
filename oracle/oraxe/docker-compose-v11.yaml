@@ -14,7 +14,7 @@ x-xe11g: &default-xe11g
       - ORACLE_PWD=oracle # harded coded and cannot change
       - ORACLE_SID=XE
       # for the init script
-      - ARCHREDO=/u01/app/oracle/oradata/XE/arch
+      - ARCHREDO=/u01/app/oracle/oradata/XE/archive_logs
       - REDO=/u01/app/oracle/oradata/XE
       - FOOTER_LINES=3      
       - LOGDIR=/u01/app/oracle/oradata/XE

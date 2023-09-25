@@ -13,7 +13,7 @@ x-xe21: &default-xe21
       - ORACLE_PWD=Passw0rd
       - ORACLE_SID=XE
       # for the init script 
-      - ARCHREDO=/opt/oracle/oradata/XE/arch
+      - ARCHREDO=/opt/oracle/oradata/XE/archive_logs
       - REDO=/opt/oracle/oradata/XE
       - FOOTER_LINES=4      
       - LOGDIR=/opt/oracle/oradata/XE
