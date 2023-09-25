@@ -357,7 +357,7 @@ run_docker_compose_ls() {
     jq -r '.[] | [.Config.Labels."com.docker.compose.project.config_files", .State.Status] | @tsv' | \
     awk -F'\t' '{split($1,c,"/"); n[$1]=c[length(c)-1]; split(c[length(c)],y,"[-|.]"); x=y[length(y)-1]; if (x=="compose") v[$1]=""; else v[$1]=("-" x);}
     {r[$1]+=0; nr[$1]+=0; s[$1]=(s[$1] $2 "|"); if ($2=="running") r[$1]++; else nr[$1]++; } 
-    END {for (k in s) {printf "%s,%s%s,%s,%s,%s\n",k,n[k],v[k],s[k],r[k],nr[k]}}' | \
+    END {for (k in s) {if (k!="") printf "%s,%s%s,%s,%s,%s\n",k,n[k],v[k],s[k],r[k],nr[k]}}' | \
     sed "s|^${DOCKERDEV_BASEDIR}/||" 
     # per line vars
     # c= config split by / array
@@ -369,6 +369,7 @@ run_docker_compose_ls() {
     # r= running count
     # nr= not running count
     # i=containerid
+    # don't print non docker compose 
 }
 
 
@@ -403,8 +404,9 @@ run_docker_compose() {
 docker_compose_others() {
     local cmd=${1:-up}
     local d=${d:-${2}}
-    local compose_file=${3}
-    local WAIT_TO_COMPLETE=${4}
+    local ver=${3}
+    local compose_file=${4}
+    local WAIT_TO_COMPLETE=${5}
 
     [ -z "$cmd" ] && echo "docker_compose_others: \$1: not defined" && return 1 
     [ -z "$d" ] && echo "docker_compose_others: \$2: not defined" && return 1 
@@ -424,10 +426,11 @@ docker_compose_others() {
 }
 
 docker_compose_ora() {
-    local cmd=${1}
+    local cmd=${1:-up}
     local d=${d:-${2}}
-    local compose_file=${3}
-    local WAIT_TO_COMPLETE=${4}
+    local ver=${3}
+    local compose_file=${4}
+    local WAIT_TO_COMPLETE=${5}
 
     docker_project=${d##*/}  # ##=greedy trim, *=match anything, /=until the lasts / returning the basename
     install_ora "$docker_project"
@@ -442,10 +445,11 @@ docker_compose_ora() {
 
 # yb does not come back up 
 docker_compose_yb() {
-    local cmd=${1}
+    local cmd=${1:-up}
     local d=${d:-${2}}
-    local compose_file=${3}
-    local WAIT_TO_COMPLETE=${4}
+    local ver=${3}
+    local compose_file=${4}
+    local WAIT_TO_COMPLETE=${5}
 
     pushd $d >/dev/null || return 1
     d=${d##*/}  # ##=greedy trim, *=match anything, /=until the lasts / returning the basename
@@ -487,7 +491,7 @@ docker_compose_db() {
     pushd $DOCKERDEV_BASEDIR >/dev/null || return 1
     case ${d} in 
         arcdemo|arcdemo/arctest) docker_compose_others "$1" "$2" "$3" "$compose_file" "wait_arcion_demo";;
-        kafka|redis|yugabyte) docker_compose_yb "$1" "$2" "$3" "$compose_file" "$3";;
+        kafka|redis|yugabyte) docker_compose_yb "$1" "$2" "$3" "$compose_file";;
         oracle/orafree|oracle/oraxe|oracle/oraee) docker_compose_ora "$1" "$2" "$3" "$compose_file";;
         *) docker_compose_others "$1" "$2" "$3" "$compose_file";;
     esac
