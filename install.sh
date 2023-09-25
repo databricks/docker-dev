@@ -15,8 +15,6 @@ declare -A default_oraver_table_dict=(
     )
 export default_oraver_table_dict_export="$(declare -p default_oraver_table_dict)"    
 
-https://drive.google.com/file/d//view?usp=drive_link
-
 abort() {
     printf "%s\n" "$@" >&2
     #if (( SOURCED == 1 )); then   
@@ -145,10 +143,12 @@ choose_start_cli() {
     fi
 }
 
+${DOCKERDEV_BASEDIR}
+
 getDockerComposeFiles() {
-        find * -maxdepth 2 \
-        -not \( -path "${DOCKERDEV_NAME:-.}" -prune \) \
-        -name "*compose*.yaml" | getNameVerFromYaml
+        find ${DOCKERDEV_BASEDIR} -maxdepth 3 \
+        -not \( -path "${DOCKERDEV_BASEDIR}/${DOCKERDEV_NAME}" -prune \) \
+        -name "*compose*.yaml" | sed "s|^${DOCKERDEV_BASEDIR}/||" | getNameVerFromYaml
 }
 
 # ARCION_DOCKER_DBS="mysql,ON mysql,OFF"
