@@ -2,7 +2,7 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 
-x-ee1930: &default-ee1930
+x-ee2130: &default-ee2130
     # image: oracle/database:19.3.0-ee
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
@@ -27,14 +27,14 @@ x-ee1930: &default-ee1930
       - ../../config/env.sh           
 
 services:
-  v1930-src:
-    << : *default-ee1930
-    build: v1930
+  v2130-src:
+    << : *default-ee2130
+    build: v2130
     hostname: oraee-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
       - ora-shared-rw:/opt/oracle/share
-      - oraee_v1930-src:/opt/oracle/oradata
+      - oraee_v2130-src:/opt/oracle/oradata
     ports:
       - 1521:1521
     networks:
@@ -43,9 +43,9 @@ services:
           - oraee
           - oraee-src  
 
-  v1930-dst:
-    << : *default-ee1930
-    image: oraee-v1930-src
+  v2130-dst:
+    << : *default-ee2130
+    image: oraee-v2130-src
     deploy:
       mode: replicated
       replicas: 0       
@@ -53,7 +53,7 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
       - ora-shared-rw:/opt/oracle/share
-      - v1930-dst:/opt/oracle/oradata
+      - v2130-dst:/opt/oracle/oradata
     networks:
       default:
         aliases: 
@@ -67,7 +67,7 @@ volumes:
   ora-shared-rw:
       external: true
       
-  oraee_v1930-src:
+  oraee_v2130-src:
       external: true
 
-  v1930-dst:
+  v2130-dst:

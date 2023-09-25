@@ -5,6 +5,18 @@
 # ARCION_DOCKER_DBS: space separated list of dbs to setup (mysql )
 # ARCION_DOCKER_COMPOSE: docker compose | docker-compose
 
+# workaround to export the dict
+# where this is required, do the following
+#   eval ${default_ycsb_table_dict_export}
+#   declare -p default_ycsb_table_dict 
+declare -A default_oraver_table_dict=(
+    ["1930"]="193000" 
+    ["2130"]="213000" 
+    )
+export default_oraver_table_dict_export="$(declare -p default_oraver_table_dict)"    
+
+https://drive.google.com/file/d//view?usp=drive_link
+
 abort() {
     printf "%s\n" "$@" >&2
     #if (( SOURCED == 1 )); then   
@@ -474,10 +486,10 @@ docker_compose_db() {
 
     pushd $DOCKERDEV_BASEDIR >/dev/null || return 1
     case ${d} in 
-        arcdemo|arcdemo/arctest) docker_compose_others "$1" "$2" "$compose_file" "wait_arcion_demo";;
-        kafka|redis|yugabyte) docker_compose_yb "$1" "$2" "$compose_file";;
-        oracle/orafree|oracle/oraxe|oracle/oraee) docker_compose_ora "$1" "$2" "$compose_file";;
-        *) docker_compose_others "$1" "$2" "$compose_file";;
+        arcdemo|arcdemo/arctest) docker_compose_others "$1" "$2" "$3" "$compose_file" "wait_arcion_demo";;
+        kafka|redis|yugabyte) docker_compose_yb "$1" "$2" "$3" "$compose_file" "$3";;
+        oracle/orafree|oracle/oraxe|oracle/oraee) docker_compose_ora "$1" "$2" "$3" "$compose_file";;
+        *) docker_compose_others "$1" "$2" "$3" "$compose_file";;
     esac
     popd >/dev/null
 }
@@ -679,7 +691,7 @@ startArcdemo() {
     # start Arcion demo kit CLI
     ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd )
     while [ -z "${ttyd_started}" ]; do
-        sleep 1f
+        sleep 1
         echo "waiting on $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd"
         ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
     done

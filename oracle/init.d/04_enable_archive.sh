@@ -56,7 +56,7 @@ EOF
 
 # skip if already run
 echo "Checking $ARCHREDO/arcion_arch.log this script already ran"
-if [  -f "$ARCHREDO/arcion_arch.log" ] || [ "$ORACLE_SID^^" != "XE" ]; then 
+if [  -f "$ARCHREDO/arcion_arch.log" ] || [ "$ORACLE_SID^^" == "ORCL" ]; then 
     echo "skipping."
 else
     # create archive redo log
