@@ -1,0 +1,28 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  v2330-src:
+    image: vertica/vertica-ce:23.3.0-0
+    hostname: vertica-src
+    ports:
+      - 5433
+      - 5444
+    environment:
+      - DBVER=23.3.0-0
+      - APP_DB_USER=root
+      - APP_DB_PASSWORD=Passw0rd
+      - TZ=America/New_York
+    volumes:
+      - v2330-src:/data
+    networks:
+      default:
+        aliases: 
+          - vertica
+networks:
+  default:
+    name: arcnet
+    external: true
+
+volumes:
+  v2330-src:

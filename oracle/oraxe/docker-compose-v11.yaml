@@ -11,6 +11,7 @@ x-xe11g: &default-xe11g
       - 1521
       - 5500
     environment:
+      - DBVER=11g
       - ORACLE_PWD=oracle # harded coded and cannot change
       - ORACLE_SID=XE
       # for the init script

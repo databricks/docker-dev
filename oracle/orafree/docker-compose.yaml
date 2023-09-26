@@ -10,13 +10,14 @@ x-free232: &default-free232
       - 1521
       - 5500
     environment:
+      - DBVER=2320
       - ORACLE_PWD=Passw0rd
-      - ORACLE_SID=XE
+      - ORACLE_SID=FREE
       # for the init script 
-      - ARCHREDO=/opt/oracle/oradata/XE/archive_logs
-      - REDO=/opt/oracle/oradata/XE
+      - ARCHREDO=/opt/oracle/oradata/FREE/archive_logs
+      - REDO=/opt/oracle/oradata/FREE
       - FOOTER_LINES=4      
-      - LOGDIR=/opt/oracle/oradata/XE
+      - LOGDIR=/opt/oracle/oradata/FREE
     env_file:
       - ../../config/env.sh           
     volumes:
@@ -24,31 +25,31 @@ x-free232: &default-free232
 
 
 services:
-  v2320free-src:
+  v2320-src:
     # sys and system password: oracle
     << : *default-free232
-    image: oracle/database:23.2.0-free
+    build: v2320
     hostname: orafree-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-      - v2320free-src:/opt/oracle/oradata
+      - v2320-src:/opt/oracle/oradata
     networks:
       default:
         aliases: 
           - orafree
           - orafree-src      
 
-  v2320free-dst:
+  v2320-dst:
     # sys and system password: oracle
     << : *default-free232
     deploy:
       mode: replicated
       replicas: 0    
-    image: oracle/database:23.2.0-free
+    image: orafree-v2320-src
     hostname: orafree-dst
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-      - v2320free-dst:/opt/oracle/oradata
+      - v2320-dst:/opt/oracle/oradata
     networks:
       default:
         aliases: 
@@ -59,5 +60,5 @@ networks:
     name: arcnet
     external: true
 volumes:
-  v2320free-src:
-  v2320free-dst:
+  v2320-src:
+  v2320-dst:

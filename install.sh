@@ -7,21 +7,62 @@
 
 # workaround to export the dict
 # where this is required, do the following
-#   eval ${default_ycsb_table_dict_export}
-#   declare -p default_ycsb_table_dict 
-declare -A default_oraver_table_dict=(
-    ["1930"]="193000" 
-    ["2130"]="213000" 
-    )
-export default_oraver_table_dict_export="$(declare -p default_oraver_table_dict)"    
+#   eval ${default_oraver_table_dict_export}
+#   declare -p default_oraver_table_dict_export 
 
+# oracle docker image name from `docker image`
+declare -A default_oraver_image_dict=(
+    ["oraee-1930-x86_64"]="oracle/database:19.3.0-ee" 
+    ["oraee-1930-arm"]="oracle/database:19.3.0-ee" 
+    ["oraxe-2130-x86_64"]="oracle/database:21.3.0-xe" 
+    ["oraee-2130-x86_64"]="oracle/database:21.3.0-ee" 
+    ["orafree-2320-x86_64"]="oracle/database:23.2.0-free"
+    )
+
+# oracle zip file
+declare -A default_oraver_zip_dict=(
+    ["oraee-1930-x86_64"]="LINUX.X64_193000_db_home.zip" 
+    ["oraee-1930-arm"]="LINUX.ARM64_1919000_db_home.zip"
+    ["oraee-2130-x86_64"]="LINUX.X64_213000_db_home.zip" 
+    ["oraxe-2130-x86_64"]="" 
+    ["orafree-2320-x86_64"]=""
+    )
+
+# env variable that has gdrive link to download the binary for internal use
+declare -A default_oraver_gdrive_dict=(
+    ["oraee-1930-x86_64"]="ARCION_ORA193000_AMD" 
+    ["oraee-1930-arm"]="ARCION_ORA193000_ARM"
+    ["oraee-2130-x86_64"]="ARCION_ORA213000_AMD" 
+    ["oraxe-2130-x86_64"]="" 
+    ["orafree-2320-x86_64"]=""
+    )
+
+# command to build the docker image
+# command to build the docker image
+declare -A default_oraver_builddir_dict=(
+    ["oraee-1930-x86_64"]="19.3.0" 
+    ["oraee-1930-arm"]="19.3.0" 
+    ["oraee-2130-x86_64"]="21.3.0" 
+    ["oraxe-2130-x86_64"]="21.3.0" 
+    ["orafree-2320-x86_64"]="23.2.0"
+    )
+
+declare -A default_oraver_buildcmd_dict=(
+    ["oraee-1930-x86_64"]="buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'" 
+    ["oraee-1930-arm"]="buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'" 
+    ["oraee-2130-x86_64"]="buildContainerImage.sh -v 21.3.0 -e -o '--build-arg SLIMMING=false'" 
+    ["oraxe-2130-x86_64"]="buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'" 
+    ["orafree-2320-x86_64"]="buildContainerImage.sh -v 23.2.0 -f -o '--build-arg SLIMMING=false'"
+    )
+
+    
 abort() {
     printf "%s\n" "$@" >&2
-    #if (( SOURCED == 1 )); then   
-    #    return 1
-    #else
+    if (( ARCION_INSTALL_SOURCED == 1 )); then   
+        return 1
+    else
         exit 1
-    #fi
+    fi
 }
 # DOCKERDEV_NAME
 setDockerDevName() {
@@ -143,8 +184,6 @@ choose_start_cli() {
     fi
 }
 
-${DOCKERDEV_BASEDIR}
-
 getDockerComposeFiles() {
         find ${DOCKERDEV_BASEDIR} -maxdepth 3 \
         -not \( -path "${DOCKERDEV_BASEDIR}/${DOCKERDEV_NAME}" -prune \) \
@@ -216,45 +255,74 @@ downloadFromGdrive() {
     wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=FILEID' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${FILEID}" -O ${FILENAME} && rm -rf /tmp/cookies.txt
 }
 
-install_oraee() {
-    local image_name="oracle/database:19.3.0-ee"
-    local found=$(docker images -q "${image_name}")
+
+# assume we are in $DOCKERDEV_BASEDIR
+# build_ora "$docker_project" "${compose_file}"
+build_ora() {
+    local docker_project="$1"
+    local compose_file="$2"
+
+    local ver=$(cat $DOCKERDEV_BASEDIR/oracle/${docker_project}/$compose_file | grep -i DBVER | awk -F'=' '{print $NF; exit}')
+    local key="${docker_project}-${ver}-${MACHINE}"
+
+    # see if image already exists
+    local image_name=${default_oraver_image_dict[${key}]}
+    if [ -z "$image_name" ]; then 
+        echo "${key} not in default_oraver_image_dict table" >&2
+        popd > /dev/null || return 1    
+    fi
+    echo "checking docker image ls -q ${image_name}"
+    local found=$(docker image ls -q "${image_name}")
+    echo $found
     if [[ -n "${found}" ]]; then
-        echo "found docker images -q ${image_name}"
+        echo "found docker image ls -q ${image_name}" >&2
+        #DEBUG 
         return 0
     fi 
 
-    pushd $DOCKERDEV_BASEDIR/oracle || exit 
-
+    # git clone the oracle docker image builder
+    pushd $DOCKERDEV_BASEDIR/oracle || return 1
     if [ ! -d oracle-docker-images ]; then
         git clone https://github.com/oracle/docker-images oracle-docker-images \
             || abort "Error: git clone https://github.com/oracle/docker-images oracle-docker-images"
-    fi
-    cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-
-    if [[ "${MACHINE}" = "x86_64" ]]; then 
-        image=LINUX.X64_193000_db_home.zip
-        arcion_image=$ARCION_ORA193AMD
-    else  
-        image=LINUX.ARM64_1919000_db_home.zip
-        arcion_image=$ARCION_ORA193ARM
+    else
+        git fetch || return 1
     fi
 
-    # prepare image
-    if [ ! -f "19.3.0/$image" ] && [ -f ~/Downloads/$image ]; then
-        echo cp ~/Downloads/$image 19.3.0/.
-        cp ~/Downloads/$image 19.3.0/.
-    elif [ -n "${arcion_image}" ]; then
-        downloadFromGdrive "${arcion_image}" 19.3.0/${image}
+    # prepare the oracle zip file
+    local zip_name=${default_oraver_zip_dict[${key}]}
+    local gdrive_name=${default_oraver_gdrive_dict[${key}]}
+    local builddir_name=${default_oraver_builddir_dict[${key}]}
+
+    echo $gdrive_name
+    echo $builddir_name
+    cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles || return 1
+    # download the zip file if required
+    if [ -n "$zip_name" ]; then
+        echo "checking for $zip_name"
+        if [ -f "$builddir_name/$zip_name" ]; then
+            echo "found $builddir_name/$zip_name"
+        else
+            echo "$builddir_name/$zip_name does not exist"
+
+            echo "checking for ~/Downloads/$zip_name $builddir_name/."
+            if [ -f ~/Downloads/$zip_name ]; then
+                echo "found cp ~/Downloads/$zip_name $builddir_name/."
+                cp ~/Downloads/$zip_name $builddir_name/.
+            elif [ -n "${zip_name}" ]; then
+                echo "downloadFromGdrive ${!gdrive_name} $builddir_name/$zip_name"
+                downloadFromGdrive "${!gdrive_name}" "$builddir_name/$zip_name"
+            else
+                abort "Error: $(pwd)/$builddir_name/$zip_name not found"
+            fi
+        fi
     fi
 
-    # bail if not manually downloaded and does not have internal usage
-    if [ ! -f "19.3.0/$image" ]; then
-        abort "Error: $(pwd)/19.3.0/$image not found"
-    fi
-
-    ./buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'
-    popd    
+    # bulild the image - will take a while
+    local buildcmd_name=${default_oraver_buildcmd_dict[${key}]}
+    echo $buildcmd_name
+    eval "./${buildcmd_name}"
+    popd > /dev/null || return 1    
 }
 
 install_oraxe() {
@@ -311,13 +379,14 @@ install_orafree() {
 
 
 install_ora() {
-    local oraversion=$1
+    local docker_project="$1"
+    local ver="$2"
 
-    case "${oraversion}" in
+    case "${docker_project}" in
     oraxe) install_oraxe;;
-    oraee) install_oraee;;
+    oraee) install_oraee "${ver}";;
     orafree) install_orafree;;
-    *) echo "$oraversion not handled" >&2
+    *) echo "$docker_project not handled" >&2
     esac 
 }
 
@@ -378,6 +447,8 @@ run_docker_compose() {
     local cmd=${1:-start}
     local d=${2}
     local compose_file=${3:-"docker-compose.yaml"}
+
+    echo "run_docker_compose $cmd $d $compose_file" $(pwd)
     
     # ConfigFile,Name[-ver],Status(es),RunningCount,NotRunningCount
     readarray -d',' -t DOCKER_LS < <(run_docker_compose_ls "$d" | grep "${compose_file}")
@@ -388,7 +459,7 @@ run_docker_compose() {
                 $ARCION_DOCKER_COMPOSE -f ${compose_file} start || abort "${pwd} $ARCION_DOCKER_COMPOSE start failed"
             else 
                 export DOCKER_BUILDKIT=0
-                $ARCION_DOCKER_COMPOSE build
+                $ARCION_DOCKER_COMPOSE -f ${compose_file} build
                 $ARCION_DOCKER_COMPOSE -f ${compose_file} up -d || abort "${pwd} $ARCION_DOCKER_COMPOSE up -d failed" 
             fi
             ;;
@@ -426,14 +497,14 @@ docker_compose_others() {
 }
 
 docker_compose_ora() {
-    local cmd=${1:-up}
-    local d=${d:-${2}}
-    local ver=${3}
-    local compose_file=${4}
+    local cmd=${1:-up}      # up|stop
+    local d=${d:-${2}}      # oracle/oraee
+    local ver=${3}          # v11
+    local compose_file=${4} # docker-compose-v11.yaml
     local WAIT_TO_COMPLETE=${5}
 
     docker_project=${d##*/}  # ##=greedy trim, *=match anything, /=until the lasts / returning the basename
-    install_ora "$docker_project"
+    build_ora "$docker_project" "${compose_file}"
 
     pushd $d >/dev/null || return 1
     run_docker_compose "$cmd" "$docker_project" "${compose_file}"
@@ -633,7 +704,7 @@ createArcnet() {
     fi
 }
 createVolumes() {
-    oravols=(db2_sqllib ora_client oraee_v1930-src oraxe_v2130-src ora-shared-rw arcion-log)
+    oravols=(db2_sqllib ora_client oraee_v1930-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log)
     for v in ${oravols[*]}; do
         docker volume inspect $v >/dev/null 2>/dev/null
         if [[ "$?" = "0" ]]; then
@@ -708,9 +779,9 @@ setMachineType
 setDockerDevName
 setBasedir
 setWhiptailDialog
-(return 0 2>/dev/null) && export SOURCED=1 || export SOURCED=0
+(return 0 2>/dev/null) && export ARCION_INSTALL_SOURCED=1 || export ARCION_INSTALL_SOURCED=0
 
-if (( SOURCED == 0 )); then
+if (( ARCION_INSTALL_SOURCED == 0 )); then
     # choose prereq check
     if [[ -n "${DOCKERDEV_INSTALL}" ]]; then choose_start_setup; fi
 

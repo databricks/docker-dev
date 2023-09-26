@@ -10,6 +10,7 @@ x-xe21: &default-xe21
       - 1521
       - 5500
     environment:
+      - DBVER=2130
       - ORACLE_PWD=Passw0rd
       - ORACLE_SID=XE
       # for the init script 
