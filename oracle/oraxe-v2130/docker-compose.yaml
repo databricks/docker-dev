@@ -2,58 +2,59 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 
-x-free232: &default-free232
+x-xe21: &default-xe21
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
-    hostname: orafree
+    hostname: oraxe
     ports:
       - 1521
       - 5500
     environment:
-      - DBVER=2320
+      - DBVER=2130
       - ORACLE_PWD=Passw0rd
-      - ORACLE_SID=FREE
+      - ORACLE_SID=XE
       # for the init script 
-      - ARCHREDO=/opt/oracle/oradata/FREE/archive_logs
-      - REDO=/opt/oracle/oradata/FREE
+      - ARCHREDO=/opt/oracle/oradata/XE/archive_logs
+      - REDO=/opt/oracle/oradata/XE
       - FOOTER_LINES=4      
-      - LOGDIR=/opt/oracle/oradata/FREE
+      - LOGDIR=/opt/oracle/oradata/XE
     env_file:
       - ../../config/env.sh           
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-
+      - ora-shared-rw:/opt/oracle/share
 
 services:
-  v2320-src:
+  src:
     # sys and system password: oracle
-    << : *default-free232
-    build: v2320
-    hostname: orafree-src
+    << : *default-xe21
+    #image: oracle/database:21.3.0-xe
+    build: .
+    hostname: oraxe-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-      - orafree_v2320-src:/opt/oracle/oradata
+      - oraxe_v2130-src:/opt/oracle/oradata
     networks:
       default:
         aliases: 
-          - orafree
-          - orafree-src      
+          - oraxe
+          - oraxe-src      
 
-  v2320-dst:
+  dst:
     # sys and system password: oracle
-    << : *default-free232
+    << : *default-xe21
     deploy:
       mode: replicated
-      replicas: 0    
-    image: orafree-v2320-src
-    hostname: orafree-dst
+      replicas: 0   
+    image: oraxe-v2130-src
+    hostname: oraxe-dst
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-      - v2320-dst:/opt/oracle/oradata
+      - dst:/opt/oracle/oradata
     networks:
       default:
         aliases: 
-          - orafree-dst
+          - oraxe-dst
 
 networks:
   default:
@@ -63,7 +64,7 @@ volumes:
   ora-shared-rw:
       external: true
       
-  orafree_v2320-src:
+  oraxe_v2130-src:
       external: true
-
-  v2320-dst:
+      
+  dst:
