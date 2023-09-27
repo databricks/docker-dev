@@ -32,7 +32,7 @@ services:
     hostname: orafree-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
-      - v2320-src:/opt/oracle/oradata
+      - orafree_v2320-src:/opt/oracle/oradata
     networks:
       default:
         aliases: 
@@ -60,5 +60,10 @@ networks:
     name: arcnet
     external: true
 volumes:
-  v2320-src:
+  ora-shared-rw:
+      external: true
+      
+  orafree_v2320-src:
+      external: true
+
   v2320-dst:

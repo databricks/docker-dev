@@ -75,6 +75,8 @@ services:
       # used by oracle native redo log reader
       - oraee_v1930-src:/opt/stage/oraee1930/oradata:ro      
       - oraxe_v2130-src:/opt/stage/oraxe2130/oradata:ro    
+      - oraee_v2130-src:/opt/stage/oraee2130/oradata:ro    
+      - orafree_v2320-src:/opt/stage/orafree2320/oradata:ro    
       - ora-shared-rw:/opt/oracle/share:rw
 
       # test specific to edit scripts
@@ -132,6 +134,12 @@ volumes:
     external: true
 
   oraxe_v2130-src:
+    external: true
+
+  orafree_v2320-src:
+    external: true
+
+  oraee_v2130-src:
     external: true
 
   # shared for oracle exp/dmp, sqlldr, external tables

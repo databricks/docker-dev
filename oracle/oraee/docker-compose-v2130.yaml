@@ -38,8 +38,8 @@ services:
     networks:
       default:
         aliases: 
-          - oraee
-          - oraee-src  
+          - oraee-v2130
+          - oraee-v2130-src  
 
   v2130-dst:
     << : *default-ee2130

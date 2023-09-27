@@ -39,8 +39,8 @@ services:
     networks:
       default:
         aliases: 
-          - oraee
-          - oraee-src  
+          - oraee-v1930
+          - oraee-v1930-src  
 
   v1930-dst:
     << : *default-ee1930
