@@ -2,7 +2,7 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  v2330-src:
+  src:
     image: vertica/vertica-ce:23.3.0-0
     hostname: vertica-src
     ports:
@@ -14,7 +14,7 @@ services:
       - APP_DB_PASSWORD=Passw0rd
       - TZ=America/New_York
     volumes:
-      - v2330-src:/data
+      - src:/data
     networks:
       default:
         aliases: 
@@ -25,4 +25,4 @@ networks:
     external: true
 
 volumes:
-  v2330-src:
+  src:
