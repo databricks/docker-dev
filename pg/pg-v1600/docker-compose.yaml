@@ -8,15 +8,13 @@ version: '3.8'
 services:
   v1503-src:
     extends: 
-      file: ./docker-pg.yaml
+      file: ../docker-pg.yaml
       service: pg
-    build: v1503
+    build: .
     hostname: pg-src
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d        
-      - src-v1503:/var/lib/postgresql/data
-    ports:
-      - 5432:5432      
+      - src:/var/lib/postgresql/data    
     networks:
       default:
         aliases: 
@@ -24,18 +22,18 @@ services:
           - pg-src
           - postgresql
           
-  v1503-dst:
+  dst:
     extends: 
       file: ./docker-pg.yaml
       service: pg
     deploy:
       mode: replicated
       replicas: 0           
-    image: postgres:15.3
+    image: postgres:16.0
     hostname: pg-dst
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d        
-      - dst-v1503:/var/lib/postgresql/data
+      - ../init.d:/docker-entrypoint-initdb.d        
+      - dst:/var/lib/postgresql/data
     networks:
       default:
         aliases: 
@@ -46,5 +44,5 @@ networks:
     name: arcnet
     external: true
 volumes:
-  src-v1503:
-  dst-v1503:
+  src:
+  dst:

@@ -255,7 +255,6 @@ downloadFromGdrive() {
     wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=FILEID' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${FILEID}" -O ${FILENAME} && rm -rf /tmp/cookies.txt
 }
 
-
 # assume we are in $DOCKERDEV_BASEDIR
 # build_ora "$docker_project" "${compose_file}"
 build_ora() {
@@ -323,71 +322,6 @@ build_ora() {
     echo $buildcmd_name
     eval "./${buildcmd_name}"
     popd > /dev/null || return 1    
-}
-
-install_oraxe() {
-    if [[ "${MACHINE}" != "x86_64" ]]; then 
-        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
-        return 1
-    fi    
-
-    local image_name="oracle/database:21.3.0-xe"
-    local found=$(docker images -q "${image_name}")
-    if [[ -n "${found}" ]]; then
-        echo "found docker images -q ${image_name}"
-        return 0
-    fi 
-
-    pushd $DOCKERDEV_BASEDIR/oracle || exit 
-
-    if [ ! -d oracle-docker-images ]; then
-        git clone https://github.com/oracle/docker-images oracle-docker-images \
-            || abort "Error: git clone https://github.com/oracle/docker-images oracle-docker-images"
-    fi
-    cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-
-    ./buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'
-    popd    
-
-}
-
-install_orafree() {
-    if [[ "${MACHINE}" != "x86_64" ]]; then 
-        echo "INFO: Oracle not supported on machine architecture: ${MACHINE}"  
-        return 1
-    fi    
-
-    local image_name="oracle/database:23.2.0-free"
-    local found=$(docker images -q "${image_name}")
-    if [[ -n "${found}" ]]; then
-        echo "found docker images -q ${image_name}"
-        return 0
-    fi 
-
-    pushd $DOCKERDEV_BASEDIR/oracle || exit 
-
-    if [ ! -d oracle-docker-images ]; then
-        git clone https://github.com/oracle/docker-images oracle-docker-images \
-            || abort "Error: git clone https://github.com/oracle/docker-images oracle-docker-images"
-    fi
-    cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles 
-
-    ./buildContainerImage.sh -v 23.2.0 -f -o '--build-arg SLIMMING=false'
-    popd    
-
-}
-
-
-install_ora() {
-    local docker_project="$1"
-    local ver="$2"
-
-    case "${docker_project}" in
-    oraxe) install_oraxe;;
-    oraee) install_oraee "${ver}";;
-    orafree) install_orafree;;
-    *) echo "$docker_project not handled" >&2
-    esac 
 }
 
 # make oraxe/docker-compose-v11.yaml to oraxe-v11
@@ -748,7 +682,7 @@ pullArcdemo() {
 startDatabases() {
     echo ${ARCION_DOCKER_DBS[@]}
     for db in ${ARCION_DOCKER_DBS[@]}; do
-        readarray -d',' -t name_ver_onoff < <(echo "${db}" | awk -F'[-|,]' 'NF==2 {printf "%s,,%s",$1,$2} NF==3 {printf "%s,%s,%s",$1,$2,$3}')
+        readarray -d',' -t name_ver_onoff < <(echo "${db}" | awk -F',' 'NF==2 {printf "%s,,%s",$1,$2} NF==3 {printf "%s,%s,%s",$1,$2,$3}')
 
         declare -p name_ver_onoff
 
