@@ -28,9 +28,9 @@ x-ee1930: &default-ee1930
       - ../../config/env.sh           
 
 services:
-  v1930-src:
+  src:
     << : *default-ee1930
-    build: v1930
+    build: .
     hostname: oraee-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
@@ -39,8 +39,8 @@ services:
     networks:
       default:
         aliases: 
-          - oraee-v1930
-          - oraee-v1930-src  
+          - oraee
+          - oraee-src  
 
   v1930-dst:
     << : *default-ee1930
@@ -52,7 +52,7 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
       - ora-shared-rw:/opt/oracle/share
-      - v1930-dst:/opt/oracle/oradata
+      - dst:/opt/oracle/oradata
     networks:
       default:
         aliases: 
@@ -69,4 +69,4 @@ volumes:
   oraee_v1930-src:
       external: true
 
-  v1930-dst:
+  dst:

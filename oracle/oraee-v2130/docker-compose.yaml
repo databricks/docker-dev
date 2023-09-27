@@ -27,9 +27,9 @@ x-ee2130: &default-ee2130
       - ../../config/env.sh           
 
 services:
-  v2130-src:
+  src:
     << : *default-ee2130
-    build: v2130
+    build: .
     hostname: oraee-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
@@ -38,10 +38,10 @@ services:
     networks:
       default:
         aliases: 
-          - oraee-v2130
-          - oraee-v2130-src  
+          - oraee
+          - oraee-src  
 
-  v2130-dst:
+  dst:
     << : *default-ee2130
     image: oraee-v2130-src
     deploy:
@@ -51,7 +51,7 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup    
       - ora-shared-rw:/opt/oracle/share
-      - v2130-dst:/opt/oracle/oradata
+      - dst:/opt/oracle/oradata
     networks:
       default:
         aliases: 
@@ -68,4 +68,4 @@ volumes:
   oraee_v2130-src:
       external: true
 
-  v2130-dst:
+  dst:
