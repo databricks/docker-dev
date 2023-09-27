@@ -3,17 +3,15 @@
 version: '3.8'
 
 services:
-  v8033-src:
+  src:
     extends: 
-      file: ./docker-mysql.yaml
+      file: ../docker-mysql.yaml
       service: mysql  
     image: mysql:8.0.33
     hostname: mysql-src
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d
-      - v8033-src:/var/lib/mysql
-    ports:
-      - 3306:3306      
+      - ../init.d:/docker-entrypoint-initdb.d
+      - src:/var/lib/mysql   
     networks:
       default:
         aliases: 
@@ -28,7 +26,7 @@ services:
 
   v8033-dst:
     extends: 
-      file: ./docker-mysql.yaml
+      file: ../docker-mysql.yaml
       service: mysql  
     deploy:
       mode: replicated
@@ -36,8 +34,8 @@ services:
     image: mysql:8.0.33
     hostname: mysql-dst
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d
-      - v8033-dst:/var/lib/mysql
+      - ../init.d:/docker-entrypoint-initdb.d
+      - dst:/var/lib/mysql
     networks:
       default:
         aliases:
@@ -55,5 +53,5 @@ networks:
     external: true
     
 volumes:    
-  v8033-src:
-  v8033-dst:
+  src:
+  dst:

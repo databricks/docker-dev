@@ -3,24 +3,24 @@
 version: '3.8'
 
 services:
-  v5742-src:
+  src:
     extends: 
-      file: ./docker-mysql.yaml
+      file: ../docker-mysql.yaml
       service: mysql  
     image: mysql:5.7.42
     hostname: mysql-src
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d
-      - v5742-src:/var/lib/mysql 
+      - ../init.d:/docker-entrypoint-initdb.d
+      - src:/var/lib/mysql 
     command: 
       - mysqld
       - --default-authentication-plugin=mysql_native_password
       - --local-infile=true                    # allow load data local
       - --secure-file-priv=/tmp                # allow load data
 
-  v5742-dst:
+  dst:
     extends: 
-      file: ./docker-mysql.yaml
+      file: ../docker-mysql.yaml
       service: mysql  
     deploy:
       mode: replicated
@@ -28,8 +28,8 @@ services:
     image: mysql:5.7.42
     hostname: mysql-dst
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d
-      - v5742-dst:/var/lib/mysql
+      - ../init.d:/docker-entrypoint-initdb.d
+      - dst:/var/lib/mysql
     command: 
       - mysqld
       - --default-authentication-plugin=mysql_native_password
@@ -42,5 +42,5 @@ networks:
     external: true
     
 volumes:    
-  v5742-src:  
-  v5742-dst:  
+  src:  
+  dst:  
