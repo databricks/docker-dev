@@ -76,7 +76,7 @@ setMachineType() {
     [ -z "${MACHINE}" ] && export MACHINE="$(uname -p)"    
 }
 # DOCKERDEV_BASEDIR
-# DOCKERDEV_INSTALL
+# DOCKERDEV_INSTALL=1|""
 setBasedir() {
     # curl or running from docker-dev dir
     DIR_NAME="${BASH_SOURCE[0]}"
@@ -90,6 +90,7 @@ setBasedir() {
         echo "mkdir ${DOCKERDEV_NAME}" >&2
         mkdir ${DOCKERDEV_NAME}
         export DOCKERDEV_BASEDIR="$(pwd)/${DOCKERDEV_NAME}"
+        echo "Internet install of intall.sh from ${DOCKERDEV_BASEDIR}" >&2
     else 
         export DOCKERDEV_INSTALL=""
         export DOCKERDEV_BASEDIR="$(realpath $(dirname ${DIR_NAME}))"
@@ -654,20 +655,19 @@ createVolumes() {
     done
 }
 pullDockerDev() {
-    if [[ -d "${DOCKERDEV_NAME}" ]]; then
+    if [[ -z "$DOCKERDEV_INSTALL" ]]; then
         echo "dir ${DOCKERDEV_NAME} found. running git pull to refresh"
-        pushd "${DOCKERDEV_NAME}"
         if [ -z "${ARCION_WORKLOADS_TAG}" ]; then
-            git pull
+            git fetch
         else
             git config pull.rebase false
             git pull origin ${ARCION_WORKLOADS_TAG}
-            git checkout ${ARCION_WORKLOADS_TAG}
+            git switch ${ARCION_WORKLOADS_TAG}
         fi
         popd
     else
-        echo "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME}"
-        git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} >/tmp/install.$$ 2>&1
+        echo "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} ."
+        git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} . >/tmp/install.$$ 2>&1
         if [[ "$?" != 0 ]]; then 
             cat /tmp/install.$$
             abort "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} failed."
@@ -719,6 +719,8 @@ if (( ARCION_INSTALL_SOURCED == 0 )); then
     # choose prereq check
     if [[ -n "${DOCKERDEV_INSTALL}" ]]; then choose_start_setup; fi
 
+    pushd $DOCKERDEV_BASEDIR >/dev/null || abort "popd to $DOCKERDEV_BASEDIR failed"
+
     checkArcionLicense
     checkJq
     checkGit
@@ -727,9 +729,8 @@ if (( ARCION_INSTALL_SOURCED == 0 )); then
 
     createArcnet
     createVolumes
-    pullDockerDev
-    # pullArcdemo
 
+    pullDockerDev
     # choose databases
     chooseDataProviders
     startDatabases
@@ -737,4 +738,5 @@ if (( ARCION_INSTALL_SOURCED == 0 )); then
     # choose demo run
     choose_start_cli
     startArcdemo
+    popd >/dev/null
 fi
