@@ -598,15 +598,25 @@ checkDockerCompose() {
     docker compose --help >/dev/null 2>/dev/null
     if [[ "$?" == "0" ]]; then
         export ARCION_DOCKER_COMPOSE="docker compose"
-    else
-        docker-compose --help >/dev/null 2>/dev/null
-        if [[ "$?" == "0" ]]; then
-            export ARCION_DOCKER_COMPOSE="docker-compose"
-        else
-            abort "docker compose and docker-compose not found."
-        fi
+        echo "Found ${ARCION_DOCKER_COMPOSE}."
+        return
     fi
-    echo "Found ${ARCION_DOCKER_COMPOSE}."
+
+    docker-compose --help >/dev/null 2>/dev/null
+    if [[ "$?" == "0" ]]; then
+        export ARCION_DOCKER_COMPOSE="docker-compose"
+        echo "Found ${ARCION_DOCKER_COMPOSE}."
+        return
+    fi
+
+    podman-compose --help >/dev/null 2>/dev/null
+    if [[ "$?" == "0" ]]; then
+        export ARCION_DOCKER_COMPOSE="podman-compose"
+        echo "Found ${ARCION_DOCKER_COMPOSE}."
+        return
+    fi
+
+    abort "docker compose, docker-compose or podman-compose not found."
 }
 checkDocker() {
     # docker exists
@@ -639,7 +649,7 @@ createArcnet() {
     fi
 }
 createVolumes() {
-    oravols=(db2_sqllib ora_client oraee_v1930-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log)
+    oravols=(db2_sqllib ora_client oraee_v1930-src oraee_v2130-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log)
     for v in ${oravols[*]}; do
         docker volume inspect $v >/dev/null 2>/dev/null
         if [[ "$?" = "0" ]]; then
