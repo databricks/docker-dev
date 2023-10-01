@@ -12,47 +12,47 @@
 
 # oracle docker image name from `docker image`
 declare -A default_oraver_image_dict=(
-    ["oraee-1930-x86_64"]="oracle/database:19.3.0-ee" 
-    ["oraee-1930-arm"]="oracle/database:19.3.0-ee" 
-    ["oraxe-2130-x86_64"]="oracle/database:21.3.0-xe" 
-    ["oraee-2130-x86_64"]="oracle/database:21.3.0-ee" 
-    ["orafree-2320-x86_64"]="oracle/database:23.2.0-free"
+    ["oraee-v1930-x86_64"]="oracle/database:19.3.0-ee" 
+    ["oraee-v1930-arm"]="oracle/database:19.3.0-ee" 
+    ["oraxe-v2130-x86_64"]="oracle/database:21.3.0-xe" 
+    ["oraee-v2130-x86_64"]="oracle/database:21.3.0-ee" 
+    ["orafree-v2320-x86_64"]="oracle/database:23.2.0-free"
     )
 
 # oracle zip file
 declare -A default_oraver_zip_dict=(
-    ["oraee-1930-x86_64"]="LINUX.X64_193000_db_home.zip" 
-    ["oraee-1930-arm"]="LINUX.ARM64_1919000_db_home.zip"
-    ["oraee-2130-x86_64"]="LINUX.X64_213000_db_home.zip" 
-    ["oraxe-2130-x86_64"]="" 
-    ["orafree-2320-x86_64"]=""
+    ["oraee-v1930-x86_64"]="LINUX.X64_193000_db_home.zip" 
+    ["oraee-v1930-arm"]="LINUX.ARM64_1919000_db_home.zip"
+    ["oraee-v2130-x86_64"]="LINUX.X64_213000_db_home.zip" 
+    ["oraxe-v2130-x86_64"]="" 
+    ["orafree-v2320-x86_64"]=""
     )
 
 # env variable that has gdrive link to download the binary for internal use
 declare -A default_oraver_gdrive_dict=(
-    ["oraee-1930-x86_64"]="ARCION_ORA193000_AMD" 
-    ["oraee-1930-arm"]="ARCION_ORA193000_ARM"
-    ["oraee-2130-x86_64"]="ARCION_ORA213000_AMD" 
-    ["oraxe-2130-x86_64"]="" 
-    ["orafree-2320-x86_64"]=""
+    ["oraee-v1930-x86_64"]="ARCION_ORA193000_AMD" 
+    ["oraee-v1930-arm"]="ARCION_ORA193000_ARM"
+    ["oraee-v2130-x86_64"]="ARCION_ORA213000_AMD" 
+    ["oraxe-v2130-x86_64"]="" 
+    ["orafree-v2320-x86_64"]=""
     )
 
 # command to build the docker image
 # command to build the docker image
 declare -A default_oraver_builddir_dict=(
-    ["oraee-1930-x86_64"]="19.3.0" 
-    ["oraee-1930-arm"]="19.3.0" 
-    ["oraee-2130-x86_64"]="21.3.0" 
-    ["oraxe-2130-x86_64"]="21.3.0" 
-    ["orafree-2320-x86_64"]="23.2.0"
+    ["oraee-v1930-x86_64"]="19.3.0" 
+    ["oraee-v1930-arm"]="19.3.0" 
+    ["oraee-v2130-x86_64"]="21.3.0" 
+    ["oraxe-v2130-x86_64"]="21.3.0" 
+    ["orafree-v2320-x86_64"]="23.2.0"
     )
 
 declare -A default_oraver_buildcmd_dict=(
-    ["oraee-1930-x86_64"]="buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'" 
-    ["oraee-1930-arm"]="buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'" 
-    ["oraee-2130-x86_64"]="buildContainerImage.sh -v 21.3.0 -e -o '--build-arg SLIMMING=false'" 
-    ["oraxe-2130-x86_64"]="buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'" 
-    ["orafree-2320-x86_64"]="buildContainerImage.sh -v 23.2.0 -f -o '--build-arg SLIMMING=false'"
+    ["oraee-v1930-x86_64"]="buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'" 
+    ["oraee-v1930-arm"]="buildContainerImage.sh -v 19.3.0 -e -o '--build-arg SLIMMING=false'" 
+    ["oraee-v2130-x86_64"]="buildContainerImage.sh -v 21.3.0 -e -o '--build-arg SLIMMING=false'" 
+    ["oraxe-v2130-x86_64"]="buildContainerImage.sh -v 21.3.0 -x -o '--build-arg SLIMMING=false'" 
+    ["orafree-v2320-x86_64"]="buildContainerImage.sh -v 23.2.0 -f -o '--build-arg SLIMMING=false'"
     )
 
     
@@ -73,7 +73,11 @@ setDockerDevName() {
 setMachineType() {
     # osx=arm
     # linux=x86_64
-    [ -z "${MACHINE}" ] && export MACHINE="$(uname -p)"    
+    [ -z "${MACHINE}" ] && export MACHINE="$(uname -m)"    
+    case ${MACHINE} in
+        arm|x86_64) echo "$MACHINE detected.";; 
+        *) abort "MACHINE $MACHINE not handled.";;
+    esac
 }
 # DOCKERDEV_BASEDIR
 # DOCKERDEV_INSTALL=1|""
@@ -262,8 +266,18 @@ build_ora() {
     local docker_project="$1"
     local compose_file="$2"
 
-    local ver=$(cat $DOCKERDEV_BASEDIR/oracle/${docker_project}/$compose_file | grep -i DBVER | awk -F'=' '{print $NF; exit}')
-    local key="${docker_project}-${ver}-${MACHINE}"
+    echo $docker_project
+    echo $compose_file
+    echo $MACHINE
+    
+    #local ver=$(cat $DOCKERDEV_BASEDIR/oracle/${docker_project}/$compose_file | grep -i DBVER | awk -F'=' '{print $NF; exit}')
+
+    #if [ -z "${ver}" ]; then
+    #    abort "DBVER not defined in $DOCKERDEV_BASEDIR/oracle/${docker_project}/$compose_file"
+    #fi
+
+    local key="${docker_project}-${MACHINE}"
+    echo $key
 
     # see if image already exists
     local image_name=${default_oraver_image_dict[${key}]}
@@ -320,7 +334,11 @@ build_ora() {
 
     # bulild the image - will take a while
     local buildcmd_name=${default_oraver_buildcmd_dict[${key}]}
+    if [ -z "$buildcmd_name" ]; then
+        abort "default_oraver_buildcmd_dict[$key] not defined"
+    fi
     echo $buildcmd_name
+    export DOCKER_BUILDKIT=0
     eval "./${buildcmd_name}"
     popd > /dev/null || return 1    
 }
@@ -496,9 +514,9 @@ docker_compose_db() {
 
     pushd $DOCKERDEV_BASEDIR >/dev/null || return 1
     case ${d} in 
-        arcdemo|arcdemo/arctest) docker_compose_others "$1" "$2" "$3" "$compose_file" "wait_arcion_demo";;
+        arcdemo*) docker_compose_others "$1" "$2" "$3" "$compose_file" "wait_arcion_demo";;
         kafka|redis|yugabyte) docker_compose_yb "$1" "$2" "$3" "$compose_file";;
-        oracle/orafree|oracle/oraxe|oracle/oraee) docker_compose_ora "$1" "$2" "$3" "$compose_file";;
+        oracle*) docker_compose_ora "$1" "$2" "$3" "$compose_file";;
         *) docker_compose_others "$1" "$2" "$3" "$compose_file";;
     esac
     popd >/dev/null
@@ -649,7 +667,7 @@ createArcnet() {
     fi
 }
 createVolumes() {
-    oravols=(db2_sqllib ora_client oraee_v1930-src oraee_v2130-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log)
+    oravols=(db2_sqllib ora_client orafree_v2320-src oraee_v1930-src oraee_v2130-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log) 
     for v in ${oravols[*]}; do
         docker volume inspect $v >/dev/null 2>/dev/null
         if [[ "$?" = "0" ]]; then
