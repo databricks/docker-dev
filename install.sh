@@ -14,7 +14,7 @@
 declare -A default_oraver_image_dict=(
     ["oraee-v1930-x86_64"]="oracle/database:19.3.0-ee" 
     ["oraee-v1930-arm"]="oracle/database:19.3.0-ee" 
-    ["oraxe-v2130-x86_64"]="oracle/database:21.3.0-xe" 
+    ["oraxe-v2130-x86_64"]="" 
     ["oraee-v2130-x86_64"]="oracle/database:21.3.0-ee" 
     ["orafree-v2320-x86_64"]="oracle/database:23.2.0-free"
     )
@@ -22,7 +22,7 @@ declare -A default_oraver_image_dict=(
 # oracle zip file
 declare -A default_oraver_zip_dict=(
     ["oraee-v1930-x86_64"]="LINUX.X64_193000_db_home.zip" 
-    ["oraee-v1930-arm"]="LINUX.ARM64_1919000_db_home.zip"
+    ["oraee-v1930-arm"]="LINUX.ARM64_191900_db_home.zip"
     ["oraee-v2130-x86_64"]="LINUX.X64_213000_db_home.zip" 
     ["oraxe-v2130-x86_64"]="" 
     ["orafree-v2320-x86_64"]=""
@@ -270,12 +270,6 @@ build_ora() {
     echo $compose_file
     echo $MACHINE
     
-    #local ver=$(cat $DOCKERDEV_BASEDIR/oracle/${docker_project}/$compose_file | grep -i DBVER | awk -F'=' '{print $NF; exit}')
-
-    #if [ -z "${ver}" ]; then
-    #    abort "DBVER not defined in $DOCKERDEV_BASEDIR/oracle/${docker_project}/$compose_file"
-    #fi
-
     local key="${docker_project}-${MACHINE}"
     echo $key
 
@@ -283,8 +277,10 @@ build_ora() {
     local image_name=${default_oraver_image_dict[${key}]}
     if [ -z "$image_name" ]; then 
         echo "${key} not in default_oraver_image_dict table" >&2
-        popd > /dev/null || return 1    
+        popd > /dev/null || return 1
+        return 0    
     fi
+
     echo "checking docker image ls -q ${image_name}"
     local found=$(docker image ls -q "${image_name}")
     echo $found
@@ -307,9 +303,11 @@ build_ora() {
     local zip_name=${default_oraver_zip_dict[${key}]}
     local gdrive_name=${default_oraver_gdrive_dict[${key}]}
     local builddir_name=${default_oraver_builddir_dict[${key}]}
+    local gdrive_link=${!gdrive_name}
 
-    echo $gdrive_name
-    echo $builddir_name
+    echo "gdrive_name=$gdrive_name"
+    echo "builddir_name=$builddir_name"
+    echo "gdrive_link=${!gdrive_name}"
     cd oracle-docker-images/OracleDatabase/SingleInstance/dockerfiles || return 1
     # download the zip file if required
     if [ -n "$zip_name" ]; then
@@ -323,9 +321,9 @@ build_ora() {
             if [ -f ~/Downloads/$zip_name ]; then
                 echo "found cp ~/Downloads/$zip_name $builddir_name/."
                 cp ~/Downloads/$zip_name $builddir_name/.
-            elif [ -n "${zip_name}" ]; then
-                echo "downloadFromGdrive ${!gdrive_name} $builddir_name/$zip_name"
-                downloadFromGdrive "${!gdrive_name}" "$builddir_name/$zip_name"
+            elif [ -n "${zip_name}" ] && [ -n "${gdrive_link}" ]; then
+                echo "downloadFromGdrive ${gdrive_link} $builddir_name/$zip_name"
+                downloadFromGdrive "${gdrive_link}" "$builddir_name/$zip_name"
             else
                 abort "Error: $(pwd)/$builddir_name/$zip_name not found"
             fi

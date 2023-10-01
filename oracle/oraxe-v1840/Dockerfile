@@ -1,8 +1,4 @@
-# does not work on fedora well 
-# from oracle/database:21.3.0-xe 
-
-# takes a long time to download 6GB. 
-from container-registry.oracle.com/database/express:21.3.0-xe
+from container-registry.oracle.com/database/express:18.4.0-xe
 
 label maintainer sangkyulee@gmail.com
 
