@@ -12,8 +12,9 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
       - LOGDIR=/var/lib/postgresql/data
+      - POSTGRES_INITDB_WALDIR=/var/lib/postgresql/data/pg_wal
     env_file:
-      - ../config/env.sh      
+      - ${DOCKERDEV_BASEDIR}/config/env.sh      
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
     command: 
@@ -27,5 +28,5 @@ services:
       - "-c" 
       - shared_buffers=80MB
       - "-c" 
-      - max_wal_size=4GB
+      - max_wal_size=512MB
 

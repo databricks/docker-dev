@@ -72,11 +72,11 @@ setDockerDevName() {
 
 # MACHINE
 setMachineType() {
-    # osx=arm
+    # osx=arm64
     # linux=x86_64
     [ -z "${MACHINE}" ] && export MACHINE="$(uname -m)"    
     case ${MACHINE} in
-        arm|x86_64) echo "$MACHINE detected.";; 
+        arm64|x86_64) echo "$MACHINE detected.";; 
         *) abort "MACHINE $MACHINE not handled.";;
     esac
 }
