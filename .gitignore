@@ -5,7 +5,7 @@ oracle-docker-images/
 arcion-share/
 *.swp
 *.zip
-.DS_Store
+**/.DS_Store
 docker-dev/
 
 # Byte-compiled / optimized / DLL files

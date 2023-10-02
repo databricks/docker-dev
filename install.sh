@@ -3,7 +3,8 @@
 # ARCION_WORKLOADS_TAG: docker tag of robertslee/arcdemo
 # ARCION_UI_TAG: docker tag of arcionlabs/replicant-on-premises
 # ARCION_DOCKER_DBS: space separated list of dbs to setup (mysql )
-# ARCION_DOCKER_COMPOSE: docker compose | docker-compose
+# ARCION_DOCKER_COMPOSE: podman-compose | docker compose | docker-compose
+# ARCION_DOCKER: podman | docker
 
 # workaround to export the dict
 # where this is required, do the following
@@ -607,7 +608,15 @@ on Linux or Windows WSL
 # ARCION_DOCKER_COMPOSE
 checkDockerCompose() {
     if [ -n "${ARCION_DOCKER_COMPOSE}" ]; then
+        echo "Using ${ARCION_DOCKER_COMPOSE}"
         return 0
+    fi
+
+    podman-compose --help >/dev/null 2>/dev/null
+    if [[ "$?" == "0" ]]; then
+        export ARCION_DOCKER_COMPOSE="podman-compose"
+        echo "Found ${ARCION_DOCKER_COMPOSE}."
+        return
     fi
 
     # docker compose or docker-compose
@@ -625,57 +634,74 @@ checkDockerCompose() {
         return
     fi
 
-    podman-compose --help >/dev/null 2>/dev/null
-    if [[ "$?" == "0" ]]; then
-        export ARCION_DOCKER_COMPOSE="podman-compose"
-        echo "Found ${ARCION_DOCKER_COMPOSE}."
-        return
-    fi
-
     abort "docker compose, docker-compose or podman-compose not found."
 }
+
+# ARCION_DOCKER
 checkDocker() {
+    if [ -n "${ARCION_DOCKER}" ]; then
+        echo "Using ${ARCION_DOCKER}"
+        return 0
+    fi
+
+    # docker exists
+    if [[ $(type -P "podman") ]]; then 
+        echo "podman found." 
+        export ARCION_DOCKER="podman"
+
+        # docker is up and running
+        podman ps --all >/dev/null || abort "podman is not running.  Please start podman"
+
+        # podman version >= 4.17.0
+        readarray -d ' ' ARCION_PODMAN_VERSION < <(podman version --format '{{.Client.Version}}' | awk -F'.' '{printf "%s %s %s",$1,$2,$3}')
+        if (( ${ARCION_PODMAN_VERSION[0]} <= 4 )) && (( ${ARCION_PODMAN_VERSION[1]} < 7 )); then
+            abort "podman 4.17.0 or greater needed. $(echo  ${ARCION_PODMAN_VERSION[*]} | tr '[:space:]' '.') found."
+        fi
+        return 0
+    fi
+
     # docker exists
     if [[ $(type -P "docker") ]]; then 
         echo "docker found." 
-    else     
-        abort "docker is NOT in PATH"
+        export ARCION_DOCKER="docker"
+
+        # docker is up and running
+        docker ps --all >/dev/null || abort "docker is not running.  Please start docker"
+
+        # docker version >= 19.3.0
+        readarray -d ' ' ARCION_DOCKER_VERSION < <(docker version --format '{{.Client.Version}}' | awk -F'.' '{printf "%s %s %s",$1,$2,$3}')
+        if (( ${ARCION_DOCKER_VERSION[0]} <= 19 )) && (( ${ARCION_DOCKER_VERSION[1]} < 3 )); then
+            abort "docker 19.3.0 or greater needed. $(echo  ${ARCION_DOCKER_VERSION[*]} | tr '[:space:]' '.') found."
+        fi
     fi
 
-    # docker is up and running
-    docker ps --all >/dev/null || abort "docker is not running.  Please start docker"
-
-    # docker version >= 19.3.0
-    readarray -d ' ' ARCION_DOCKER_VERSION < <(docker version --format '{{.Client.Version}}' | awk -F'.' '{printf "%s %s %s",$1,$2,$3}')
-    if (( ${ARCION_DOCKER_VERSION[0]} <= 19 )) && (( ${ARCION_DOCKER_VERSION[1]} < 3 )); then
-        abort "docker 19.3.0 or greater needed. $(echo  ${ARCION_DOCKER_VERSION[*]} | tr '[:space:]' '.') found."
-    fi
+    abort "podman or docker not found."
 }
 createArcnet() {
-    docker network inspect arcnet >/dev/null 2>/dev/null
+    ${ARCION_DOCKER} network inspect arcnet >/dev/null 2>/dev/null
     if [[ "$?" == "0" ]]; then
-        echo "docker network arcnet found."
+        echo "${ARCION_DOCKER} network arcnet found."
     else 
-        echo "docker network create arcnet"
-        docker network create arcnet >/tmp/install.$$ 2>&1
+        echo "${ARCION_DOCKER} network create arcnet"
+        ${ARCION_DOCKER} network create arcnet >/tmp/install.$$ 2>&1
         if [[ "$?" != 0 ]]; then 
             cat /tmp/install.$$
-            abort "docker network create arcnet failed."
+            abort "${ARCION_DOCKER} network create arcnet failed."
         fi
     fi
 }
 createVolumes() {
     oravols=(db2_sqllib ora_client orafree_v2320-src oraee_v1930-src oraee_v2130-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log) 
     for v in ${oravols[*]}; do
-        docker volume inspect $v >/dev/null 2>/dev/null
+        ${ARCION_DOCKER} volume inspect $v >/dev/null 2>/dev/null
         if [[ "$?" = "0" ]]; then
-            echo "docker volume $v found."
+            echo "${ARCION_DOCKER} volume $v found."
         else
-            echo "docker volume create $v"
-            docker volume create $v >/tmp/install.$$ 2>&1
+            echo "${ARCION_DOCKER} volume create $v"
+            ${ARCION_DOCKER} volume create $v >/tmp/install.$$ 2>&1
             if [[ "$?" != 0 ]]; then 
                 cat /tmp/install.$$
-                abort "docker create $v failed."
+                abort "${ARCION_DOCKER} create $v failed."
             fi
         fi    
     done
@@ -721,24 +747,30 @@ startDatabases() {
 }
 startArcdemo() {
     # configs are relative to the script
-    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml up -d || abort "please see the error msg"
+    pushd ${DOCKERDEV_BASEDIR}/arcdemo >/dev/null || abort "${DOCKERDEV_BASEDIR}/arcdemo does not exist"
+
+    $ARCION_DOCKER_COMPOSE up -d || abort "please see the error msg"
 
     # start Arcion demo kit CLI
-    ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd )
+    ttyd_started=$( $ARCION_DOCKER_COMPOSE logs workloads 2>&1 | grep ttyd )
     while [ -z "${ttyd_started}" ]; do
         sleep 1
-        echo "waiting on $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads | grep ttyd"
-        ttyd_started=$( $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml logs workloads 2>/dev/null | grep ttyd )
+        echo "waiting on $ARCION_DOCKER_COMPOSE logs workloads 2>&1 | grep ttyd"
+        ttyd_started=$( $ARCION_DOCKER_COMPOSE logs workloads 2>&1 | grep ttyd )
     done
-    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "clear" enter'
+    $ARCION_DOCKER_COMPOSE exec workloads bash -c 'tmux send-keys -t arcion:0.0 "clear" enter'
     sleep 1
-    $ARCION_DOCKER_COMPOSE -f ${DOCKERDEV_BASEDIR}/arcdemo/docker-compose.yaml exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql pg"; tmux attach'
+    $ARCION_DOCKER_COMPOSE exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql pg"; tmux attach'
+
+    popd >/dev/null || abort "startArcdemo: popd failed"
 }
 
 setMachineType
 setDockerDevName
 setBasedir
 setWhiptailDialog
+checkDocker
+checkDockerCompose
 (return 0 2>/dev/null) && export ARCION_INSTALL_SOURCED=1 || export ARCION_INSTALL_SOURCED=0
 
 if (( ARCION_INSTALL_SOURCED == 0 )); then
@@ -750,8 +782,6 @@ if (( ARCION_INSTALL_SOURCED == 0 )); then
     checkArcionLicense
     checkJq
     checkGit
-    checkDocker
-    checkDockerCompose
 
     createArcnet
     createVolumes

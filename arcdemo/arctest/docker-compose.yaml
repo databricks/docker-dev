@@ -32,7 +32,7 @@ services:
     volumes:
       - arcion-ui-data:/data
       - arcion-ui-config:/config
-      - ../arcion-share/libs:/libs
+      - ${DOCKERDEV_BASEDIR}/arcdemo/arcion-share/libs:/libs
 
       # used by oracle native redo log reader
       - oraee_v1930-src:/opt/stage/oraee1930/oradata:ro      
@@ -57,7 +57,7 @@ services:
       # to enable debug trace on arcion
       #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5002"  
     env_file:
-      - ../../config/env.sh
+      - ${DOCKERDEV_BASEDIR}/config/env.sh
     tmpfs:
       - /opt/stage/tmpfs
     volumes:
@@ -66,11 +66,11 @@ services:
       # cache oracle client install
       - ora_client:/opt/oracle
       # same as the UI
-      - ../arcion-share/libs:/opt/mnt/libs
+      - ${DOCKERDEV_BASEDIR}/arcdemo/arcion-share/libs:/opt/mnt/libs
 
       # loadgen specific
       - arcion-log:/opt/stage/loadgen
-      - ../arcion-share/bin:/opt/arcion            
+      - ${DOCKERDEV_BASEDIR}/arcdemo/arcion-share/bin:/opt/arcion            
 
       # used by oracle native redo log reader
       - oraee_v1930-src:/opt/stage/oraee1930/oradata:ro      
@@ -80,7 +80,7 @@ services:
       - ora-shared-rw:/opt/oracle/share:rw
 
       # test specific to edit scripts
-      - ../../../arcion-loadgen/scripts/:/scripts
+      - ${ARCDEMO_BASEDIR}/scripts/:/scripts
 
     depends_on:
       - metadata  

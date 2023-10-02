@@ -57,7 +57,7 @@ services:
       # to enable debug trace on arcion     
       #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5001"  
     env_file:
-      - ../config/env.sh
+      - ${DOCKERDEV_BASEDIR}/arcdemo/config/env.sh
     volumes:
       # cache db2 sqllib install
       - db2_sqllib:/home/arcion/sqllib
