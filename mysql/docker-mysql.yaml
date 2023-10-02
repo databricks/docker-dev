@@ -13,7 +13,7 @@ services:
       - LANG=C.UTF-8
       - LOGDIR=/var/lib/mysql
     env_file:
-      - ../config/env.sh        
+      - ${DOCKERDEV_BASEDIR}/config/env.sh        
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
 

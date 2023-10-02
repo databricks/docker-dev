@@ -16,13 +16,13 @@ cli_root() {
 
 db_disable_logging() {
     set -x
-    echo "ALTER INSTANCE DISABLE INNODB REDO_LOG;" | cli_root
+    echo "ALTER INSTANCE DISABLE INNODB REDO_LOG;" #| cli_root
     set +x
 }
 
 db_enable_logging() {
     set -x
-    echo "ALTER INSTANCE ENABLE INNODB REDO_LOG;" | cli_root
+    echo "ALTER INSTANCE ENABLE INNODB REDO_LOG;" #| cli_root
     set +x
 }
 
