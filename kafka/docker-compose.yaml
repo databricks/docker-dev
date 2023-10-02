@@ -25,14 +25,15 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'oskzookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka-v703-1:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_BYTES: 536870912   # 1024*1024*512 = 512MB
     tmpfs: 
-      - /var/lib/kafka/data:tmpfs-size=4GB
-    #volumes: 
-    #  - broker-v703:/var/lib/kafka/data
+      - /var/log/kafka
+    volumes: 
+      - broker-v703:/var/lib/kafka/data
     networks:
       default:
         aliases:
