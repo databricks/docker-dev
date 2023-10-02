@@ -691,7 +691,7 @@ createArcnet() {
     fi
 }
 createVolumes() {
-    oravols=(db2_sqllib ora_client orafree_v2320-src oraee_v1930-src oraee_v2130-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log) 
+    oravols=(db2_sqllib ora_client orafree_v2320-src oraxe_v1840-src oraee_v1930-src oraee_v2130-src oraxe_v2130-src oraxe_v2130-src ora-shared-rw arcion-log) 
     for v in ${oravols[*]}; do
         ${ARCION_DOCKER} volume inspect $v >/dev/null 2>/dev/null
         if [[ "$?" = "0" ]]; then

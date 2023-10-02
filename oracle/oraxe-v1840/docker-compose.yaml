@@ -18,9 +18,9 @@ x-xe21: &default-xe21
       - FOOTER_LINES=4      
       - LOGDIR=/opt/oracle/oradata/XE
     env_file:
-      - ../../config/env.sh           
+      - ${DOCKERDEV_BASEDIR}/config/env.sh           
     volumes:
-      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ${DOCKERDEV_BASEDIR}/oracle/init.d:/docker-entrypoint-initdb.d/startup
       - ora-shared-rw:/opt/oracle/share
 
 services:
@@ -30,7 +30,7 @@ services:
     build: .
     hostname: oraxe-src
     volumes:
-      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ${DOCKERDEV_BASEDIR}/oracle/init.d:/docker-entrypoint-initdb.d/startup
       - oraxe_v1840-src:/opt/oracle/oradata
     networks:
       default:
@@ -47,7 +47,7 @@ services:
     image: oraxe-v1840-src
     hostname: oraxe-dst
     volumes:
-      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ${DOCKERDEV_BASEDIR}/oracle/init.d:/docker-entrypoint-initdb.d/startup
       - dst:/opt/oracle/oradata
     networks:
       default:

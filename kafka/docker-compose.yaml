@@ -29,8 +29,10 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-    volumes: 
-      - broker-v703:/var/lib/kafka/data
+    tmpfs: 
+      - /var/lib/kafka/data:tmpfs-size=4GB
+    #volumes: 
+    #  - broker-v703:/var/lib/kafka/data
     networks:
       default:
         aliases:
