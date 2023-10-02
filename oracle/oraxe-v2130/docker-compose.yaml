@@ -20,9 +20,6 @@ x-xe21: &default-xe21
       - LOGDIR=/opt/oracle/oradata/XE
     env_file:
       - ../../config/env.sh           
-    volumes:
-      - ../init.d:/docker-entrypoint-initdb.d/startup
-      - ora-shared-rw:/opt/oracle/share
 
 services:
   src:
@@ -33,6 +30,7 @@ services:
     hostname: oraxe-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ora-shared-rw:/opt/oracle/share
       - oraxe_v2130-src:/opt/oracle/oradata
     networks:
       default:

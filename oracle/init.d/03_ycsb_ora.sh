@@ -190,7 +190,7 @@ create_src() {
 
 echo "starting $0 with ${*}"
 if [ ! -f ${LOGDIR}/03_ycsb.txt ]; then
-    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
+    if [[ ! $(uname -a | awk '{print $2}') =~ dst$ ]]; then
         create_src
     fi
 fi

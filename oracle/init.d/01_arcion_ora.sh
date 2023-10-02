@@ -38,9 +38,7 @@ EOF
 }
 
 if [ ! -f ${LOGDIR}/01_arcion.txt ]; then
-    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then ROLE=SRC; else ROLE=DST; fi
+    if [[ ! $(uname -a | awk '{print $2}') =~ dst$ ]]; then ROLE=SRC; else ROLE=DST; fi
 
-    if [[ "${ROLE^^}" = "SRC" ]]; then
-        create_heartbeat | tee -a  ${LOGDIR}/01_arcion.txt
-    fi
+    create_heartbeat | tee -a  ${LOGDIR}/01_arcion.txt
 fi

@@ -14,15 +14,12 @@ x-free232: &default-free232
       - ORACLE_PWD=Passw0rd
       - ORACLE_SID=FREE
       # for the init script 
-      - ARCHREDO=/opt/oracle/oradata/FREE/archive_logs
-      - REDO=/opt/oracle/oradata/FREE
+      - ARCHREDO=/opt/oracle/oradata/archive_logs
+      - REDO=/opt/oracle/oradata/online_logs
       - FOOTER_LINES=4      
-      - LOGDIR=/opt/oracle/oradata/FREE
+      - LOGDIR=/opt/oracle/oradata
     env_file:
       - ../../config/env.sh           
-    volumes:
-      - ../init.d:/docker-entrypoint-initdb.d/startup
-
 
 services:
   src:
@@ -32,6 +29,7 @@ services:
     hostname: orafree-src
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ora-shared-rw:/opt/oracle/share
       - orafree_v2320-src:/opt/oracle/oradata
     networks:
       default:
@@ -49,7 +47,27 @@ services:
     hostname: orafree-dst
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ora-shared-rw:/opt/oracle/share
       - dst:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - orafree-dst
+
+  ramdisk:
+    # sys and system password: oracle
+    << : *default-free232
+    deploy:
+      mode: replicated
+      replicas: 0    
+    image: orafree-v2320-src
+    hostname: orafree-dst
+    tmpfs:
+      - /opt/oracle/oradata/online_logs:uid=54321,gid=54321
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ramdisk:/opt/oracle/oradata
+      - ora-shared-rw:/opt/oracle/oradata/share
     networks:
       default:
         aliases: 
@@ -67,3 +85,4 @@ volumes:
       external: true
 
   dst:
+  ramdisk:
