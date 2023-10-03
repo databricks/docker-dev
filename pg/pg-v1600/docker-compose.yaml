@@ -53,7 +53,7 @@ services:
       - /var/lib/postgresql/online_redo   
     volumes:
       - ${DOCKERDEV_BASEDIR}/pg/init.d:/docker-entrypoint-initdb.d        
-      - dst:/var/lib/postgresql/data
+      - ramdisk:/var/lib/postgresql/data
     networks:
       default:
         aliases: 

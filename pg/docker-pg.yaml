@@ -12,7 +12,6 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
       - LOGDIR=/var/lib/postgresql/data
-      - POSTGRES_INITDB_WALDIR=/var/lib/postgresql/data/pg_wal
     env_file:
       - ${DOCKERDEV_BASEDIR}/config/env.sh      
     volumes:

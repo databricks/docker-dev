@@ -223,7 +223,7 @@ chooseDataProviders() {
             else {onoff="OFF"}; 
             if ($3=="" && $4=="") printf "%s,,%s\n",$1,onoff;
             else printf "%s,running(%s)/not(%s),%s\n",$1,$3,$4,onoff;}' | \
-        sort > ${whiptail_input}   
+        sort -t, > ${whiptail_input}   
     readarray -d ',' -t whiptailmenu < <(cat ${whiptail_input} | tr '\n' ',')
 
     $CLIMENU --title "Select / Deselet To Start/Stop Service" --output-fd 4 --separate-output \
@@ -236,11 +236,11 @@ chooseDataProviders() {
 
     if [[ "$?" != "0" ]]; then return; fi
 
-    sort ${whiptail_unsorted} > ${whiptail_output}
+    sort -t, ${whiptail_unsorted} > ${whiptail_output}
 
     # mysql,ON|OFF oraxe,ON|OFF 
     export ARCION_DOCKER_DBS=$(
-            join -t, -a 1 -e OFF -o "1.1 1.2 1.3 2.1" ${whiptail_input} ${whiptail_output} | \
+            join -t, -a 1 -e OFF -o "1.1 1.2 1.3 2.1" <(sort -t, ${whiptail_input}) <(sort -t, ${whiptail_output}) | \
                 awk -F',' '
                 # previous and new state
                 # on on = on (no change)
@@ -673,6 +673,7 @@ checkDocker() {
         if (( ${ARCION_DOCKER_VERSION[0]} <= 19 )) && (( ${ARCION_DOCKER_VERSION[1]} < 3 )); then
             abort "docker 19.3.0 or greater needed. $(echo  ${ARCION_DOCKER_VERSION[*]} | tr '[:space:]' '.') found."
         fi
+        return 0
     fi
 
     abort "podman or docker not found."
