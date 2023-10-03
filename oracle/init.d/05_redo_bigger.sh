@@ -3,7 +3,7 @@
 manual_run=$1
 
 export REDO_SIZE=${REDO_SIZE:-1G}
-export DATA_SIZE=${DATA_SIZE:-12G}  # xe and free max
+export DATA_SIZE=${DATA_SIZE:-12000M}  # xe and free max
 export UNDO_SIZE=${UNDO_SIZE:-5G}
 export TEMP_SIZE=${TEMP_SIZE:-5G}
 
@@ -83,7 +83,8 @@ SELECT a.file_id
 EOF
 
     for line in "$(cat /tmp/dbfsize.$$.log | grep users01)"; do
-        readarray -d ',' -t id_name <<<$(printf '%s' "$line")
+        echo $line
+        IFS=',' read -ra id_name <<< "$line"
         echo "users01 resize ${DATA_SIZE}"
         declare -p id_name
         sqlplus -S sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
@@ -93,7 +94,8 @@ EOF
     done
 
     for line in "$(cat /tmp/dbfsize.$$.log | grep undotbs01)"; do
-        readarray -d ',' -t id_name <<<$(printf '%s' "$line")
+        echo $line
+        IFS=',' read -ra id_name <<< "$line"
         echo "undotbs01 resize ${UNDO_SIZE}"
         declare -p id_name
         sqlplus -S sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
@@ -114,7 +116,8 @@ resizeTemp() {
 EOF
 
     for line in $(cat /tmp/tempsize.$$.log | grep temp01); do
-        readarray -d ',' -t id_name <<<$(printf '%s' "$line")
+        echo $line
+        IFS=',' read -ra id_name <<< "$line"
         echo resize ${TEMP_SIZE}; 
         declare -p id_name
         sqlplus -S sys/${ORACLE_PWD}@${ORACLE_SID} as sysdba <<EOF
@@ -126,15 +129,7 @@ EOF
     done
 }
 
-
-if [[ ! -d $REDO ]]; then
-    echo "Error: \REDO=$REDO is not a dir"
-
-elif [ -f "$REDO/redo.large.log" ]; then
-    echo "skipping. $REDO/redo.large.log exists" 
-
-else
-
+setup_redo() {
     addRedo
     sleep 5
 
@@ -147,8 +142,11 @@ else
 
     # show one more time
     ora_redostatus
+}
 
-    touch $REDO/redo.large.log
-
+echo "Checking $LOGDIR/redo.large.log this script already ran"
+if [  -f "$LOGDIR/redo.large.log" ]; then 
+    echo "skipping."
+else
+    setup_redo | tee -a $LOGDIR/redo.large.log
 fi
-

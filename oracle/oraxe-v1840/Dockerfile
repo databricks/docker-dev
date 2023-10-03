@@ -14,4 +14,5 @@ run mkdir -p ${ORACLE_BASE}/oradata/online_logs
 run chown oracle:oinstall ${ORACLE_BASE}/oradata/online_logs
 
 # switch user back to oracle
-user oracle
+# 18 runs as root
+# user oracle

@@ -54,12 +54,7 @@ ora_archenable() {
 EOF
 }
 
-# skip if already run
-echo "Checking $ARCHREDO/arcion_arch.log this script already ran"
-if [  -f "$ARCHREDO/arcion_arch.log" ] || [ "$ORACLE_SID^^" == "ORCL" ]; then 
-    echo "skipping."
-else
-    # create archive redo log
+setup_archredo() {
     mkdir $ARCHREDO
     ora_showarchdest
     ora_shutdown
@@ -68,5 +63,13 @@ else
     sleep 10
     ora_showarchdest
     archstatus
-    touch $ARCHREDO/arcion_arch.log
+}
+
+# skip if already run
+echo "Checking $LOGDIR/arcion_arch.log this script already ran"
+if [  -f "$LOGDIR/arcion_arch.log" ] || [ "$ORACLE_SID^^" == "ORCL" ]; then 
+    echo "skipping."
+else
+    # create archive redo log
+    setup_archredo | tee -a $LOGDIR/arcion_arch.log
 fi
