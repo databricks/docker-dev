@@ -178,19 +178,17 @@ ycsb_load() {
 
 create_src() {
     # 1M rows (2MB), 10M (25MB) and 100M (250MB) 1B (2.5G) rows
-    if [ ! -f ~/03_ycsb.txt ]; then
-        time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ${LOGDIR}/03_ycsb.txt
-        # time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10  | tee -a ${LOGDIR}/03_ycsb.txt
-        # time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100  | tee -a ${LOGDIR}/03_ycsb.txt
-        # time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1  | tee -a ${LOGDIR}/03_ycsb.txt
-    else
-        echo "${LOGDIR}/03_ycsb.txt exists. skipping" 
-    fi
+    time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 
+    # time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 
+    # time ycsb_load SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100
+    # time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1  
 }
 
 echo "starting $0 with ${*}"
-if [ ! -f ${LOGDIR}/03_ycsb.txt ]; then
+if [ -f ${LOGDIR}/03_ycsb.txt ]; then
+    echo "${LOGDIR}/03_ycsb.txt exists. skipping" 
+else
     if [[ ! $(uname -a | awk '{print $2}') =~ dst$ ]]; then
-        create_src
+        create_src | tee -a ${LOGDIR}/03_ycsb.txt
     fi
 fi

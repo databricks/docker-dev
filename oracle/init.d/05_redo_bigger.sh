@@ -130,6 +130,9 @@ EOF
 }
 
 setup_redo() {
+
+    mkdir -p $REDO
+
     addRedo
     sleep 5
 
