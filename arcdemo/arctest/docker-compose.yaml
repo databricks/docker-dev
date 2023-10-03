@@ -82,7 +82,7 @@ services:
       - ora-shared-rw:/opt/oracle/share:rw
 
       # test specific to edit scripts
-      - ${ARCDEMO_BASEDIR}/scripts/:/scripts
+      - ${ARCDEMO_BASEDIR}/scripts:/scripts
 
     depends_on:
       - metadata  

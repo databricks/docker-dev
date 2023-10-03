@@ -1,0 +1,1 @@
+does not allow archive log
