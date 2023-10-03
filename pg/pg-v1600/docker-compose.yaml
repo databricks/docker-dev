@@ -45,7 +45,7 @@ services:
     deploy:
       mode: replicated
       replicas: 1           
-    image: postgres:16.0
+    image: pg-v1600-src
     hostname: pg-src
     environment:
       - POSTGRES_INITDB_WALDIR=/var/lib/postgresql/online_redo    

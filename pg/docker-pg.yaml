@@ -27,5 +27,6 @@ services:
       - "-c" 
       - shared_buffers=80MB
       - "-c" 
-      - max_wal_size=512MB
+      # - max_wal_size=512MB # podman has 1G limit
+      - max_wal_size=4GB
 
