@@ -13,10 +13,10 @@ x-xe21: &default-xe21
       - ORACLE_PWD=Passw0rd
       - ORACLE_SID=XE
       # for the init script 
-      - ARCHREDO=/opt/oracle/oradata/XE/archive_logs
-      - REDO=/opt/oracle/oradata/XE
+      - ARCHREDO=/opt/oracle/oradata/archive_logs
+      - REDO=/opt/oracle/oradata/online_logs
       - FOOTER_LINES=4      
-      - LOGDIR=/opt/oracle/oradata/XE
+      - LOGDIR=/opt/oracle/oradata
     env_file:
       - ${DOCKERDEV_BASEDIR}/config/env.sh           
     volumes:
@@ -54,6 +54,25 @@ services:
         aliases: 
           - oraxe-dst
 
+  ramdisk:
+    # sys and system password: oracle
+    << : *default-xe21
+    deploy:
+      mode: replicated
+      replicas: 1    
+    image: oraxe-v1840-src
+    hostname: oraxe-src
+    tmpfs:
+      - /opt/oracle/oradata/online_logs:uid=54321,gid=54321
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ramdisk:/opt/oracle/oradata
+      - ora-shared-rw:/opt/oracle/oradata/share
+    networks:
+      default:
+        aliases: 
+          - orafree-dst          
+
 networks:
   default:
     name: arcnet
@@ -66,3 +85,4 @@ volumes:
       external: true
       
   dst:
+  ramdisk:

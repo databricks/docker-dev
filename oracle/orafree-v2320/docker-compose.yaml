@@ -59,7 +59,7 @@ services:
     << : *default-free232
     deploy:
       mode: replicated
-      replicas: 0    
+      replicas: 1    
     image: orafree-v2320-src
     hostname: orafree-dst
     tmpfs:

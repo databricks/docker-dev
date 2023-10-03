@@ -1,15 +1,17 @@
-# does not work on fedora well 
-# from oracle/database:21.3.0-xe 
-
-# takes a long time to download 6GB. 
 from container-registry.oracle.com/database/express:21.3.0-xe
 
 label maintainer sangkyulee@gmail.com
 
 # for sharing data with arcion 
 user root
-run mkdir -p ${ORACLE_BASE}/share
-run chown oracle:dba ${ORACLE_BASE}/share
+run mkdir -p ${ORACLE_BASE}/oradata/share
+run chown oracle:oinstall ${ORACLE_BASE}/oradata/share
+
+run mkdir -p ${ORACLE_BASE}/oradata/archive_logs
+run chown oracle:oinstall ${ORACLE_BASE}/oradata/archive_logs
+
+run mkdir -p ${ORACLE_BASE}/oradata/online_logs
+run chown oracle:oinstall ${ORACLE_BASE}/oradata/online_logs
 
 # switch user back to oracle
 user oracle
