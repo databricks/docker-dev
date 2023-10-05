@@ -27,10 +27,12 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_LOG_RETENTION_BYTES: 536870912   # 1024*1024*512 = 512MB
+      KAFKA_LOG_RETENTION_BYTES: 1073741824    # 1024*1024*1024 = 1GB
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/var/tmp/log4j.properties"
     tmpfs: 
-      - /var/log/kafka      
+      - /var/log/kafka:mode=01777,uid=1000      
     volumes: 
+      - ${DOCKERDEV_BASEDIR}/kafka/config/log4j.properties:/var/tmp/log4j.properties
       - broker:/var/lib/kafka/data
     networks:
       default:
