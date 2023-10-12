@@ -4,7 +4,7 @@ manual_run=$1
 
 export REDO_SIZE=${REDO_SIZE:-1G}
 export DATA_SIZE=${DATA_SIZE:-12000M}  # xe and free max
-export UNDO_SIZE=${UNDO_SIZE:-5G}
+export UNDO_SIZE=${UNDO_SIZE:-10G}
 export TEMP_SIZE=${TEMP_SIZE:-5G}
 
 # do not use `exit`.  it won't start the next script
