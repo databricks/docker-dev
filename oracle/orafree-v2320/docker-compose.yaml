@@ -72,6 +72,8 @@ services:
       default:
         aliases: 
           - orafree-dst
+    command: >
+      bash -c "/docker-entrypoint-initdb.d/startup/redocheck/00_crash_recovery.sh"          
 
 networks:
   default:

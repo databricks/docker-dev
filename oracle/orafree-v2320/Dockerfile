@@ -13,5 +13,8 @@ run chown oracle:oinstall ${ORACLE_BASE}/oradata/archive_logs
 run mkdir -p ${ORACLE_BASE}/oradata/online_logs
 run chown oracle:oinstall ${ORACLE_BASE}/oradata/online_logs
 
+run mkdir -p ${ORACLE_BASE}/oradata/backup
+run chown oracle:oinstall ${ORACLE_BASE}/oradata/backup
+
 # switch user back to oracle
 user oracle
