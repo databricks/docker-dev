@@ -8,7 +8,7 @@ backup() {
     shutdown immediate;
     startup mount;
     CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT '${ORACLE_BASE}/oradata/backup/full_%u_%s_%p';
-    BACKUP AS BACKUPSET DATABASE;
+    BACKUP as backupset database include current controlfile;
     alter database open;
 EOF
 

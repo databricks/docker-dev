@@ -2,10 +2,16 @@
 
 recover() {
 
+    set -x 
+    rman target / <<EOF
+    shutdown immediate;
+EOF
+
+    rm -rf $ARCHREDO/*
+
     scn=$(cat $LOGDIR/backup.log | grep -m 1 -A 1 CURRENT_SCN | tail -1)
 
     rman target / <<EOF
-    shutdown immediate;
     startup mount;
     run
     {
@@ -14,7 +20,10 @@ recover() {
     recover database;
     }
     alter database open resetlogs;
+    shutdown immediate;
 EOF
+
+    set +x
 }
 
 redocnt=$(ls $REDO | wc -l)
