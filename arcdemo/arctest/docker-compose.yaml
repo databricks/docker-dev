@@ -61,7 +61,7 @@ services:
     env_file:
       - ${DOCKERDEV_BASEDIR}/config/env.sh
     tmpfs:
-      - /opt/stage/tmpfs
+      - /opt/stage/tmpfs:exec
     volumes:
       # cache db2 sqllib install
       - db2_sqllib:/home/arcion/sqllib
