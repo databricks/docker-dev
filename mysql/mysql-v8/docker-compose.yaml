@@ -23,6 +23,7 @@ services:
       - --local-infile=true                    # allow load data local
       - --secure-file-priv=/tmp                # allow load data
       - --innodb_redo_log_capacity=536870912   # 1024*1024*512
+      - --innodb-flush-method=nosync
 
   dst:
     extends: 
