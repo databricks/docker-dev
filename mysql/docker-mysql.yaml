@@ -21,9 +21,13 @@ services:
       - --default-authentication-plugin=mysql_native_password
       - --local-infile=true                     # allow load data local
       - --secure-file-priv=/tmp                 # allow load data
-      - --innodb_redo_log_capacity=536870912    # 1024*1024*512
+      # - --innodb_redo_log_capacity=536870912    # 1024*1024*512 (not avail for v5)
       - --innodb_flush_sync=off                 # do not limit iops
       - --innodb_flush_log_at_trx_commit=0      # flush once a second and not at every commit (about 2x TPS)
       - --innodb_doublewrite=off                # about 5% more TPS      
       # - --innodb_log_compressed_pages=off     does not provide more TPS
       # - --innodb-flush-method=nosync          does not provide more TPS
+      - --log-bin=mysql-log.bin
+      - --binlog_format=ROW
+      - --binlog_row_image=full
+      - --server-id=1
