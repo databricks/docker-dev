@@ -38,28 +38,6 @@ services:
         aliases: 
           - pg-dst
 
-  ramdisk:
-    extends: 
-      file: ${DOCKERDEV_BASEDIR}/pg/docker-pg.yaml
-      service: pg
-    deploy:
-      mode: replicated
-      replicas: 1           
-    image: pg-v1600-src
-    hostname: pg-src
-    environment:
-      - POSTGRES_INITDB_WALDIR=/var/lib/postgresql/online_redo    
-    tmpfs:
-      - /var/lib/postgresql/online_redo   
-    volumes:
-      - ${DOCKERDEV_BASEDIR}/pg/init.d:/docker-entrypoint-initdb.d        
-      - ramdisk:/var/lib/postgresql/data
-    networks:
-      default:
-        aliases: 
-          - pg-src
-
-
 networks:
   default:
     name: arcnet
@@ -67,4 +45,3 @@ networks:
 volumes:
   src:
   dst:
-  ramdisk:

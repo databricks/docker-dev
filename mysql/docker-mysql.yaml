@@ -27,6 +27,7 @@ services:
       - --innodb_doublewrite=off                # about 5% more TPS      
       # - --innodb_log_compressed_pages=off     does not provide more TPS
       # - --innodb-flush-method=nosync          does not provide more TPS
+      # below required for v5 but not required for v8 docker images
       - --log-bin=mysql-log.bin
       - --binlog_format=ROW
       - --binlog_row_image=full
