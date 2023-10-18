@@ -34,3 +34,8 @@ services:
       - archive_mode=on
       - "-c" 
       - archive_command=/docker-entrypoint-initdb.d/redo/archive_wal.sh
+# replication does not kick in with these settings       
+#      - "-c" 
+#      - fsync=off
+#      - "-c" 
+#      - full_page_writes=off

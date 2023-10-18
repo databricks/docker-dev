@@ -127,7 +127,7 @@ create_src() {
     db_disable_logging
 
     time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ~/03_ycsb.txt
-    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt
+    # time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt
     # time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100 | tee -a ~/03_ycsb.txt
     time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ~/03_ycsb.txt
     # time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt

@@ -12,11 +12,6 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d
       - src:/var/lib/mysql 
-    command: 
-      - mysqld
-      - --default-authentication-plugin=mysql_native_password
-      - --local-infile=true                    # allow load data local
-      - --secure-file-priv=/tmp                # allow load data
 
   dst:
     extends: 
@@ -30,12 +25,7 @@ services:
     volumes:
       - ../init.d:/docker-entrypoint-initdb.d
       - dst:/var/lib/mysql
-    command: 
-      - mysqld
-      - --default-authentication-plugin=mysql_native_password
-      - --local-infile=true                    # allow load data local
-      - --secure-file-priv=/tmp                # allow load data
-
+      
 networks:
   default:
     name: arcnet

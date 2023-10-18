@@ -17,13 +17,6 @@ services:
         aliases: 
           - mysql
           - mysql-src
-    command: 
-      - mysqld
-      - --default-authentication-plugin=mysql_native_password
-      - --local-infile=true                    # allow load data local
-      - --secure-file-priv=/tmp                # allow load data
-      - --innodb_redo_log_capacity=536870912   # 1024*1024*512
-      - --innodb-flush-method=nosync
 
   dst:
     extends: 
@@ -41,40 +34,7 @@ services:
       default:
         aliases:
           - mysql-dst
-    command: 
-      - mysqld
-      - --default-authentication-plugin=mysql_native_password
-      - --local-infile=true                    # allow load data local
-      - --secure-file-priv=/tmp                # allow load data
-      - --innodb_redo_log_capacity=536870912   # 1024*1024*512
       
-  ramdisk:
-    extends: 
-      file: ${DOCKERDEV_BASEDIR}/mysql/docker-mysql.yaml
-      service: mysql
-    deploy:
-      mode: replicated
-      replicas: 1     
-    image: mysql:8.0.33
-    hostname: mysql-src
-    tmpfs:
-      - /var/lib/online_redo
-    volumes:
-      - ${DOCKERDEV_BASEDIR}/mysql/init.d:/docker-entrypoint-initdb.d
-      - ramdisk:/var/lib/mysql
-    networks:
-      default:
-        aliases: 
-          - mysql
-          - mysql-src
-    command: 
-      - mysqld
-      - --default-authentication-plugin=mysql_native_password
-      - --local-infile=true                    # allow load data local
-      - --secure-file-priv=/tmp                # allow load data
-      - --innodb_redo_log_capacity=536870912   # 1024*1024*512
-      - --innodb_log_group_home_dir=/var/lib/online_redo
-
 networks:
   default:
     name: arcnet
@@ -83,4 +43,3 @@ networks:
 volumes:    
   src:
   dst:
-  ramdisk:
