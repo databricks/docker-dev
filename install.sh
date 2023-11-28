@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+abort() {
+    printf "%s\n" "$@" >&2
+    if (( ARCION_INSTALL_SOURCED == 1 )); then   
+        return 1
+    else
+        exit 1
+    fi
+}
+
+if [ -z "$BASH_VERSINFO" ]; then
+    abort "BASH_VERSION not defined"
+fi
+
+if (( ${BASH_VERSINFO[0]} < 4 )) then
+    abort "bash 4.0 or greater needed. $BASH_VERSION found."
+fi
+
 # ARCION_WORKLOADS_TAG: docker tag of robertslee/arcdemo
 # ARCION_UI_TAG: docker tag of arcionlabs/replicant-on-premises
 # ARCION_DOCKER_DBS: space separated list of dbs to setup (mysql )
@@ -57,14 +74,7 @@ declare -A default_oraver_buildcmd_dict=(
     )
 
     
-abort() {
-    printf "%s\n" "$@" >&2
-    if (( ARCION_INSTALL_SOURCED == 1 )); then   
-        return 1
-    else
-        exit 1
-    fi
-}
+
 # DOCKERDEV_NAME
 setDockerDevName() {
     [ -z "${DOCKERDEV_NAME}" ] && export DOCKERDEV_NAME="docker-dev"
@@ -615,7 +625,7 @@ checkDockerCompose() {
     podman-compose --help >/dev/null 2>/dev/null
     if [[ "$?" == "0" ]]; then
         export ARCION_DOCKER_COMPOSE="podman-compose"
-        echo "Found ${ARCION_DOCKER_COMPOSE}."
+        echo "${ARCION_DOCKER_COMPOSE} found."
         return
     fi
 
@@ -623,14 +633,14 @@ checkDockerCompose() {
     docker compose --help >/dev/null 2>/dev/null
     if [[ "$?" == "0" ]]; then
         export ARCION_DOCKER_COMPOSE="docker compose"
-        echo "Found ${ARCION_DOCKER_COMPOSE}."
+        echo "${ARCION_DOCKER_COMPOSE} found."
         return
     fi
 
     docker-compose --help >/dev/null 2>/dev/null
     if [[ "$?" == "0" ]]; then
         export ARCION_DOCKER_COMPOSE="docker-compose"
-        echo "Found ${ARCION_DOCKER_COMPOSE}."
+        echo "${ARCION_DOCKER_COMPOSE} found."
         return
     fi
 
