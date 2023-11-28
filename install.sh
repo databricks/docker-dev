@@ -293,7 +293,7 @@ build_ora() {
     fi
 
     echo "checking docker image ls -q ${image_name}"
-    local found=$(docker image ls -q "${image_name}")
+    local found=$($ARCION_DOCKER image ls -q "${image_name}")
     echo $found
     if [[ -n "${found}" ]]; then
         echo "found docker image ls -q ${image_name}" >&2
@@ -380,11 +380,11 @@ run_docker_compose_ls() {
 
     [ -n "${d}" ] && filter="--filter name=$d"
     
-    containerid=($(docker ps --all -q ${filter}))
+    containerid=($($ARCION_DOCKER ps --all -q ${filter}))
 
     if [ -z "${containerid}" ]; then return; fi
 
-    docker inspect ${containerid[@]} | \
+    $ARCION_DOCKER inspect ${containerid[@]} | \
     jq -r '.[] | [.Config.Labels."com.docker.compose.project.config_files", .State.Status] | @tsv' | \
     awk -F'\t' '{split($1,c,"/"); n[$1]=c[length(c)-1]; split(c[length(c)],y,"[-|.]"); x=y[length(y)-1]; if (x=="compose") v[$1]=""; else v[$1]=("-" x);}
     {r[$1]+=0; nr[$1]+=0; s[$1]=(s[$1] $2 "|"); if ($2=="running") r[$1]++; else nr[$1]++; } 
