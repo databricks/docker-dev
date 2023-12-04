@@ -664,7 +664,7 @@ checkDocker() {
 
         # podman version >= 4.17.0
         readarray -d ' ' ARCION_PODMAN_VERSION < <(podman version --format '{{.Client.Version}}' | awk -F'.' '{printf "%s %s %s",$1,$2,$3}')
-        if (( ${ARCION_PODMAN_VERSION[0]} <= 4 )) && (( ${ARCION_PODMAN_VERSION[1]} < 7 )); then
+        if (( ${ARCION_PODMAN_VERSION[0]} < 3 )); then
             abort "podman 4.17.0 or greater needed. $(echo  ${ARCION_PODMAN_VERSION[*]} | tr '[:space:]' '.') found."
         fi
         return 0
