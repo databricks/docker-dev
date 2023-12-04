@@ -23,7 +23,7 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
       - ARCION_LICENSE=${ARCION_LICENSE}
-      - DB_HOST=arcdemo-metadata-1
+      - DB_HOST=arcdemo_metadata_1
       - DB_PORT=5432
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion

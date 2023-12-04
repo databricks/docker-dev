@@ -23,7 +23,7 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Passw0rd 
       - ARCION_LICENSE=${ARCION_LICENSE}
-      - DB_HOST=arcteset-metadata-1
+      - DB_HOST=arctest_metadata_1  # podman has - (undersore), docker has - (hyphen)
       - DB_PORT=5432
       - DB_DATABASE=arcion
       - DB_USERNAME=arcion
