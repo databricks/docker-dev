@@ -13,7 +13,7 @@ if [ -z "$BASH_VERSINFO" ]; then
     abort "BASH_VERSION not defined"
 fi
 
-if (( ${BASH_VERSINFO[0]} < 4 )) then
+if (( ${BASH_VERSINFO[0]} < 4 )); then
     abort "bash 4.0 or greater needed. $BASH_VERSION found."
 fi
 
