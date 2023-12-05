@@ -108,7 +108,7 @@ setBasedir() {
         echo "Internet install of intall.sh from ${DOCKERDEV_BASEDIR}" >&2
     else 
         export DOCKERDEV_INSTALL=""
-        export DOCKERDEV_BASEDIR="$(realpath $(dirname ${DIR_NAME}))"
+        export DOCKERDEV_BASEDIR="$(readlink -f $(dirname ${DIR_NAME}))"
         echo "Manually running intall.sh from ${DOCKERDEV_BASEDIR}" >&2
     fi
 }
