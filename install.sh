@@ -735,6 +735,10 @@ pullDockerDev() {
             cat /tmp/install.$$
             abort "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} failed."
         fi
+
+        if [ -n "${ARCION_WORKLOADS_TAG}" ]; then
+            git switch ${ARCION_WORKLOADS_TAG}
+        fi
     fi
 }
 pullArcdemo() {
