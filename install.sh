@@ -718,7 +718,7 @@ createVolumes() {
     done
 }
 pullDockerDev() {
-    if [[ -z "$DOCKERDEV_INSTALL" ]]; then
+    if [[ -n "$DOCKERDEV_INSTALL" ]]; then
         echo "dir ${DOCKERDEV_NAME} found. running git pull to refresh"
         if [ -z "${ARCION_WORKLOADS_TAG}" ]; then
             git fetch
