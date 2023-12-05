@@ -55,6 +55,7 @@ services:
       - ARCION_HOME=/arcion
       - ARCION_LICENSE=${ARCION_LICENSE}
       - LANG=C.UTF-8
+      - TERM=ansi
       - PGCLIENTENCODING=utf-8
       - PROMETHEUS_ENABLE=true    
       # to enable debug trace on arcion
