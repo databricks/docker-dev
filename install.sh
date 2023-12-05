@@ -610,7 +610,7 @@ setWhiptailDialog() {
     else     
 abort "whiptail or dialog not found.
 on OSX 
-    brew install newt
+    brew install newt or brew install dialog
 on Linux or Windows WSL
     sudo apt-get install whiptail"
     fi

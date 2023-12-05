@@ -28,15 +28,43 @@ Assumptions:
 
 - Running on Windows WSL2, Liunx or Mac 
   - Intel CPU can run all databases
-  - Apple Silicon cannot run Oracle 
+  - Apple Silicon can run Oracle 19c 
 - Have Arcion License 
   - `ARCION_LICENSE` env variable  
   - `replicant.lic` file in the current directory 
-- Have Docker 19.3.0 or above
-- Have `docker compose` or `docker-compose` 
-- Have git installed
+- Have `podman` or `docker`
+- Have `podman-compose` or `docker compose` or `docker-compose` 
+- Have `bash`, `git`, `dialog`, `wget`, `jq`, `python3` 
 - Have access to a terminal
 - Have access to a browser
+
+# Install and setup prerequisites
+
+- osx
+  
+```bash
+brew install dialog 
+brew install jq 
+brew install git
+brew install wget
+brew install bash
+brew install podman 
+brew install podman-desktop
+pip3 install podman-compose
+```
+
+- bash required for Demokit's install.sh
+```bash
+echo $(brew --prefix)/bin/bash | sudo tee -a /private/etc/shells
+chpass -s $(brew --prefix)/bin/bash
+```
+
+- podman allocated 512GB of disk, 16GB of RAM, and 8 CPUs
+```bash
+podman machine init --disk-size 512 --memory 16384 --cpus 8
+podman machine start
+```  
+
 
 # Install Demo Kit  
 
@@ -44,13 +72,13 @@ Cut and paste the following in a terminal.
 
 - run the latest
 ```
-/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
+bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
 ```
 
 - to run a specific tag
 ```bash
 export ARCION_WORKLOADS_TAG=23.07
-/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 [![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
@@ -261,3 +289,6 @@ cd bin
 ./startall.sh
 ./recdemo.sh
 ```
+
+
+
