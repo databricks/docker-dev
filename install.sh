@@ -96,9 +96,8 @@ setBasedir() {
     # curl or running from docker-dev dir
     DIR_NAME="${BASH_SOURCE[0]}"
     echo "\$0=$0"
-    echo "DIR_NAME=$DIR_NAME"
-    return 1
-    if [ -z "${DIR_NAME}" ]; then
+    echo "BASH_SOURCE[0]=$DIR_NAME"
+    if [[ -z "${DIR_NAME}" ]] || [[ $0 == "bash" && "${DIR_NAME}" == "environment" ]]; then
         echo "Running curl intall.sh" >&2
         export DOCKERDEV_INSTALL=1
         # inside docker-dev dir
@@ -721,7 +720,7 @@ createVolumes() {
     done
 }
 pullDockerDev() {
-    if [[ -n "$DOCKERDEV_INSTALL" ]]; then
+    if [[ -z "$DOCKERDEV_INSTALL" ]]; then
         echo "dir ${DOCKERDEV_NAME} found. running git pull to refresh"
         if [ -z "${ARCION_WORKLOADS_TAG}" ]; then
             git fetch
@@ -730,7 +729,6 @@ pullDockerDev() {
             git pull origin ${ARCION_WORKLOADS_TAG}
             git switch ${ARCION_WORKLOADS_TAG}
         fi
-        popd
     else
         echo "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} ."
         git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} . >/tmp/install.$$ 2>&1
