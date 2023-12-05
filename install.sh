@@ -95,6 +95,7 @@ setMachineType() {
 setBasedir() {
     # curl or running from docker-dev dir
     DIR_NAME="${BASH_SOURCE[0]}"
+    echo "\$0=$0"
     echo "DIR_NAME=$DIR_NAME"
     return 1
     if [ -z "${DIR_NAME}" ]; then

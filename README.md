@@ -77,7 +77,7 @@ bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev
 
 - to run a specific tag
 ```bash
-export ARCION_WORKLOADS_TAG=23.07
+export ARCION_WORKLOADS_TAG=23.09
 bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
