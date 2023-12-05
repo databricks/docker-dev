@@ -2,7 +2,7 @@
 
 ycsb_create_mysql() {
 cat <<'EOF'
-CREATE TABLE IF NOT EXISTS THEUSERTABLE (
+CREATE TABLE IF NOT EXISTS YCSBSPARSE (
     YCSB_KEY INT PRIMARY KEY,
     FIELD0 TEXT, FIELD1 TEXT,
     FIELD2 TEXT, FIELD3 TEXT,
@@ -41,7 +41,7 @@ ycsb_load() {
     seq 0 $(( 1000000*${SIZE_FACTOR:-1} - 1 )) > /tmp/ycsb.fifo.$$ &
     ycsb_create_mysql | mysql -u ${db} --password=${DB_ARC_PW} -D ${db}
 
-    echo "load data local infile '/tmp/ycsb.fifo.$$' into table THEUSERTABLE (YCSB_KEY);" | \
+    echo "load data local infile '/tmp/ycsb.fifo.$$' into table YCSBSPARSE (YCSB_KEY);" | \
         mysql -u ${db} \
             --password=${DB_ARC_PW} \
             -D ${db} \

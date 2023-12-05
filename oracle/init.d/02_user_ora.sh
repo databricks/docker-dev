@@ -67,13 +67,8 @@ create_dst() {
 }
 
 if [ ! -f ${LOGDIR}/02_user.txt ]; then
-    if [[ $(uname -a | awk '{print $2}') =~ src$ ]]; then
+    if [[ ! $(uname -a | awk '{print $2}') =~ dst$ ]]; then
         create_src 
-        create_dst 
-    elif [[ $(uname -a | awk '{print $2}') =~ dst$ ]]; then
-        create_dst 
-    else 
-        create_src 
-        create_dst 
     fi
+    create_dst 
 fi

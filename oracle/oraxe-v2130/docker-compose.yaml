@@ -1,0 +1,87 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+x-xe21: &default-xe21
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraxe
+    ports:
+      - 1521
+      - 5500
+    environment:
+      - DBVER=2130
+      - ORACLE_PWD=Passw0rd
+      - ORACLE_SID=XE
+      # for the init script 
+      - ARCHREDO=/opt/oracle/oradata/archive_logs
+      - REDO=/opt/oracle/oradata/online_logs
+      - FOOTER_LINES=4      
+      - LOGDIR=/opt/oracle/oradata
+    env_file:
+      - ../../config/env.sh           
+
+services:
+  src:
+    # sys and system password: oracle
+    << : *default-xe21
+    build: .
+    hostname: oraxe-src
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ora-shared-rw:/opt/oracle/share
+      - oraxe_v2130-src:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraxe
+          - oraxe-src      
+
+  dst:
+    # sys and system password: oracle
+    << : *default-xe21
+    deploy:
+      mode: replicated
+      replicas: 0   
+    image: oraxe-v2130-src
+    hostname: oraxe-dst
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - dst:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraxe-dst
+
+  ramdisk:
+    # sys and system password: oracle
+    << : *default-xe21
+    deploy:
+      mode: replicated
+      replicas: 1    
+    image: oraxe-v2130-src
+    hostname: oraxe-src
+    tmpfs:
+      - /opt/oracle/oradata/online_logs:uid=54321,gid=54321
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup
+      - ramdisk:/opt/oracle/oradata
+      - ora-shared-rw:/opt/oracle/oradata/share
+    networks:
+      default:
+        aliases: 
+          - orafree-dst          
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  ora-shared-rw:
+      external: true
+      
+  oraxe_v2130-src:
+      external: true
+      
+  dst:
+  ramdisk:

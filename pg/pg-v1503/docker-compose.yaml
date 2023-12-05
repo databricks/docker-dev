@@ -1,0 +1,68 @@
+---
+# 3.8 required for the volume relative path name to config file 
+# the build adds wal2json 
+version: '3.8'
+
+services:
+  src:
+    extends: 
+      file: ${DOCKERDEV_BASEDIR}/pg/docker-pg.yaml
+      service: pg  
+    build: .
+    hostname: pg-src
+    volumes:
+      - ${DOCKERDEV_BASEDIR}/pg/init.d:/docker-entrypoint-initdb.d        
+      - src:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases: 
+          - pg
+          - pg-src
+          - postgresql
+
+  dst:
+    extends: 
+      file: ${DOCKERDEV_BASEDIR}/pg/docker-pg.yaml
+      service: pg  
+    deploy:
+      mode: replicated
+      replicas: 0       
+    image: postgres:15.3
+    hostname: pg-dst
+    volumes:
+      - ${DOCKERDEV_BASEDIR}/pg/init.d:/docker-entrypoint-initdb.d        
+      - dst:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases: 
+          - pg-dst
+
+  ramdisk:
+    extends: 
+      file: ${DOCKERDEV_BASEDIR}/pg/docker-pg.yaml
+      service: pg
+    deploy:
+      mode: replicated
+      replicas: 1           
+    image: pg-v1503-src
+    hostname: pg-src
+    environment:
+      - POSTGRES_INITDB_WALDIR=/var/lib/postgresql/online_redo    
+    tmpfs:
+      - /var/lib/postgresql/online_redo   
+    volumes:
+      - ${DOCKERDEV_BASEDIR}/pg/init.d:/docker-entrypoint-initdb.d        
+      - ramdisk:/var/lib/postgresql/data
+    networks:
+      default:
+        aliases: 
+          - pg-src
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  src:  
+  dst:  
+  ramdisk:

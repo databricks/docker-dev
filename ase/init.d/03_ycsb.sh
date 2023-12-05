@@ -12,11 +12,11 @@ load_dense_data() {
     echo "Starting dense table $SIZE_FACTOR" 
 
     # create table
-    heredoc_file ${PROG_DIR}/lib/03_densetable.sql | tee ${INITDB_LOG_DIR}/03_densetable.sql 
-    cli_arcsrc < ${INITDB_LOG_DIR}/03_densetable.sql 
+    heredoc_file ${PROG_DIR}/lib/03_YCSBDENSE.sql | tee ${INITDB_LOG_DIR}/03_YCSBDENSE.sql 
+    cli_arcsrc < ${INITDB_LOG_DIR}/03_YCSBDENSE.sql 
 
     # prepare bulk loader
-    heredoc_file ${PROG_DIR}/lib/03_densetable.fmt | tee ${INITDB_LOG_DIR}/03_densetable.fmt
+    heredoc_file ${PROG_DIR}/lib/03_YCSBDENSE.fmt | tee ${INITDB_LOG_DIR}/03_YCSBDENSE.fmt
 
     # prepare data file
     datafile=$(mktemp -p $INITDB_LOG_DIR)
@@ -25,7 +25,7 @@ load_dense_data() {
     # run the bulk loader
     # don't batch dense
     echo "Start loading"
-    time bcp DENSETABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_densetable.fmt -b 1000 2>&1 | tee ${INITDB_LOG_DIR}/03_densetable.log
+    time bcp YCSBDENSE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_YCSBDENSE.fmt -b 1000 2>&1 | tee ${INITDB_LOG_DIR}/03_YCSBDENSE.log
     echo "Finished loading"
     # delete datafile
     rm -rf $datafile
@@ -53,7 +53,7 @@ load_sparse_data() {
     # run the bulk loader
     # batch of 1M is too large
     echo "Start loading"
-    time bcp THEUSERTABLE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 1000000 2>&1 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
+    time bcp YCSBSPARSE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -S $SYBASE_SID -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 1000000 2>&1 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
     echo "Finished loading"
     # delete datafile
     rm -rf $datafile   

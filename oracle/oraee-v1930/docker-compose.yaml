@@ -1,0 +1,72 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+x-ee1930: &default-ee1930
+    # image: oracle/database:19.3.0-ee
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraee-src
+    ports:
+      - 1521
+      - 5500
+      - 2484
+    environment:
+      - DBVER=1930
+      - ORACLE_SID=orcl
+      - ORACLE_PDB=orclpdb1
+      - ORACLE_EDITION=enterprise
+      - ENABLE_ARCHIVELOG=true
+      #- AUTO_MEM_CALCULATION=false    # set to max of 2GB
+      - ORACLE_PWD=Passw0rd 
+      # for the init script 
+      - ARCHREDO=/opt/oracle/oradata/ORCL/archive_logs
+      - REDO=/opt/oracle/oradata/ORCL
+      - FOOTER_LINES=4     
+      - LOGDIR=/opt/oracle/oradata/ORCL
+    env_file:
+      - ../../config/env.sh           
+
+services:
+  src:
+    << : *default-ee1930
+    build: .
+    hostname: oraee-src
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup    
+      - ora-shared-rw:/opt/oracle/share
+      - oraee_v1930-src:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraee
+          - oraee-src  
+
+  v1930-dst:
+    << : *default-ee1930
+    image: oraee-v1930-src
+    deploy:
+      mode: replicated
+      replicas: 0       
+    hostname: oraee-dst
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d/startup    
+      - ora-shared-rw:/opt/oracle/share
+      - dst:/opt/oracle/oradata
+    networks:
+      default:
+        aliases: 
+          - oraee-dst
+networks:
+  default:
+    name: arcnet
+    external: true
+    
+volumes:
+  ora-shared-rw:
+      external: true
+      
+  oraee_v1930-src:
+      external: true
+
+  dst:

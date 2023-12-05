@@ -13,7 +13,7 @@ services:
       - POSTGRES_PASSWORD=Passw0rd 
       - LOGDIR=/var/lib/postgresql/data
     env_file:
-      - ../config/env.sh      
+      - ${DOCKERDEV_BASEDIR}/config/env.sh        
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
     command: 
@@ -27,5 +27,15 @@ services:
       - "-c" 
       - shared_buffers=80MB
       - "-c" 
-      - max_wal_size=4GB
-
+      - max_wal_size=3GB
+      - "-c" 
+      - wal_keep_size=3GB
+      - "-c" 
+      - archive_mode=on
+      - "-c" 
+      - archive_command=/docker-entrypoint-initdb.d/redo/archive_wal.sh
+# replication does not kick in with these settings       
+#      - "-c" 
+#      - fsync=off
+#      - "-c" 
+#      - full_page_writes=off

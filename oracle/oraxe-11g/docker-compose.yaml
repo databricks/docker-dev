@@ -1,0 +1,53 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+x-xe11g: &default-xe11g
+    image: oracleinanutshell/oracle-xe-11g
+    # container_name: must be unqiue and can't replicate
+    # hostname: `nmap` and `getent hosts` will show containers with this hostname
+    hostname: oraxe11g
+    ports:
+      - 1521
+      - 5500
+    environment:
+      - DBVER=11g
+      - ORACLE_PWD=oracle # harded coded and cannot change
+      - ORACLE_SID=XE
+      # for the init script
+      - ARCHREDO=/u01/app/oracle/oradata/XE/archive_logs
+      - REDO=/u01/app/oracle/oradata/XE
+      - FOOTER_LINES=3      
+      - LOGDIR=/u01/app/oracle/oradata/XE
+    env_file:
+      - ../../config/env.sh          
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d
+
+services:
+  v1102-src:
+    # sys and system password: oracle
+    << : *default-xe11g
+    hostname: oraxe-src
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d
+      - v1102-src:/u01/app/oracle/oradata
+
+  v1102-dst:
+    # sys and system password: oracle
+    << : *default-xe11g
+    deploy:
+      mode: replicated
+      replicas: 0
+    hostname: oraxe-dst
+    volumes:
+      - ../init.d:/docker-entrypoint-initdb.d
+      - v1102-dst:/u01/app/oracle/oradata
+
+networks:
+  default:
+    name: arcnet
+    external: true
+volumes:
+  v1102-src:
+  v1102-dst:

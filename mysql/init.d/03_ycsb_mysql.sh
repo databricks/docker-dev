@@ -16,19 +16,19 @@ cli_root() {
 
 db_disable_logging() {
     set -x
-    echo "ALTER INSTANCE DISABLE INNODB REDO_LOG;" | cli_root
+    echo "ALTER INSTANCE DISABLE INNODB REDO_LOG;" #| cli_root
     set +x
 }
 
 db_enable_logging() {
     set -x
-    echo "ALTER INSTANCE ENABLE INNODB REDO_LOG;" | cli_root
+    echo "ALTER INSTANCE ENABLE INNODB REDO_LOG;" #| cli_root
     set +x
 }
 
 ycsb_create_sparse_table() {
 cat <<EOF
-CREATE TABLE IF NOT EXISTS THEUSERTABLE${SIZE_FACTOR_NAME} (
+CREATE TABLE IF NOT EXISTS YCSBSPARSE${SIZE_FACTOR_NAME} (
     YCSB_KEY INT PRIMARY KEY,
     FIELD0 TEXT, FIELD1 TEXT,
     FIELD2 TEXT, FIELD3 TEXT,
@@ -41,7 +41,7 @@ EOF
 
 ycsb_create_dense_table() {
 cat <<EOF
-CREATE TABLE IF NOT EXISTS DENSETABLE${SIZE_FACTOR_NAME} (
+CREATE TABLE IF NOT EXISTS YCSBDENSE${SIZE_FACTOR_NAME} (
     YCSB_KEY INT PRIMARY KEY,
     FIELD0 TEXT, FIELD1 TEXT,
     FIELD2 TEXT, FIELD3 TEXT,
@@ -63,7 +63,7 @@ ycsb_load_sparse_table() {
     ycsb_sparse_data $datafile
     
     set -x
-    echo "load data local infile '${datafile}' into table THEUSERTABLE${SIZE_FACTOR_NAME} (YCSB_KEY);" | \
+    echo "load data local infile '${datafile}' into table YCSBSPARSE${SIZE_FACTOR_NAME} (YCSB_KEY);" | \
         cli_user
     set +x
 }
@@ -79,7 +79,7 @@ ycsb_load_dense_table() {
     ycsb_dense_data $datafile      
 
     set -x
-    echo "load data local infile '${datafile}' into table DENSETABLE${SIZE_FACTOR_NAME} (YCSB_KEY);" | \
+    echo "load data local infile '${datafile}' into table YCSBDENSE${SIZE_FACTOR_NAME} (YCSB_KEY);" | \
         cli_user
     set +x
 }
@@ -127,7 +127,7 @@ create_src() {
     db_disable_logging
 
     time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ~/03_ycsb.txt
-    time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt
+    # time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt
     # time ycsb_load_sparse_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 100 | tee -a ~/03_ycsb.txt
     time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 1 | tee -a ~/03_ycsb.txt
     # time ycsb_load_dense_table SRC ${SRCDB_ARC_USER} ${SRCDB_ARC_PW} ycsb 10 | tee -a ~/03_ycsb.txt

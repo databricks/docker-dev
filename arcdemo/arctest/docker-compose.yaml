@@ -1,0 +1,159 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+services:
+  metadata:
+    image: postgres:14-alpine
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=Passw0rd 
+      - PGCLIENTENCODING=utf-8
+    volumes:
+      - arcion-metadata:/var/lib/postgresql/data
+      - ./init.d:/docker-entrypoint-initdb.d
+
+  ui:
+    image:  arcionlabs/replicant-on-premises:${ARCION_UI_TAG:-test}
+    ports:
+      - 8082:8080
+      - 8052:8050
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=Passw0rd 
+      - ARCION_LICENSE=${ARCION_LICENSE}
+      - DB_HOST=arctest_metadata_1  # podman has - (undersore), docker has - (hyphen)
+      - DB_PORT=5432
+      - DB_DATABASE=arcion
+      - DB_USERNAME=arcion
+      - DB_PASSWORD=Passw0rd
+      - PROMETHEUS_ENABLE=true
+    volumes:
+      - arcion-ui-data:/data
+      - arcion-ui-config:/config
+      - ${DOCKERDEV_BASEDIR}/arcdemo/arcion-share/libs:/libs
+      - ${DOCKERDEV_BASEDIR}/arcdemo/arcion-share/bin:/opt/arcion
+
+      # used by oracle native redo log reader
+      - oraee_v1930-src:/opt/stage/oraee1930/oradata 
+      - oraxe_v2130-src:/opt/stage/oraxe2130/oradata
+      - oraee_v2130-src:/opt/stage/oraee2130/oradata
+      - orafree_v2320-src:/opt/stage/orafree2320/oradata
+      - ora-shared-rw:/opt/oracle/share:rw      
+    depends_on:
+      - metadata  
+      - workloads
+
+  workloads:
+    image:  robertslee/arcdemo:${ARCION_WORKLOADS_TAG:-test}
+    privileged: true
+    ports:
+      - 5002:5000
+      - 7682:7681
+    environment:
+      - ARCION_HOME=/arcion
+      - ARCION_LICENSE=${ARCION_LICENSE}
+      - LANG=C.UTF-8
+      - TERM=ansi
+      - PGCLIENTENCODING=utf-8
+      - PROMETHEUS_ENABLE=true    
+      # to enable debug trace on arcion
+      #- JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5002"  
+    env_file:
+      - ${DOCKERDEV_BASEDIR}/arcdemo/config/env.sh
+    tmpfs:
+      - /opt/stage/tmpfs:exec
+    volumes:
+      # cache db2 sqllib install
+      - db2_sqllib:/home/arcion/sqllib
+      # cache oracle client install
+      - ora_client:/opt/oracle
+      # same as the UI
+      - ${DOCKERDEV_BASEDIR}/arcdemo/arcion-share/libs:/opt/mnt/libs
+
+      # loadgen specific
+      - arcion-log:/opt/mnt/loadgen
+      - ${DOCKERDEV_BASEDIR}/arcdemo/arcion-share/bin:/opt/arcion            
+
+      # used by oracle native redo log reader
+      - oraee_v1930-src:/opt/stage/oraee1930/oradata    
+      - oraee_v2130-src:/opt/stage/oraee2130/oradata 
+      - oraxe_v2130-src:/opt/stage/oraxe2130/oradata 
+      - oraxe_v2130-ramdisk:/opt/stage/oraxe2130ramdisk/oradata 
+      - orafree_v2320-src:/opt/stage/orafree2320/oradata    
+      - orafree_v2320-ramdisk:/opt/stage/orafree2320ramdisk/oradata    
+      - ora-shared-rw:/opt/oracle/share:rw
+
+      # test specific to edit scripts
+      - ${ARCDEMO_BASEDIR}/scripts:/scripts
+
+    depends_on:
+      - metadata  
+
+
+  prometheus:
+      image: prom/prometheus
+      ports:
+          - 9092:9090
+      volumes:
+          - ./init.d/prometheus.yml:/etc/prometheus/prometheus.yml
+          - prometheus:/prometheus
+
+  grafana:
+    image: grafana/grafana:9.4.7
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana:/var/lib/grafana
+    ports:
+      - 3002:3000 
+
+networks:
+  default:
+    name: arcnet
+    external: true
+
+volumes:
+  # ui
+  arcion-metadata:
+  arcion-ui-data:
+  arcion-ui-config:
+
+  prometheus:
+  grafana:
+
+  # workloads
+  db2_sqllib:
+      external: true
+
+  ora_client:
+    external: true
+
+  # shared with arcdemo and arctest
+  # must be a volume for fast write of temp files
+  arcion-log:
+    external: true
+
+  # mounted by ui and workloads for oracle native reader
+  oraee_v1930-src:
+    external: true
+
+  oraee_v2130-src:
+    external: true
+
+  orafree_v2320-src:
+    external: true
+
+  orafree_v2320-ramdisk:
+    external: true
+
+  oraxe_v2130-src:
+    external: true
+
+  oraxe_v2130-ramdisk:
+    external: true
+
+  # shared for oracle exp/dmp, sqlldr, external tables
+  ora-shared-rw:
+    external: true    

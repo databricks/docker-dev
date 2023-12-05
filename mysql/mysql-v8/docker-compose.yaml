@@ -1,0 +1,45 @@
+---
+# 3.8 required for the volume relative path name to config file 
+version: '3.8'
+
+services:
+  src:
+    extends: 
+      file: ${DOCKERDEV_BASEDIR}/mysql/docker-mysql.yaml
+      service: mysql  
+    image: mysql:8.0.33
+    hostname: mysql-src
+    volumes:
+      - ${DOCKERDEV_BASEDIR}/mysql/init.d:/docker-entrypoint-initdb.d
+      - src:/var/lib/mysql
+    networks:
+      default:
+        aliases: 
+          - mysql
+          - mysql-src
+
+  dst:
+    extends: 
+      file: ${DOCKERDEV_BASEDIR}/mysql/docker-mysql.yaml
+      service: mysql  
+    deploy:
+      mode: replicated
+      replicas: 0  
+    image: mysql:8.0.33
+    hostname: mysql-dst
+    volumes:
+      - ${DOCKERDEV_BASEDIR}/mysql/init.d:/docker-entrypoint-initdb.d
+      - dst:/var/lib/mysql
+    networks:
+      default:
+        aliases:
+          - mysql-dst
+      
+networks:
+  default:
+    name: arcnet
+    external: true
+    
+volumes:    
+  src:
+  dst:
