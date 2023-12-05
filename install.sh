@@ -95,6 +95,8 @@ setMachineType() {
 setBasedir() {
     # curl or running from docker-dev dir
     DIR_NAME="${BASH_SOURCE[0]}"
+    echo "DIR_NAME=$DIR_NAME"
+    return 1
     if [ -z "${DIR_NAME}" ]; then
         echo "Running curl intall.sh" >&2
         export DOCKERDEV_INSTALL=1
