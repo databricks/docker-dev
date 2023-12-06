@@ -83,14 +83,14 @@ Docker exmaple
 
 # Demo Recordings
 
-Arcion support snapshot, real-time, snapshot, and delta-snapshot replication modes.
+Arcion supports snapshot, real-time, snapshot, and delta-snapshot replication modes.
 Recorded Arcion CLI demos of source, destination, and replication type combination is available.
-The recordings use `asciiinema` so that YAML config files used can be cut / pasted.
-This is functional demo using TPCC and YCSB.
-The data size is 1GB each, 1 thread on given to Arcion, and 8 GB of RAM shared.  
+The recordings use `asciinema` so that the YAML config files can be cut/pasted.
+This is a functional demo using TPCC and YCSB.
+The data size is 1GB each, 1 thread given to Arcion, and 8 GB of RAM shared.  
 
-- Left side of the table (the left column) is the source.
-- Right side of the table (the top row) is the destination.
+- The source is on the left side of the table (the left column).
+- The destination is on the right side of the table (the top row).
 - The cell has workloads and URL to the demo.
 - A blank cell means a demo has not been recorded as of yet.
    
@@ -214,7 +214,7 @@ done
 ## Snowflake
 
 - Snowflake source to MySQL destination
-use default on mysql destination
+use the default on mysql destination
 
 single thread each extractor and applier
 source catalog is SNOWFLAKE_SAMPLE_DATA and source schema is TPCH_SF1
@@ -231,9 +231,9 @@ arcdemo.sh -b 2:2 snpashot snowflake mysql
 
 # Oracle Docker Setup
 
-Oracle requires container images to be build locally.
+Oracle requires container images to be built locally.
 Start with Oracle XE, then use Oracle EE for volume testing.
-Oracle XE does not require the extra step of download the Oracle EE binary.
+Oracle XE does not require the extra step of downloading the Oracle EE binary.
 Oracle EE should be used for anything scale factor beyond 10.
 
 ### Oracle XE
