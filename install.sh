@@ -776,7 +776,7 @@ startArcdemo() {
     done
     $ARCION_DOCKER_COMPOSE exec workloads bash -c 'tmux send-keys -t arcion:0.0 "clear" enter'
     sleep 1
-    $ARCION_DOCKER_COMPOSE exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql pg"; tmux attach'
+    $ARCION_DOCKER_COMPOSE exec workloads bash -c 'tmux send-keys -t arcion:0.0 "arcdemo.sh full mysql pg" enter; tmux attach'
 
     popd >/dev/null || abort "startArcdemo: popd failed"
 }
@@ -810,5 +810,6 @@ if (( ARCION_INSTALL_SOURCED == 0 )); then
     # choose demo run
     choose_start_cli
     startArcdemo
+    
     popd >/dev/null
 fi
