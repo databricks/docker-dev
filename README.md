@@ -1,15 +1,16 @@
-Please use [Arcion demo kit docs](https://arcionlabs.github.io/demokit-docs.gtihub-io/).   
+More info at [Arcion Demo Kit docs](https://arcionlabs.github.io/demokit-docs.gtihub-io/).   
 
-Below docs is deprecated and will be removed soon.
 
 # Overview
 
 This is the Arcion Demo Kit. It is designed to demo and test Arcion replication from various data sources to targets. The diagram below describes the components of the demo kit.  Please refer to [https://docs.arcion.io](https://docs.arcion.io) for more info.
 
-- Load Generator
-- Data source
-- Arcion host with the dedicated metadata database
-- Data destination
+- Load Generators 
+  - Yahoo Cloud Serving Benchmark [YCSB](https://github.com/brianfrankcooper/YCSB)
+  - Carnegie Mellon Database Group [BenchBase](https://github.com/cmu-db/benchbase)
+- Data sources
+- Arcion cluster with dedicated metadata database
+- Data destinations
 
 ```mermaid
 graph LR
@@ -26,21 +27,16 @@ graph LR
 
 Assumptions:
 
-- Running on Windows WSL2, Liunx or Mac 
-  - Intel CPU can run all databases
-  - Apple Silicon can run Oracle 19c 
-- Have Arcion License 
-  - `ARCION_LICENSE` env variable  
-  - `replicant.lic` file in the current directory 
-- Have `podman` or `docker`
-- Have `podman-compose` or `docker compose` or `docker-compose` 
-- Have `bash`, `git`, `dialog`, `wget`, `jq`, `python3` 
-- Have access to a terminal
-- Have access to a browser
+- Run on Windows WSL2, Liunx or Mac 
+  - x64_64 (Intel, AMD) CPUs can run all databases
+  - ARM64 (Apple Silicon, Tau, Graviton2) can run Oracle 19c 
+- Access to a terminal
+- Access to a browser
+- Arcion License file `replicant.loc`
 
-# Install and setup prerequisites
+# Install and Setup
 
-- osx
+## OSX (Mac) prerequisites
   
 ```bash
 brew install dialog 
@@ -53,34 +49,36 @@ brew install podman-desktop
 pip3 install podman-compose
 ```
 
-- bash required for Demokit's install.sh
+- `bash` required for Demokit's install.sh
 ```bash
 echo $(brew --prefix)/bin/bash | sudo tee -a /private/etc/shells
 chpass -s $(brew --prefix)/bin/bash
 ```
 
-- podman allocated 512GB of disk, 16GB of RAM, and 8 CPUs
+- `podman` with 512GB of disk, 16GB of RAM, and 8 CPUs
 ```bash
 podman machine init --disk-size 512 --memory 16384 --cpus 8
 podman machine start
 ```  
 
-
-# Install Demo Kit  
+# Install Arcion Demo Kit  
 
 Cut and paste the following in a terminal.
 
-- run the latest
 ```
-bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/HEAD/install.sh)"
+git clone https://github.com/arcionlabs/docker-dev
+cat >>~/.profile <<EOF
+export ARCION_LICENSE="$(cat replicant.lic | base64)"
+export DOCKERDEV_BASEDIR="$(pwd)/docker-dev"
+EOF
+source ~/.profile
+docker-dev/install.sh
 ```
 
-- to run a specific tag
-```bash
-export ARCION_WORKLOADS_TAG=23.09
-bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
-```
+Podman example
+[![asciicast](https://asciinema.org/a/SVckaKD28z29VmW7rBo3FPeGw.svg)](https://asciinema.org/a/SVckaKD28z29VmW7rBo3FPeGw)
 
+Docker exmaple
 [![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
 
 # Demo Recordings
