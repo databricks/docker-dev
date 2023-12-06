@@ -29,7 +29,7 @@ Assumptions:
 
 - Run on Windows WSL2, Liunx or Mac 
   - x64_64 (Intel, AMD) CPUs can run all databases
-  - ARM64 (Apple Silicon) can run Oracle 19c 
+  - ARM64 (Apple Silicon, Tau, Graviton2) can run Oracle 19c 
 - Access to a terminal
 - Access to a browser
 - Arcion License file `replicant.loc`
@@ -75,6 +75,10 @@ source ~/.profile
 docker-dev/install.sh
 ```
 
+Podman example
+[![asciicast](https://asciinema.org/a/SVckaKD28z29VmW7rBo3FPeGw.svg)](https://asciinema.org/a/SVckaKD28z29VmW7rBo3FPeGw)
+
+Docker exmaple
 [![asciicast](https://asciinema.org/a/587770.svg)](https://asciinema.org/a/587770)
 
 # Demo Recordings
