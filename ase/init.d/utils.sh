@@ -33,7 +33,7 @@ heredoc_file() {
 cli_arcsrc() {
     local DB_ARC_USER=${1:-${DB_ARC_USER:-${SRCDB_ARC_USER:-arcsrc}}}
     local DB_ARC_PW=${2:-${DB_ARC_PW:-${SRCDB_ARC_PW:-Passw0rd}}}
-    local DB_DB=${3:-${DB_DB:-${SRCDB_DB:-${DB_SRC_USER}}}}
+    local DB_DB=${3:-${DB_DB:-${SRCDB_DB:-${DB_ARC_USER}}}}
 
     isql -U ${DB_ARC_USER} -P ${DB_ARC_PW} -S $SYBASE_SID
 }
@@ -41,7 +41,7 @@ cli_arcsrc() {
 cli_arcdst() {
     local DB_ARC_USER=${1:-${DB_ARC_USER:-${DSTDB_ARC_USER:-arcdst}}}
     local DB_ARC_PW=${2:-${DB_ARC_PW:-${DSTDB_ARC_PW:-Passw0rd}}}
-    local DB_DB=${3:-${DB_DB:-${DSTDB_DB:-${DB_SRC_USER}}}}
+    local DB_DB=${3:-${DB_DB:-${DSTDB_DB:-${DB_ARC_USER}}}}
 
     isql -U ${DB_ARC_USER} -P ${DB_ARC_PW} -S $SYBASE_SID
 }

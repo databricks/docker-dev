@@ -19,5 +19,10 @@ go
 alter user ${DB_ARC_USER} with default_schema=dbo
 go
 
-ALTER LOGIN ${DB_ARC_USER} WITH DEFAULT_DATABASE=[${DB_DB}
+ALTER LOGIN ${DB_ARC_USER} WITH DEFAULT_DATABASE=[${DB_DB}]
 go
+
+-- enable change tracking
+ALTER DATABASE [${DB_DB}] SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON);
+go
+

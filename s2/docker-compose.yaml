@@ -39,6 +39,10 @@ services:
     volumes:
       - ./init.d:/docker-entrypoint-initdb.d
       - v815-src:/var/lib/memsql
+    ports:
+      - 19000:9000
+      - 18080:8080
+      - 13306:3306
     networks:
       default:
         aliases: 

@@ -12,11 +12,11 @@ load_dense_data() {
     echo "Starting dense table $SIZE_FACTOR" 
 
     # create table
-    heredoc_file ${PROG_DIR}/lib/03_YCSBDENSE.sql | tee ${INITDB_LOG_DIR}/03_YCSBDENSE.sql 
-    cli_arcsrc < ${INITDB_LOG_DIR}/03_YCSBDENSE.sql 
+    heredoc_file ${PROG_DIR}/lib/03_densetable.sql | tee ${INITDB_LOG_DIR}/03_densetable.sql 
+    cli_arcsrc < ${INITDB_LOG_DIR}/03_densetable.sql 
 
     # prepare bulk loader
-    heredoc_file ${PROG_DIR}/lib/03_YCSBDENSE.fmt | tee ${INITDB_LOG_DIR}/03_YCSBDENSE.fmt
+    heredoc_file ${PROG_DIR}/lib/03_densetable.fmt | tee ${INITDB_LOG_DIR}/03_densetable.fmt
 
     # prepare data file
     datafile=$(mktemp -p $INITDB_LOG_DIR)
@@ -24,7 +24,7 @@ load_dense_data() {
     
     # run the bulk loader
     # batch of 1M
-    time /opt/mssql-tools/bin/bcp YCSBDENSE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_YCSBDENSE.fmt -b 1000000 | tee ${INITDB_LOG_DIR}/03_YCSBDENSE.log
+    time /opt/mssql-tools/bin/bcp YCSBDENSE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_densetable.fmt -b 1000000 | tee ${INITDB_LOG_DIR}/03_densetable.log
 
     # delete datafile
     rm $datafile
@@ -50,6 +50,7 @@ load_sparse_data() {
     
     # run the bulk loader
     # batch of 1M
+    # tablename=YCSBSPARSE${SIZE_FACTOR_NAME}
     time /opt/mssql-tools/bin/bcp YCSBSPARSE${SIZE_FACTOR_NAME} in "$datafile" -Uarcsrc -PPassw0rd -d arcsrc -S localhost -f ${INITDB_LOG_DIR}/03_sparsetable.fmt -b 1000000 | tee ${INITDB_LOG_DIR}/03_sparsetable.log
 
     # delete datafile
@@ -86,10 +87,10 @@ else
 
     if [[ "${ROLE^^}" = "SRC" ]]; then
 
-        load_sparse_data 1
-        load_sparse_data 10
-        load_sparse_data 100
-        #load_sparse_data 1000
+        load_sparse_data 1      # 1M
+        # load_sparse_data 10     # 10M
+        # load_sparse_data 100    # 100M
+        # load_sparse_data 1000
         load_dense_data 1
     fi
     touch ${INITDB_LOG_DIR}/03_ycsb.txt

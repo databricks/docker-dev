@@ -19,5 +19,5 @@ go
 alter user ${DB_ARC_USER} with default_schema=dbo
 go
 
-ALTER LOGIN ${DB_ARC_USER} WITH DEFAULT_DATABASE=[${DB_DB}
+ALTER LOGIN ${DB_ARC_USER} WITH DEFAULT_DATABASE=[${DB_DB}]
 go

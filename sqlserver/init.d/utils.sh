@@ -30,7 +30,7 @@ heredoc_file() {
 cli_arcsrc() {
     local DB_ARC_USER=${1:-${DB_ARC_USER:-${SRCDB_ARC_USER:-arcsrc}}}
     local DB_ARC_PW=${2:-${DB_ARC_PW:-${SRCDB_ARC_PW:-Passw0rd}}}
-    local DB_DB=${3:-${DB_DB:-${SRCDB_DB:-${DB_SRC_USER}}}}
+    local DB_DB=${3:-${DB_DB:-${SRCDB_DB:-${DB_ARC_USER}}}}
 
     /opt/mssql-tools/bin/sqlcmd -h -1 -t 1 -U ${DB_ARC_USER} -P ${DB_ARC_PW} -d ${DB_DB}
 }

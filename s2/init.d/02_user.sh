@@ -6,6 +6,9 @@ create_user_db() {
         CREATE USER '${db}' IDENTIFIED BY '${DB_ARC_PW}';
         CREATE DATABASE ${db};
         GRANT ALL ON ${db}.* to '${db}';
+        create database IF NOT EXISTS io_replicate;
+        GRANT ALL ON io_replicate.* to '${db}';
+
 EOF
     set +x
 }
