@@ -2,7 +2,7 @@
 # 3.8 required for the volume relative path name to config file 
 version: '3.8'
 services:
-  v2022cu4-src:
+  src:
     image: mcr.microsoft.com/mssql/server:2022-CU4-ubuntu-20.04
     # container_name: must be unqiue and can't replicate
     # hostname: `nmap` and `getent hosts` will show containers with this hostname
@@ -16,12 +16,13 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=Passw0rd
       - CONFIG_EDGE_BUILD=0
+      - MSSQL_AGENT_ENABLED=True    # required for DDL CDC
       - DATA_VOL=/var/opt/mssql
     env_file:
       - $DOCKERDEV_BASEDIR/config/env.sh
     volumes:
-      - ./init.d:/docker-entrypoint-initdb.d
-      - v2022cu4-src:/var/opt/mssql  
+      - $DOCKERDEV_BASEDIR/sqlserver/init.d:/docker-entrypoint-initdb.d
+      - src:/var/opt/mssql  
     entrypoint: /docker-entrypoint-initdb.d/00_run.sh
     networks:
       default:
@@ -33,4 +34,4 @@ networks:
     name: arcnet
     external: true
 volumes:
-  v2022cu4-src:
+  src:

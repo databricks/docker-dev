@@ -11,3 +11,10 @@ go
 
 ALTER TABLE  YCSBSPARSE${SIZE_FACTOR_NAME} ENABLE CHANGE_TRACKING;
 go
+
+EXEC sys.sp_cdc_enable_table  
+@source_schema = N'dbo',  
+@source_name   = N'YCSBSPARSE${SIZE_FACTOR_NAME}',  
+@role_name     = NULL,  
+@supports_net_changes = 1
+go

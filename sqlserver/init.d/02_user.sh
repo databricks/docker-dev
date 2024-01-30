@@ -20,8 +20,8 @@ dst_user() {
     if [[ -z ${DSTDB_ARC_PW+x} ]];   then echo "DSTDB_ARC_PW not defined"; exit 1;   else export DB_ARC_PW=$DSTDB_ARC_PW; fi
     if [[ -z ${DSTDB_DB+x} ]];   then echo "DSTDB_DB not defined"; exit 1;   else export DB_DB=$DSTDB_DB; fi
 
-    heredoc_file ${PROG_DIR}/lib/01_dst_root.sql | tee ${INITDB_LOG_DIR}/01_dst_root.sql 
-    cli_root < ${INITDB_LOG_DIR}/01_dst_root.sql
+    heredoc_file ${PROG_DIR}/lib/02_dst_root.sql | tee ${INITDB_LOG_DIR}/02_dst_root.sql 
+    cli_root < ${INITDB_LOG_DIR}/02_dst_root.sql
 }
 
 if [[ $(uname -a | awk '{print $2}') =~ 'src' ]]; then ROLE=SRC; else ROLE=DST; fi
