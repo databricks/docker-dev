@@ -1,4 +1,4 @@
-More info at [Arcion Demo Kit docs](https://arcionlabs.github.io/demokit-docs.gtihub-io/).   
+More info at [Arcion Demo Kit docs](https://databricks.github.io/demokit.gtihub.io/).   
 
 
 # Overview
@@ -66,7 +66,7 @@ podman machine start
 Cut and paste the following in a terminal.
 
 ```
-git clone https://github.com/arcionlabs/docker-dev
+git clone https://github.com/databrcks/docker-dev
 cat >>~/.profile <<EOF
 export ARCION_LICENSE="$(cat replicant.lic | base64)"
 export DOCKERDEV_BASEDIR="$(pwd)/docker-dev"
@@ -270,14 +270,14 @@ Oracle EE should be used for anything scale factor beyond 10.
   
 ```bash
 export ARCION_WORKLOADS_TAG=23.07
-/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/databrcks/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 - to install DBs not listed in the menu
 
 ```bash
 export ARCION_DOCKER_DBS=(db2 informix)
-/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/arcionlabs/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/databrcks/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 # Generate Source / Target Matric
