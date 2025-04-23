@@ -270,14 +270,14 @@ Oracle EE should be used for anything scale factor beyond 10.
   
 ```bash
 export ARCION_WORKLOADS_TAG=23.07
-/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/databrcks/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/databricks/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 - to install DBs not listed in the menu
 
 ```bash
 export ARCION_DOCKER_DBS=(db2 informix)
-/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/databrcks/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
+/bin/bash -c "$(curl -k -fsSL https://raw.githubusercontent.com/databricks/docker-dev/${ARCION_WORKLOADS_TAG:-HEAD}/install.sh)"
 ```
 
 # Generate Source / Target Matric
