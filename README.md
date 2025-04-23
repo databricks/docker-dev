@@ -66,7 +66,7 @@ podman machine start
 Cut and paste the following in a terminal.
 
 ```
-git clone https://github.com/databrcks/docker-dev
+git clone https://github.com/databricks/docker-dev
 cat >>~/.profile <<EOF
 export ARCION_LICENSE="$(cat replicant.lic | base64)"
 export DOCKERDEV_BASEDIR="$(pwd)/docker-dev"
