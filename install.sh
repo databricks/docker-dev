@@ -730,11 +730,11 @@ pullDockerDev() {
             git switch ${ARCION_WORKLOADS_TAG}
         fi
     else
-        echo "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} ."
-        git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} . >/tmp/install.$$ 2>&1
+        echo "git clone https://github.com/databrcks/${DOCKERDEV_NAME} ."
+        git clone https://github.com/databrcks/${DOCKERDEV_NAME} . >/tmp/install.$$ 2>&1
         if [[ "$?" != 0 ]]; then 
             cat /tmp/install.$$
-            abort "git clone https://github.com/arcionlabs/${DOCKERDEV_NAME} failed."
+            abort "git clone https://github.com/databrcks/${DOCKERDEV_NAME} failed."
         fi
 
         if [ -n "${ARCION_WORKLOADS_TAG}" ]; then
